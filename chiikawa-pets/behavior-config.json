@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "unit": "percent-per-autonomous-decision",
+  "characters": {
+    "chiikawa": { "idle": 25, "walk": 30, "wave": 8, "encourage": 10, "weeding": 20, "sasumata": 7 },
+    "hachiware": { "idle": 20, "walk": 30, "wave": 8, "encourage": 10, "guitar": 15, "camera": 12, "sasumata": 5 },
+    "usagi": { "idle": 10, "walk": 35, "wave": 5, "cheer": 10, "jump": 20, "onigiri": 15, "sasumata": 5 },
+    "shisa": { "idle": 25, "walk": 25, "study": 25, "bow": 15, "ramen-serve": 10 },
+    "momonga": { "idle": 15, "walk": 30, "charm": 15, "tail-proud": 15, "pout": 7, "fake-cry": 5, "glide": 13 },
+    "rakko": { "idle": 30, "walk": 20, "sword": 20, "dessert": 15, "study": 10, "sleep": 5 }
+  }
+}

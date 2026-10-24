@@ -8,15 +8,32 @@
  *  document.dispatchEvent(new Event('vocab:correct'));
  *  // on teardown: pets.destroy();
  */
-// Personality choices and special-action weights merged from the supplied v2 engine.
+// The build supplies the editable percentage tables from behavior-config.json.
 const DATA = [
-  { id: 'chiikawa', label: '치이카와', size: 126, speed: 42, walk: .48, actions: [['wave', .12], ['encourage', .16], ['weeding', .18], ['sasumata', .10]] },
-  { id: 'hachiware', label: '하치와레', size: 130, speed: 48, walk: .54, actions: [['wave', .10], ['encourage', .12], ['guitar', .16], ['camera', .14], ['sasumata', .10]] },
-  { id: 'usagi', label: '우사기', size: 126, speed: 64, walk: .71, actions: [['wave', .10], ['cheer', .12], ['jump', .15], ['onigiri', .18], ['sasumata', .10]] },
-  { id: 'shisa', label: '시사', size: 122, speed: 39, walk: .39, actions: [['study', .25], ['bow', .17], ['ramen-serve', .09]] },
-  { id: 'momonga', label: '모몽가', size: 127, speed: 61, walk: .48, actions: [['charm', .18], ['tail-proud', .17], ['pout', .08], ['fake-cry', .06], ['glide', .14]] },
-  { id: 'rakko', label: '랏코', size: 120, speed: 34, walk: .34, actions: [['sword', .15], ['dessert', .11], ['study', .10], ['sleep', .10]] },
+  { id: 'chiikawa', label: '치이카와', size: 126, speed: 42 },
+  { id: 'hachiware', label: '하치와레', size: 130, speed: 48 },
+  { id: 'usagi', label: '우사기', size: 126, speed: 64 },
+  { id: 'shisa', label: '시사', size: 122, speed: 39 },
+  { id: 'momonga', label: '모몽가', size: 127, speed: 61 },
+  { id: 'rakko', label: '랏코', size: 120, speed: 34 },
 ];
+export function pickPetBehavior(weights, random = Math.random) {
+  const entries = Object.entries(weights);
+  if (!entries.length || entries.some(([, weight]) => !Number.isFinite(weight) || weight < 0)) {
+    throw new TypeError('Pet probabilities must be finite, non-negative percentages.');
+  }
+  const total = entries.reduce((sum, [, weight]) => sum + weight, 0);
+  if (Math.abs(total - 100) > 1e-6) throw new RangeError('Pet probabilities must sum to 100.');
+  const sample = random();
+  if (!Number.isFinite(sample) || sample < 0 || sample >= 1) throw new RangeError('Random sample must be in [0, 1).');
+  const target = sample * total;
+  let cumulative = 0;
+  for (const [action, weight] of entries) {
+    cumulative += weight;
+    if (target < cumulative) return action;
+  }
+  return entries.findLast(([, weight]) => weight > 0)[0];
+}
 const FRAMES = ['idle', 'blink', 'walk-a', 'walk-b', 'happy', 'reaction', 'grabbed', 'landing'];
 const clamp = (v, a, b) => Math.min(Math.max(v, a), Math.max(a, b));
 const rand = (min, max) => min + Math.random() * (max - min);
@@ -103,20 +120,17 @@ export function mountChiikawaPets(options = {}) {
     report(p);
   }
   function decide(p) {
-    if (Math.random() < p.walk) {
+    const choice = pickPetBehavior(characterProfiles[p.id]?.behavior ?? { idle: 35, walk: 65 });
+    if (choice === 'walk') {
       setMode(p, 'walk'); p.dir = Math.random() < .5 ? -1 : 1;
       p.actionTime = rand(1.1, p.id === 'momonga' ? 2.8 : 3.8);
       showFrame(p, characterProfiles[p.id]?.motion?.walkPose ?? 'walk-a'); return;
     }
-    const choice = Math.random(); let weight = 0;
-    for (const [frame, probability] of p.actions) {
-      weight += probability;
-      if (choice < weight) {
-        if (frame === 'glide' && !reducedMotion) startGlide(p);
-        else if (frame === 'jump' && !reducedMotion) startJump(p);
-        else { setMode(p, 'special'); showFrame(p, frame); p.reactionTime = rand(1.35, 2.45); }
-        return;
-      }
+    if (choice !== 'idle') {
+      if (choice === 'glide' && !reducedMotion) startGlide(p);
+      else if (choice === 'jump' && !reducedMotion) startJump(p);
+      else { setMode(p, 'special'); showFrame(p, choice); p.reactionTime = rand(1.35, 2.45); }
+      return;
     }
     setMode(p, 'idle'); showFrame(p, 'idle'); p.actionTime = rand(1.2, 4.2);
   }
@@ -291,7 +305,11 @@ export function mountChiikawaPets(options = {}) {
   applyMobileVisibility(viewport().w < 640);
   function tick(now) {
     if (destroyed) return;
-    const dt = lastTime ? clamp((now - lastTime) / 1000, 0, .04) : 0;
+    const elapsed = lastTime ? Math.max(0, (now - lastTime) / 1000) : 0;
+    const dt = Math.min(elapsed, .04);
+    // Keep physics steps stable without making pose timers run in slow motion
+    // when rendering drops below 25fps. Visibility/pause changes reset lastTime.
+    const timerDt = Math.min(elapsed, 1);
     lastTime = now;
     if (obstaclesDirty) {
       obstacles = [...document.querySelectorAll(avoidSelector)].map(el => el.getBoundingClientRect())
@@ -313,15 +331,17 @@ export function mountChiikawaPets(options = {}) {
             land(p);
           }
         } else if (p.reactionTime > 0) {
-          p.reactionTime -= dt;
+          p.reactionTime -= timerDt;
           if (p.reactionTime <= 0) {
             setMode(p, 'idle');
             showFrame(p, 'idle');
-            p.actionTime = rand(1.2, 2.8);
+            // Let the next lottery decide whether to rest; don't force a long
+            // idle period after every special action or landing.
+            p.actionTime = 0;
             if (p.pendingEvent) { const type = p.pendingEvent; p.pendingEvent = null; reactPet(p, type); }
           }
         } else if (!paused) {
-          p.actionTime -= dt;
+          p.actionTime -= timerDt;
           if (p.actionTime <= 0) decide(p);
           if (p.mode === 'walk') {
             p.x += p.dir * p.speed * dt;

@@ -40,4 +40,19 @@ Keep `docs/.nojekyll` in place. The public site does not upload or synchronize s
 - `build_html.py`: creates the self-contained local application.
 - `docs/index.html`: generated public application.
 
+## Autonomous action probabilities
+
+Edit `chiikawa-pets/behavior-config.json`, then rebuild. Each character's table sums to 100 and is sampled once whenever the character chooses its next autonomous action. Percentages describe decisions, not time spent in each pose. Movement direction and durations are randomized separately. Dragging, physics and vocabulary-event reactions retain priority.
+
+| Character | Rest | Move | Character actions |
+| --- | ---: | ---: | ---: |
+| Chiikawa | 25% | 30% | 45% |
+| Hachiware | 20% | 30% | 50% |
+| Usagi | 10% | 35% | 55% |
+| Shisa | 25% | 25% | 50% |
+| Momonga | 15% | 30% | 55% |
+| Rakko | 30% | 20% | 50% |
+
+Run the distribution and validation checks with `node --test tests/behavior.test.mjs`.
+
 Raw APK files, local verification backups and screenshot outputs are excluded from Git.

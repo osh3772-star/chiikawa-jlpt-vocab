@@ -55,11 +55,19 @@ for who, aliases in pose_aliases.items():
     profiles[who]['assetType'] = 'static-poses-with-css-motion'
     profiles[who]['motion'] = {'walkPose': 'run' if who == 'usagi' else 'idle', 'blinkPose': 'idle'}
     profiles[who]['vocab'] = events[who]
+
+behaviors = json.loads((root / 'chiikawa-pets/behavior-config.json').read_text(encoding='utf-8'))['characters']
+assert set(behaviors) == set(profiles), 'Behavior tables must cover all six characters'
+for who, weights in behaviors.items():
+    assert weights and all(isinstance(w, (int, float)) and not isinstance(w, bool) and w >= 0 for w in weights.values()), who
+    assert abs(sum(weights.values()) - 100) < 1e-6, f'{who}: probabilities must sum to 100'
+    assert all(action in ('idle', 'walk') or action in sprites[who] for action in weights), who
+    profiles[who]['behavior'] = weights
 theme = (root / 'theme.css').read_text(encoding='utf-8')
 theme = theme.replace('__MEADOW_IMAGE__', data_uri(pack / config['background']))
 theme = theme.replace('__FLOWER_IMAGE__', data_uri(pack / 'assets/ui/flower.svg'))
 theme = theme.replace('__STAR_IMAGE__', data_uri(pack / 'assets/ui/star.svg'))
-engine = (root / 'chiikawa-pets/pet-engine.js').read_text(encoding='utf-8').replace('export function mountChiikawaPets', 'function mountChiikawaPets', 1)
+engine = (root / 'chiikawa-pets/pet-engine.js').read_text(encoding='utf-8').replace('export function ', 'function ')
 integration = (root / 'chiikawa-pets/integration.js').read_text(encoding='utf-8').replace('__PET_ENGINE__', engine)
 html = html.replace('__THEME_CSS__', theme)
 html = html.replace('__STAR_IMAGE__', data_uri(pack / 'assets/ui/star.svg'))
