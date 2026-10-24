@@ -1,0 +1,64 @@
+{
+  "character": "chiikawa",
+  "character_japanese": "ちいかわ",
+  "poses": [
+    {
+      "pose": "idle",
+      "file": "assets/characters/chiikawa/idle.png",
+      "width": 390,
+      "height": 520,
+      "transparent": true
+    },
+    {
+      "pose": "wave",
+      "file": "assets/characters/chiikawa/wave.png",
+      "width": 390,
+      "height": 520,
+      "transparent": true
+    },
+    {
+      "pose": "happy",
+      "file": "assets/characters/chiikawa/happy.png",
+      "width": 390,
+      "height": 520,
+      "transparent": true
+    },
+    {
+      "pose": "encourage",
+      "file": "assets/characters/chiikawa/encourage.png",
+      "width": 390,
+      "height": 520,
+      "transparent": true
+    },
+    {
+      "pose": "cry",
+      "file": "assets/characters/chiikawa/cry.png",
+      "width": 390,
+      "height": 520,
+      "transparent": true
+    },
+    {
+      "pose": "reaction",
+      "file": "assets/characters/chiikawa/reaction.png",
+      "width": 390,
+      "height": 520,
+      "transparent": true
+    },
+    {
+      "pose": "sasumata",
+      "file": "assets/characters/chiikawa/sasumata.png",
+      "width": 390,
+      "height": 520,
+      "transparent": true
+    },
+    {
+      "pose": "weeding",
+      "file": "assets/characters/chiikawa/weeding.png",
+      "width": 390,
+      "height": 520,
+      "transparent": true
+    }
+  ],
+  "notes": "8 static character expressions/poses; not frame-by-frame movement animation. Poses generated with reference to official character profile and existing anime themes.",
+  "sheet": "chiikawa_8pose_original_sheet.png"
+}

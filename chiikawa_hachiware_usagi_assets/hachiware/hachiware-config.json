@@ -1,0 +1,45 @@
+{
+  "package": "chiikawa-vocab-interactive-pets",
+  "character": "hachiware",
+  "label": "하치와레",
+  "assetType": "individually cropped transparent PNG poses",
+  "frameCanvas": [
+    390,
+    520
+  ],
+  "note": "Generated illustrations inspired by the character, not official artwork. Compatibility files are pose aliases, not sequential animated frames.",
+  "frames": {
+    "idle": "assets/characters/hachiware/idle.png",
+    "wave": "assets/characters/hachiware/wave.png",
+    "happy": "assets/characters/hachiware/happy.png",
+    "encourage": "assets/characters/hachiware/encourage.png",
+    "guitar": "assets/characters/hachiware/guitar.png",
+    "camera": "assets/characters/hachiware/camera.png",
+    "reaction": "assets/characters/hachiware/reaction.png",
+    "sasumata": "assets/characters/hachiware/sasumata.png"
+  },
+  "compatibilityFrames": {
+    "blink": "assets/characters/hachiware/blink.png",
+    "walk-a": "assets/characters/hachiware/walk-a.png",
+    "walk-b": "assets/characters/hachiware/walk-b.png",
+    "grabbed": "assets/characters/hachiware/grabbed.png",
+    "landing": "assets/characters/hachiware/landing.png"
+  },
+  "aliasesOf": {
+    "blink": "happy",
+    "walk-a": "wave",
+    "walk-b": "encourage",
+    "grabbed": "reaction",
+    "landing": "idle"
+  },
+  "vocab": {
+    "correct": "happy",
+    "wrong": "reaction",
+    "complete": "guitar"
+  },
+  "signatureActions": [
+    "guitar",
+    "camera",
+    "sasumata"
+  ]
+}

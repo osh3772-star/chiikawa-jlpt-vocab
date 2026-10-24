@@ -1,0 +1,105 @@
+{
+  "package": "chiikawa-vocab-interactive-pets",
+  "packageVersion": "1.0.0",
+  "notes": "Illustrations generated for this project; not original official source assets, and not animation sequences derived from the original show.",
+  "background": "assets/backgrounds/pastel-meadow.webp",
+  "artwork": {
+    "type": "separate-PNG-poses",
+    "gridLayout": "4 columns x 2 rows",
+    "frameCanvas": [
+      390,
+      520
+    ],
+    "originalSheetsIncluded": true
+  },
+  "characters": {
+    "chiikawa": {
+      "label": "치이카와",
+      "sizePx": 126,
+      "walkSpeedPxPerSec": 42,
+      "color": "#F7C8D8",
+      "frames": {
+        "idle": "assets/characters/chiikawa/idle.png",
+        "blink": "assets/characters/chiikawa/blink.png",
+        "walk-a": "assets/characters/chiikawa/walk-a.png",
+        "walk-b": "assets/characters/chiikawa/walk-b.png",
+        "happy": "assets/characters/chiikawa/happy.png",
+        "reaction": "assets/characters/chiikawa/reaction.png",
+        "grabbed": "assets/characters/chiikawa/grabbed.png",
+        "landing": "assets/characters/chiikawa/landing.png"
+      },
+      "vocab": {
+        "correct": "happy",
+        "wrong": "reaction",
+        "complete": "happy"
+      }
+    },
+    "hachiware": {
+      "label": "하치와레",
+      "sizePx": 130,
+      "walkSpeedPxPerSec": 48,
+      "color": "#B8DDF6",
+      "frames": {
+        "idle": "assets/characters/hachiware/idle.png",
+        "blink": "assets/characters/hachiware/blink.png",
+        "walk-a": "assets/characters/hachiware/walk-a.png",
+        "walk-b": "assets/characters/hachiware/walk-b.png",
+        "happy": "assets/characters/hachiware/happy.png",
+        "reaction": "assets/characters/hachiware/reaction.png",
+        "grabbed": "assets/characters/hachiware/grabbed.png",
+        "landing": "assets/characters/hachiware/landing.png"
+      },
+      "vocab": {
+        "correct": "happy",
+        "wrong": "reaction",
+        "complete": "happy"
+      }
+    },
+    "usagi": {
+      "label": "우사기",
+      "sizePx": 126,
+      "walkSpeedPxPerSec": 64,
+      "color": "#FFE3A3",
+      "frames": {
+        "idle": "assets/characters/usagi/idle.png",
+        "blink": "assets/characters/usagi/blink.png",
+        "walk-a": "assets/characters/usagi/walk-a.png",
+        "walk-b": "assets/characters/usagi/walk-b.png",
+        "happy": "assets/characters/usagi/happy.png",
+        "reaction": "assets/characters/usagi/reaction.png",
+        "grabbed": "assets/characters/usagi/grabbed.png",
+        "landing": "assets/characters/usagi/landing.png"
+      },
+      "vocab": {
+        "correct": "happy",
+        "wrong": "landing",
+        "complete": "happy"
+      }
+    }
+  },
+  "actions": {
+    "idle": "idle",
+    "blink": "blink",
+    "walking": [
+      "walk-a",
+      "walk-b"
+    ],
+    "grabbing": "grabbed",
+    "falling": "grabbed",
+    "landed": "landing",
+    "answerCorrect": "happy",
+    "answerWrong": "reaction",
+    "sessionComplete": "happy"
+  },
+  "events": [
+    "vocab:correct",
+    "vocab:wrong",
+    "vocab:complete",
+    "vocab:start"
+  ],
+  "requirements": {
+    "existingVocabularyFunctionalityMustBePreserved": true,
+    "externalRuntimeDependencies": false,
+    "networkNeeded": false
+  }
+}

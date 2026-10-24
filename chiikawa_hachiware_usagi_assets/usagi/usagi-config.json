@@ -1,0 +1,20 @@
+{
+  "character": "usagi",
+  "label": "우사기",
+  "source_sheet": "usagi_8pose_original_sheet.png",
+  "frameCanvas": [
+    390,
+    520
+  ],
+  "frames": {
+    "idle": "assets/characters/usagi/idle.png",
+    "wave": "assets/characters/usagi/wave.png",
+    "happy": "assets/characters/usagi/happy.png",
+    "cheer": "assets/characters/usagi/cheer.png",
+    "jump": "assets/characters/usagi/jump.png",
+    "run": "assets/characters/usagi/run.png",
+    "onigiri": "assets/characters/usagi/onigiri.png",
+    "sasumata": "assets/characters/usagi/sasumata.png"
+  },
+  "notes": "8 separate static pose PNGs cropped from the regenerated sprite sheet; not a continuous walk cycle."
+}

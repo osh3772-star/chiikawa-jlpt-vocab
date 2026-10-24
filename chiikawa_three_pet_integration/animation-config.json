@@ -1,0 +1,133 @@
+{
+  "package": "chiikawa-three-pet-integration",
+  "version": "2.0.0",
+  "defaultCharacters": [
+    "shisa",
+    "momonga",
+    "rakko"
+  ],
+  "optionalExistingCharacters": [
+    "chiikawa",
+    "hachiware",
+    "usagi"
+  ],
+  "assetBaseExample": "/chiikawa",
+  "characters": {
+    "shisa": {
+      "label": "시사",
+      "size": 122,
+      "speed": 39,
+      "color": "#FFBE86",
+      "specialActions": [
+        "study",
+        "bow",
+        "ramen-serve"
+      ],
+      "vocab": {
+        "start": "study",
+        "correct": "happy",
+        "wrong": "study",
+        "complete": "ramen-serve"
+      },
+      "temperament": "성실함, 공손함, 라멘집의 활기",
+      "frames": {
+        "blink": "assets/characters/shisa/blink.png",
+        "bow": "assets/characters/shisa/bow.png",
+        "grabbed": "assets/characters/shisa/grabbed.png",
+        "happy": "assets/characters/shisa/happy.png",
+        "idle": "assets/characters/shisa/idle.png",
+        "landing": "assets/characters/shisa/landing.png",
+        "ramen-serve": "assets/characters/shisa/ramen-serve.png",
+        "reaction": "assets/characters/shisa/reaction.png",
+        "study": "assets/characters/shisa/study.png",
+        "walk-a": "assets/characters/shisa/walk-a.png",
+        "walk-b": "assets/characters/shisa/walk-b.png"
+      }
+    },
+    "momonga": {
+      "label": "모몽가",
+      "size": 127,
+      "speed": 61,
+      "color": "#C6E8FA",
+      "specialActions": [
+        "charm",
+        "tail-proud",
+        "pout",
+        "fake-cry",
+        "glide"
+      ],
+      "vocab": {
+        "start": "charm",
+        "correct": "tail-proud",
+        "wrong": "pout",
+        "complete": "glide"
+      },
+      "temperament": "애교, 관심욕구, 뻔뻔함, 활공",
+      "frames": {
+        "angry": "assets/characters/momonga/angry.png",
+        "blink": "assets/characters/momonga/blink.png",
+        "charm": "assets/characters/momonga/charm.png",
+        "fake-cry": "assets/characters/momonga/fake-cry.png",
+        "glide": "assets/characters/momonga/glide.png",
+        "grabbed": "assets/characters/momonga/grabbed.png",
+        "hang": "assets/characters/momonga/hang.png",
+        "happy": "assets/characters/momonga/happy.png",
+        "idle-small": "assets/characters/momonga/idle-small.png",
+        "idle": "assets/characters/momonga/idle.png",
+        "jump": "assets/characters/momonga/jump.png",
+        "landing": "assets/characters/momonga/landing.png",
+        "portrait": "assets/characters/momonga/portrait.png",
+        "pout": "assets/characters/momonga/pout.png",
+        "reaction": "assets/characters/momonga/reaction.png",
+        "run": "assets/characters/momonga/run.png",
+        "sleep": "assets/characters/momonga/sleep.png",
+        "tail-proud": "assets/characters/momonga/tail-proud.png",
+        "updraft": "assets/characters/momonga/updraft.png",
+        "walk-a": "assets/characters/momonga/walk-a.png",
+        "walk-b": "assets/characters/momonga/walk-b.png"
+      }
+    },
+    "rakko": {
+      "label": "랏코",
+      "size": 120,
+      "speed": 34,
+      "color": "#F9E6C6",
+      "specialActions": [
+        "sword",
+        "dessert",
+        "study",
+        "sleep"
+      ],
+      "vocab": {
+        "start": "idle",
+        "correct": "happy",
+        "wrong": "reaction",
+        "complete": "dessert"
+      },
+      "temperament": "침착한 스승, 검술, 디저트를 좋아함",
+      "frames": {
+        "blink": "assets/characters/rakko/blink.png",
+        "dessert": "assets/characters/rakko/dessert.png",
+        "grabbed": "assets/characters/rakko/grabbed.png",
+        "happy": "assets/characters/rakko/happy.png",
+        "idle": "assets/characters/rakko/idle.png",
+        "landing": "assets/characters/rakko/landing.png",
+        "reaction": "assets/characters/rakko/reaction.png",
+        "sleep": "assets/characters/rakko/sleep.png",
+        "study": "assets/characters/rakko/study.png",
+        "sword": "assets/characters/rakko/sword.png",
+        "user-reference-cutout": "assets/characters/rakko/user-reference-cutout.png",
+        "walk-a": "assets/characters/rakko/walk-a.png",
+        "walk-b": "assets/characters/rakko/walk-b.png"
+      },
+      "referenceNote": "User-provided reference image was used for corrected Rakko image poses."
+    }
+  },
+  "eventNames": [
+    "vocab:start",
+    "vocab:correct",
+    "vocab:wrong",
+    "vocab:complete"
+  ],
+  "licenseNotice": "Generated, non-official illustrations for private local use; Rakko derived from user-provided reference."
+}

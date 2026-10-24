@@ -1,0 +1,33 @@
+# Local extraction inputs and redundant text exports
+*.apk
+*.zip
+/*.txt
+/추출정보.json
+/원본데이터/level.json
+/원본데이터/update.json
+
+# Local sessions, screenshots and verification backups
+/.qa/
+/*.png
+__pycache__/
+*.pyc
+.env
+.env.*
+*.log
+
+# The published copy is docs/index.html
+/단어장.html
+
+# Reference sheets, demos and instruction bundles are not runtime assets
+**/demo/
+**/references/
+**/*original-sheet.png
+**/*original_sheet.png
+**/*PREVIEW*
+**/TEST_REPORT.md
+**/CODEX*
+**/FILE_SHA256.json
+**/MANIFEST_SHA256.json
+/chiikawa_vocab_codex_pack/src/
+/chiikawa_three_pet_integration/src/
+/chiikawa_vocab_codex_pack/assets/backgrounds/pastel-meadow.png

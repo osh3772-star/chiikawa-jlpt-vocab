@@ -1,0 +1,108 @@
+/* Scoped 2D interactive pet layer: no global element selectors, no CSS framework needed. */
+.cv-pet-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  overflow: hidden;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-select: none;
+  contain: layout style;
+}
+.cv-pet {
+  --cv-pet-size: 128px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: var(--cv-pet-size);
+  height: calc(var(--cv-pet-size) * 1.33333);
+  cursor: grab;
+  pointer-events: auto;
+  touch-action: none;
+  -webkit-tap-highlight-color: transparent;
+  outline-offset: 5px;
+  will-change: transform;
+}
+.cv-pet:focus-visible { outline: 3px solid #74BFE9; border-radius: 22px; }
+.cv-pet.cv-pet--dragging { cursor: grabbing; }
+.cv-pet--yielding { opacity: .16; pointer-events: none; }
+.cv-pet--yielding .cv-pet__name { visibility: hidden; }
+.cv-pet-layer[data-paused="true"] .cv-pet__figure { animation: none !important; }
+.cv-pet-layer[data-paused="true"] .cv-pet__image { animation: none !important; }
+.cv-pet[hidden] { display: none !important; }
+.mobile-pet-picker { display: none; }
+@media (max-width: 639px) {
+  .mobile-pet-picker { display: flex; align-items: center; gap: 8px; }
+  .mobile-pet-picker label { font-size: .72rem; }
+  .mobile-pet-picker select { min-height: 36px; max-width: 235px; font-size: .72rem; padding: 5px 22px 5px 8px; }
+}
+.cv-pet__figure {
+  width: 100%; height: 100%;
+  transform-origin: center 72%;
+  will-change: transform;
+}
+.cv-pet__image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+.cv-pet--celebrating .cv-pet__figure { animation: cv-pet-cheer 580ms ease-in-out infinite; }
+.cv-pet--sad .cv-pet__figure { animation: cv-pet-sad 650ms ease-in-out infinite; }
+.cv-pet--landing .cv-pet__figure { animation: cv-pet-squash 340ms ease-out both; }
+/* Special motion rules merged from the supplied six-character integration CSS. */
+.cv-pet--special .cv-pet__image { animation: cv-pet-tilt 1.4s ease-in-out infinite; }
+.cv-pet--glide .cv-pet__image { animation: cv-pet-float .85s ease-in-out infinite; }
+.cv-pet--pose-walk .cv-pet__image { animation: cv-pet-step var(--cv-step-time, .46s) ease-in-out infinite; }
+.cv-pet[data-frame="guitar"] .cv-pet__image { animation: cv-pet-strum .65s ease-in-out infinite; }
+.cv-pet[data-frame="weeding"] .cv-pet__image { animation: cv-pet-weeding 1.1s ease-in-out infinite; transform-origin: 50% 80%; }
+.cv-pet[data-frame="camera"] .cv-pet__image { animation: cv-pet-camera 1.4s ease-in-out infinite; }
+@keyframes cv-pet-step { 0%, 100% { translate: 0 0; rotate: -1deg; } 50% { translate: 0 -4px; rotate: 1deg; } }
+@keyframes cv-pet-strum { 0%, 100% { rotate: -2deg; } 50% { rotate: 2deg; translate: 0 -2px; } }
+@keyframes cv-pet-weeding { 0%, 100% { rotate: 0deg; } 50% { rotate: 5deg; translate: 0 2px; } }
+@keyframes cv-pet-camera { 0%, 75%, 100% { scale: 1; } 82% { scale: 1.035; } }
+.cv-pet--dragging .cv-pet__image { filter: drop-shadow(0 8px 6px #4b3c322b); }
+@keyframes cv-pet-tilt { 0%, 100% { rotate: -2deg; } 50% { rotate: 2deg; } }
+@keyframes cv-pet-float { 0%, 100% { translate: 0 0; } 50% { translate: 0 -7px; } }
+.cv-pet__name {
+  scale: var(--cv-facing, 1) 1;
+  position: absolute;
+  left: 50%;
+  top: 0;
+  transform: translate(-50%, -25%);
+  padding: 3px 8px;
+  border: 1px solid #f7d7df;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, .87);
+  color: #73665e;
+  box-shadow: 0 2px 8px rgba(74, 60, 45, .08);
+  white-space: nowrap;
+  font: 600 11px/1.4 system-ui, 'Noto Sans KR', sans-serif;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 150ms ease;
+}
+.cv-pet:hover .cv-pet__name, .cv-pet:focus-visible .cv-pet__name { opacity: 1; }
+@keyframes cv-pet-cheer {
+  0%, 100% { transform: translateY(0) rotate(-2deg); }
+  45% { transform: translateY(-17px) rotate(3deg); }
+}
+@keyframes cv-pet-sad {
+  0%, 100% { transform: rotate(-2deg); }
+  50% { transform: rotate(2deg); }
+}
+@keyframes cv-pet-squash {
+  0% { transform: scale(1.11, .80); }
+  45% { transform: scale(.94, 1.06); }
+  100% { transform: scale(1); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cv-pet__image { animation: none !important; }
+  .cv-pet--celebrating .cv-pet__figure,
+  .cv-pet--sad .cv-pet__figure,
+  .cv-pet--landing .cv-pet__figure { animation: none; }
+  .cv-pet__name { transition: none; }
+}

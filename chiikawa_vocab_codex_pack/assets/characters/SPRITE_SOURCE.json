@@ -1,0 +1,416 @@
+{
+  "chiikawa": {
+    "idle": {
+      "source_grid_index": 0,
+      "visible_bbox_original": [
+        31,
+        159,
+        334,
+        498
+      ],
+      "placed_at": [
+        43,
+        169
+      ],
+      "pixel_size": [
+        303,
+        339
+      ]
+    },
+    "blink": {
+      "source_grid_index": 1,
+      "visible_bbox_original": [
+        23,
+        164,
+        326,
+        498
+      ],
+      "placed_at": [
+        43,
+        174
+      ],
+      "pixel_size": [
+        303,
+        334
+      ]
+    },
+    "walk-a": {
+      "source_grid_index": 2,
+      "visible_bbox_original": [
+        11,
+        155,
+        318,
+        500
+      ],
+      "placed_at": [
+        41,
+        163
+      ],
+      "pixel_size": [
+        307,
+        345
+      ]
+    },
+    "walk-b": {
+      "source_grid_index": 3,
+      "visible_bbox_original": [
+        24,
+        162,
+        331,
+        499
+      ],
+      "placed_at": [
+        41,
+        171
+      ],
+      "pixel_size": [
+        307,
+        337
+      ]
+    },
+    "happy": {
+      "source_grid_index": 4,
+      "visible_bbox_original": [
+        35,
+        45,
+        346,
+        404
+      ],
+      "placed_at": [
+        39,
+        149
+      ],
+      "pixel_size": [
+        311,
+        359
+      ]
+    },
+    "reaction": {
+      "source_grid_index": 5,
+      "visible_bbox_original": [
+        28,
+        114,
+        321,
+        424
+      ],
+      "placed_at": [
+        48,
+        198
+      ],
+      "pixel_size": [
+        293,
+        310
+      ]
+    },
+    "grabbed": {
+      "source_grid_index": 6,
+      "visible_bbox_original": [
+        23,
+        17,
+        362,
+        424
+      ],
+      "placed_at": [
+        25,
+        101
+      ],
+      "pixel_size": [
+        339,
+        407
+      ]
+    },
+    "landing": {
+      "source_grid_index": 7,
+      "visible_bbox_original": [
+        0,
+        133,
+        337,
+        433
+      ],
+      "placed_at": [
+        26,
+        208
+      ],
+      "pixel_size": [
+        337,
+        300
+      ]
+    }
+  },
+  "hachiware": {
+    "idle": {
+      "source_grid_index": 0,
+      "visible_bbox_original": [
+        31,
+        123,
+        355,
+        503
+      ],
+      "placed_at": [
+        33,
+        128
+      ],
+      "pixel_size": [
+        324,
+        380
+      ]
+    },
+    "blink": {
+      "source_grid_index": 1,
+      "visible_bbox_original": [
+        35,
+        124,
+        354,
+        503
+      ],
+      "placed_at": [
+        35,
+        129
+      ],
+      "pixel_size": [
+        319,
+        379
+      ]
+    },
+    "walk-a": {
+      "source_grid_index": 2,
+      "visible_bbox_original": [
+        36,
+        123,
+        353,
+        503
+      ],
+      "placed_at": [
+        36,
+        128
+      ],
+      "pixel_size": [
+        317,
+        380
+      ]
+    },
+    "walk-b": {
+      "source_grid_index": 3,
+      "visible_bbox_original": [
+        40,
+        114,
+        345,
+        503
+      ],
+      "placed_at": [
+        42,
+        119
+      ],
+      "pixel_size": [
+        305,
+        389
+      ]
+    },
+    "happy": {
+      "source_grid_index": 4,
+      "visible_bbox_original": [
+        10,
+        50,
+        362,
+        440
+      ],
+      "placed_at": [
+        19,
+        118
+      ],
+      "pixel_size": [
+        352,
+        390
+      ]
+    },
+    "reaction": {
+      "source_grid_index": 5,
+      "visible_bbox_original": [
+        0,
+        56,
+        362,
+        444
+      ],
+      "placed_at": [
+        15,
+        122
+      ],
+      "pixel_size": [
+        360,
+        386
+      ]
+    },
+    "grabbed": {
+      "source_grid_index": 6,
+      "visible_bbox_original": [
+        0,
+        18,
+        362,
+        454
+      ],
+      "placed_at": [
+        15,
+        74
+      ],
+      "pixel_size": [
+        360,
+        434
+      ]
+    },
+    "landing": {
+      "source_grid_index": 7,
+      "visible_bbox_original": [
+        0,
+        75,
+        336,
+        447
+      ],
+      "placed_at": [
+        27,
+        136
+      ],
+      "pixel_size": [
+        336,
+        372
+      ]
+    }
+  },
+  "usagi": {
+    "idle": {
+      "source_grid_index": 0,
+      "visible_bbox_original": [
+        42,
+        49,
+        331,
+        493
+      ],
+      "placed_at": [
+        50,
+        64
+      ],
+      "pixel_size": [
+        289,
+        444
+      ]
+    },
+    "blink": {
+      "source_grid_index": 1,
+      "visible_bbox_original": [
+        41,
+        58,
+        329,
+        492
+      ],
+      "placed_at": [
+        51,
+        74
+      ],
+      "pixel_size": [
+        288,
+        434
+      ]
+    },
+    "walk-a": {
+      "source_grid_index": 2,
+      "visible_bbox_original": [
+        34,
+        58,
+        313,
+        543
+      ],
+      "placed_at": [
+        55,
+        23
+      ],
+      "pixel_size": [
+        279,
+        485
+      ]
+    },
+    "walk-b": {
+      "source_grid_index": 3,
+      "visible_bbox_original": [
+        46,
+        58,
+        320,
+        493
+      ],
+      "placed_at": [
+        58,
+        73
+      ],
+      "pixel_size": [
+        274,
+        435
+      ]
+    },
+    "happy": {
+      "source_grid_index": 4,
+      "visible_bbox_original": [
+        32,
+        20,
+        335,
+        425
+      ],
+      "placed_at": [
+        43,
+        103
+      ],
+      "pixel_size": [
+        303,
+        405
+      ]
+    },
+    "reaction": {
+      "source_grid_index": 5,
+      "visible_bbox_original": [
+        34,
+        37,
+        342,
+        462
+      ],
+      "placed_at": [
+        41,
+        83
+      ],
+      "pixel_size": [
+        308,
+        425
+      ]
+    },
+    "grabbed": {
+      "source_grid_index": 6,
+      "visible_bbox_original": [
+        39,
+        0,
+        341,
+        463
+      ],
+      "placed_at": [
+        44,
+        45
+      ],
+      "pixel_size": [
+        302,
+        463
+      ]
+    },
+    "landing": {
+      "source_grid_index": 7,
+      "visible_bbox_original": [
+        23,
+        96,
+        350,
+        473
+      ],
+      "placed_at": [
+        31,
+        131
+      ],
+      "pixel_size": [
+        327,
+        377
+      ]
+    }
+  }
+}
