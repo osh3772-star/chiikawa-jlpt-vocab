@@ -95,10 +95,14 @@ if momonga_preview:
     require(match.get('previewTestingAuthorized') is True and match.get('previewReviewId') == momonga_preview['reviewId'] and
             match.get('bodyActionRef') == momonga_preview['bodyActionRef'] and
             match.get('previewAssetSha256') == momonga_preview['assetSha256'], 'Limited preview is not linked to current reviewed registry')
+from static_cameo import load_static_cameo
+cameo_asset = load_static_cameo(root, data_uri)
+cameo_helpers = (root / 'chiikawa-pets/static-cameo.js').read_text(encoding='utf-8').replace('export function ', 'function ')
 preview_helpers = (root / 'chiikawa-pets/momonga-preview.js').read_text(encoding='utf-8').replace('export function ', 'function ')
 
 engine = (root / 'chiikawa-pets/pet-engine.js').read_text(encoding='utf-8').replace('export function ', 'function ')
 integration = (root / 'chiikawa-pets/integration.js').read_text(encoding='utf-8').replace('__PET_ENGINE__', engine)
+integration = integration.replace('__STATIC_CAMEO_HELPERS__', cameo_helpers).replace('__STATIC_CAMEO_CONFIG__', json.dumps(cameo_asset, ensure_ascii=False, separators=(',', ':')).replace('<', '\\u003c'))
 integration = integration.replace('__MOMONGA_PREVIEW_HELPERS__', preview_helpers).replace('__MOMONGA_PREVIEW_CONFIG__', json.dumps(momonga_preview, ensure_ascii=False, separators=(',', ':')).replace('<', '\\u003c')).replace('__VISIBILITY_HELPERS__', visibility_helpers).replace('__EVIDENCE_HELPERS__', evidence_helpers).replace('__MOTION_EVIDENCE__', json.dumps(motion_evidence, ensure_ascii=False, separators=(',', ':')).replace('<', '\\u003c'))
 html = html.replace('__THEME_CSS__', theme)
 html = html.replace('__STAR_IMAGE__', data_uri(pack / 'assets/ui/star.svg'))

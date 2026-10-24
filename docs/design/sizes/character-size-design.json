@@ -1,0 +1,286 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-10-24",
+  "status": "RESEARCH_AND_DESIGN_ONLY",
+  "implemented": false,
+  "generatedArt": false,
+  "videoWatchedInThisPass": false,
+  "officialHeightConclusion": "Not found in the inspected public official introductions and profiles; not proof of universal absence.",
+  "characters": [
+    {
+      "id": "chiikawa",
+      "officialHeightCm": null,
+      "evidenceRelativeBodyRatio": null,
+      "referenceUnit": 1,
+      "excludeFromBodyNormalization": [
+        "ears",
+        "props"
+      ]
+    },
+    {
+      "id": "hachiware",
+      "officialHeightCm": null,
+      "evidenceRelativeBodyRatio": null,
+      "excludeFromBodyNormalization": [
+        "ears",
+        "tail",
+        "props"
+      ]
+    },
+    {
+      "id": "usagi",
+      "officialHeightCm": null,
+      "evidenceRelativeBodyRatio": null,
+      "excludeFromBodyNormalization": [
+        "long_ears",
+        "tail",
+        "props"
+      ]
+    },
+    {
+      "id": "momonga",
+      "officialHeightCm": null,
+      "evidenceRelativeBodyRatio": null,
+      "excludeFromBodyNormalization": [
+        "ears",
+        "tail",
+        "props"
+      ]
+    },
+    {
+      "id": "rakko",
+      "officialHeightCm": null,
+      "evidenceRelativeBodyRatio": null,
+      "excludeFromBodyNormalization": [
+        "cape",
+        "props"
+      ],
+      "occlusionPolicy": "do_not_invent_hidden_body"
+    },
+    {
+      "id": "shisa",
+      "officialHeightCm": null,
+      "evidenceRelativeBodyRatio": null,
+      "excludeFromBodyNormalization": [
+        "ears",
+        "mane",
+        "tail",
+        "props"
+      ]
+    },
+    {
+      "id": "furuhonya",
+      "aliases": [
+        "kani",
+        "kuruhonya"
+      ],
+      "officialHeightCm": null,
+      "evidenceRelativeBodyRatio": null,
+      "excludeFromBodyNormalization": [
+        "crab_headband",
+        "props"
+      ]
+    },
+    {
+      "id": "kurimanju",
+      "officialHeightCm": null,
+      "evidenceRelativeBodyRatio": null,
+      "excludeFromBodyNormalization": [
+        "ears",
+        "can",
+        "props"
+      ]
+    },
+    {
+      "id": "pajama_midori",
+      "officialHeightCm": null,
+      "evidenceRelativeBodyRatio": null,
+      "excludeFromBodyNormalization": [
+        "hood_protrusions",
+        "tail"
+      ],
+      "occlusionPolicy": "clothed_proxy_not_anatomy"
+    },
+    {
+      "id": "pajama_pink",
+      "officialHeightCm": null,
+      "evidenceRelativeBodyRatio": null,
+      "excludeFromBodyNormalization": [
+        "hood_protrusions",
+        "tail"
+      ],
+      "occlusionPolicy": "clothed_proxy_not_anatomy"
+    },
+    {
+      "id": "pajama_shiro",
+      "officialHeightCm": null,
+      "evidenceRelativeBodyRatio": null,
+      "excludeFromBodyNormalization": [
+        "hood_protrusions",
+        "tail"
+      ],
+      "occlusionPolicy": "clothed_proxy_not_anatomy"
+    },
+    {
+      "id": "pajama_murasaki",
+      "officialHeightCm": null,
+      "evidenceRelativeBodyRatio": null,
+      "excludeFromBodyNormalization": [
+        "hood_protrusions",
+        "tail"
+      ],
+      "occlusionPolicy": "clothed_proxy_not_anatomy"
+    }
+  ],
+  "sourceURLs": [
+    "https://www.anime-chiikawa.jp/chara.html",
+    "https://www.chiikawaofficial.com/characters/",
+    "https://spiralcute.com/characters/chiikawa/en/",
+    "https://www.fujitv.com/animation/chiikawa/",
+    "https://chiikawa-info.jp/"
+  ],
+  "sources": [
+    {
+      "url": "https://www.anime-chiikawa.jp/images/characters/img_charapage.png",
+      "use": "appendage_identity_only",
+      "rejectScaleReason": "composited lineup; differing baselines; no declared common scale"
+    },
+    {
+      "url": "https://www.anime-chiikawa.jp/images/episodes/018.jpg",
+      "use": "rejected_for_scale",
+      "reason": "different depth and action pose"
+    },
+    {
+      "url": "https://www.anime-chiikawa.jp/images/episodes/133.jpg",
+      "use": "rejected_for_scale",
+      "reason": "front and rear rows"
+    },
+    {
+      "url": "https://www.anime-chiikawa.jp/images/episodes/144.jpg",
+      "use": "rejected_for_precision_scale",
+      "reason": "depth and dancing pose"
+    },
+    {
+      "url": "https://www.anime-chiikawa.jp/images/episodes/155.jpg",
+      "use": "qualitative_candidate",
+      "subjects": [
+        "chiikawa_in_pajamas",
+        "pajama_midori",
+        "hachiware_in_pajamas"
+      ],
+      "observation": "front-row body envelopes appear broadly comparable",
+      "numericRatio": null,
+      "limitations": [
+        "costume",
+        "dance pose",
+        "single still",
+        "possible depth difference"
+      ]
+    },
+    {
+      "url": "https://www.anime-chiikawa.jp/images/episodes/145.jpg",
+      "use": "rejected_for_scale",
+      "reason": "foreground observers versus background subject"
+    },
+    {
+      "url": "https://www.anime-chiikawa.jp/images/episodes/035.jpg",
+      "use": "rejected_for_scale",
+      "reason": "cropped close-up"
+    },
+    {
+      "url": "https://www.anime-chiikawa.jp/images/episodes/340.jpg",
+      "use": "rejected_for_scale",
+      "reason": "cropped close-up"
+    },
+    {
+      "url": "https://www.anime-chiikawa.jp/images/episodes/341.jpg",
+      "use": "rejected_for_scale",
+      "reason": "thought-bubble inset is not shared scene scale"
+    }
+  ],
+  "evidenceLimitations": [
+    "Dynamic anime profile text incompletely returned by web reader",
+    "main.js fetch unsupported application/javascript; no claim of full fresh profile extraction",
+    "Existing additional-character ledger consulted",
+    "No original manga corpus-wide inspection",
+    "Reposted browser reference screenshots excluded from official scale evidence",
+    "No numeric body measurements approved"
+  ],
+  "measurementProposal": {
+    "requiredIndependentScenesPerPair": 3,
+    "sameGroundAndComparableCameraDepthRequired": true,
+    "neutralFullBodyRequired": true,
+    "bodyHeight": "cranial crown excluding ears to supporting sole",
+    "report": [
+      "sourceURL",
+      "sceneId",
+      "sourceDimensions",
+      "bodyLandmarks",
+      "occlusion",
+      "measurementError",
+      "medianRatio",
+      "observedRange"
+    ],
+    "reviewBetweenSceneSpreadAbovePercent": 5,
+    "thresholdsAreProjectProposalsNotOfficialFacts": true,
+    "unknownRatioPolicy": "remain null; preserve current display until separately approved",
+    "forbiddenEvidence": [
+      "merchandise dimensions",
+      "voice actor height",
+      "real animal size",
+      "crossover human size",
+      "can size assumptions",
+      "profile thumbnail pixel heights"
+    ]
+  },
+  "renderAnchorProposal": {
+    "normalizationBox": "core head and body excluding appendages and accessories",
+    "visualBox": "all visible body, appendages, costume and props",
+    "interactionBox": "independent accessible target",
+    "anchor": "midpoint of supporting soles in neutral pose",
+    "scaleFormula": "targetBodyHeight = baseBodyHeight * approvedRelativeRatio * globalUserScale * perCharacterUserScale",
+    "uniformXYScale": true,
+    "perFrameAutoFit": false,
+    "jump": "motion offset from stable ground anchor",
+    "sittingAndSleeping": "retain character scale; use pose contact anchor",
+    "hiddenAnatomy": "unknown, never inferred as measured"
+  },
+  "sizeControlsProposal": {
+    "globalPercentRange": [
+      75,
+      150
+    ],
+    "stepPercent": 5,
+    "defaultPercent": 100,
+    "officialSizeClaim": false,
+    "cmLabelAllowed": false,
+    "preserveRelativeRatioByDefault": true,
+    "optionalPerCharacterOverride": true,
+    "resetGlobalAndIndividual": true,
+    "keyboardAndNumericInput": true,
+    "projectTouchTargetCssPx": 44,
+    "reducedMotionPreview": true,
+    "hideSeparateFromZeroScale": true,
+    "silentViewportClamping": false,
+    "needsViewportValidation": true
+  },
+  "qaProposal": {
+    "baselineToleranceCssPx": 1,
+    "viewportMinimumWidthCssPx": 320,
+    "browserZoomPercent": 200,
+    "check": [
+      "no clipping at every scale and pose",
+      "appendages do not shrink body normalization",
+      "no learning UI overlap",
+      "stable scale across animation frames",
+      "correct mirrored anchor",
+      "global scale preserves pair ratios",
+      "keyboard and touch controls",
+      "persistence and reset",
+      "invalid stored values recover",
+      "four pajama members measured separately"
+    ],
+    "thresholdsAreProjectProposalsNotOfficialFacts": true
+  },
+  "implementationGate": "User approval plus approved reference measurements; this file does not authorize or implement app changes"
+}

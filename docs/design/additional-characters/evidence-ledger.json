@@ -1,0 +1,173 @@
+{
+  "date": "2026-10-24",
+  "scope": "research only; no app mutation; no generated art",
+  "profiles": [
+    {
+      "code": "kuri",
+      "name": "くりまんじゅう",
+      "cv": "CV:淺井 孝行",
+      "profile": "見た目はかわいいけど…!? グルメで面倒見がいい。",
+      "image": "https://www.anime-chiikawa.jp/images/characters/bt_chara_05.png",
+      "height_cm": null,
+      "official_palette": null
+    },
+    {
+      "code": "huruhonya",
+      "name": "古本屋",
+      "cv": "CV:春海百乃",
+      "profile": "古本を売っている。モモンガからもらった カニのカチューシャをつけている。",
+      "image": "https://www.anime-chiikawa.jp/images/characters/bt_chara_12.png",
+      "height_cm": null,
+      "official_palette": null
+    },
+    {
+      "code": "pajamas",
+      "name": "パジャマパーティーズ",
+      "cv": "CV:諸星すみれ(みどり)、長縄まりあ(ぴんく)、 篠原侑(しろ)、内山茉莉(むらさき)",
+      "profile": "ポシェットの鎧さんが作ったパジャマを着て 歌とダンスを披露するグループ。",
+      "image": "https://www.anime-chiikawa.jp/images/characters/bt_chara_11.png",
+      "height_cm": null,
+      "official_palette": null
+    }
+  ],
+  "group": {
+    "id": "pajama_parties",
+    "members": [
+      "midori",
+      "pink",
+      "murasaki",
+      "shiro"
+    ],
+    "single_recolorable_character": false
+  },
+  "source_page": "https://www.anime-chiikawa.jp/chara.html",
+  "profile_delivery_url": "https://www.anime-chiikawa.jp/js/main.js",
+  "profile_delivery_sha256": "bb1c184a5925948c4d54b0eaf9237339f856313cfd4d44777a3f6dd06ced1695",
+  "image_observations": [
+    {
+      "url": "https://www.anime-chiikawa.jp/images/characters/bt_chara_05.png",
+      "sha256": "c7821eabad78ebe3547ec9fc860b22bfec5823a9b6dae605968f1d7a6d6e9d26",
+      "inspection": "still image directly inspected in research; no video watched",
+      "status": "STILL_REFERENCE_ONLY",
+      "observation": "공식 프로필 정지 이미지 외형 확인; 상세는 research-and-design.ko.txt",
+      "production_asset": false,
+      "reference_media_included": false
+    },
+    {
+      "url": "https://www.anime-chiikawa.jp/images/characters/bt_chara_11.png",
+      "sha256": "43ba2914d02b1548e09d3e88424eb576c44f04d6b54ea3635a058d43e18d1a17",
+      "inspection": "still image directly inspected in research; no video watched",
+      "status": "STILL_REFERENCE_ONLY",
+      "observation": "공식 프로필 정지 이미지 외형 확인; 상세는 research-and-design.ko.txt",
+      "production_asset": false,
+      "reference_media_included": false
+    },
+    {
+      "url": "https://www.anime-chiikawa.jp/images/characters/bt_chara_12.png",
+      "sha256": "cd247bddd80eaec9053309bf31bc420b33728558f2174cddd40afaf6d7616cfe",
+      "inspection": "still image directly inspected in research; no video watched",
+      "status": "STILL_REFERENCE_ONLY",
+      "observation": "공식 프로필 정지 이미지 외형 확인; 상세는 research-and-design.ko.txt",
+      "production_asset": false,
+      "reference_media_included": false
+    },
+    {
+      "url": "https://www.anime-chiikawa.jp/images/episodes/018.jpg",
+      "sha256": "a114fd45cc5d091c1f1c223653dc0452beef5ac6d3fa2c8ddd1c128773b0c1d8",
+      "inspection": "still image directly inspected in research; no video watched",
+      "status": "STILL_REFERENCE_ONLY",
+      "observation": "쿠리만쥬 없음. 치이카와/하치와레와 사스마타만 보여 대상 외형·동작 근거로 부적합.",
+      "production_asset": false,
+      "reference_media_included": false
+    },
+    {
+      "url": "https://www.anime-chiikawa.jp/images/episodes/035.jpg",
+      "sha256": "0cc60b98e2803560b5fef5b18b7896d5a202d7fb2498ddf2e08dba16fa1a30e4",
+      "inspection": "still image directly inspected in research; no video watched",
+      "status": "STILL_REFERENCE_ONLY",
+      "observation": "쿠리만쥬 머리 갈색 무늬, 크림 몸, 분홍 볼, 캔을 든 팔, 주름/열린 입/치아. 캔 내용과 동작 순서는 미확인.",
+      "production_asset": false,
+      "reference_media_included": false
+    },
+    {
+      "url": "https://www.anime-chiikawa.jp/images/episodes/133.jpg",
+      "sha256": "9fce5563a4cc84277cca58dfcbf2d5aea78b317a481c56503d5ac6b234325840",
+      "inspection": "still image directly inspected in research; no video watched",
+      "status": "STILL_REFERENCE_ONLY",
+      "observation": "네 잠옷 인물과 포셰트 갑옷 삽입 그림. 초록/보라/분홍/흰 잠옷, 회청록 얼굴. 144화를 외형 최초 등장으로 단정 불가.",
+      "production_asset": false,
+      "reference_media_included": false
+    },
+    {
+      "url": "https://www.anime-chiikawa.jp/images/episodes/144.jpg",
+      "sha256": "8c98be3eb0feb2cae14b42e7cd2fb8b5ab68ec0a47d0fb4e46c67c3176b81c5f",
+      "inspection": "still image directly inspected in research; no video watched",
+      "status": "STILL_REFERENCE_ONLY",
+      "observation": "현수막 아래 네 멤버. 보라-초록-분홍-흰색 순서. 짧은 팔다리·단추·회청록 얼굴.",
+      "production_asset": false,
+      "reference_media_included": false
+    },
+    {
+      "url": "https://www.anime-chiikawa.jp/images/episodes/145.jpg",
+      "sha256": "26b321e8546bd7e3d215e91496ecd484307121ceb57f641669febfd46fec7b34",
+      "inspection": "still image directly inspected in research; no video watched",
+      "status": "STILL_REFERENCE_ONLY",
+      "observation": "초록 멤버 단독 정면, 양팔 든 자세, 우측 짧은 꼬리, 음표. 춤 순서/박자 미확인.",
+      "production_asset": false,
+      "reference_media_included": false
+    },
+    {
+      "url": "https://www.anime-chiikawa.jp/images/episodes/155.jpg",
+      "sha256": "3555196194abb2f4c8c35ef11f184c6948f00d3f0cd9aaf152f2f8a12e2582c2",
+      "inspection": "still image directly inspected in research; no video watched",
+      "status": "STILL_REFERENCE_ONLY",
+      "observation": "원래 네 멤버와 잠옷 치이카와/하치와레/우사기 7명. 흰/분홍/보라 얼굴 X형은 이 장면에 한정.",
+      "production_asset": false,
+      "reference_media_included": false
+    },
+    {
+      "url": "https://www.anime-chiikawa.jp/images/episodes/340.jpg",
+      "sha256": "44f5acb6f23b6d1ba2ff0d91748c34a7a806ca4ea376c2c40bf03d995601949b",
+      "inspection": "still image directly inspected in research; no video watched",
+      "status": "STILL_REFERENCE_ONLY",
+      "observation": "회색빛 머리와 두 분홍 집게 장식. 동작·선물 전달 관찰 불가.",
+      "production_asset": false,
+      "reference_media_included": false
+    },
+    {
+      "url": "https://www.anime-chiikawa.jp/images/episodes/341.jpg",
+      "sha256": "07da7dda3b457c06b050594faf91d0d944099bbec04d44e529d0b07d06061190",
+      "inspection": "still image directly inspected in research; no video watched",
+      "status": "STILL_REFERENCE_ONLY",
+      "observation": "분홍 古本屋 머리띠/집게/얼굴 및 모몽가 삽입 이미지. 연속 집게 인사 동작 관찰 불가.",
+      "production_asset": false,
+      "reference_media_included": false
+    }
+  ],
+  "motion_approved": [],
+  "video_observed": false,
+  "authored_ui_only": [
+    "static cameo selection",
+    "future verified fragment on direct click",
+    "individual group-member selector"
+  ],
+  "blocked": [
+    {
+      "url": "https://x.com/ngnchiikawa/status/1617551194020511745",
+      "status": "403 Forbidden",
+      "directly_observed": false,
+      "retry": false
+    },
+    {
+      "url": "https://x.com/ngnchiikawa/status/1617907297656909824",
+      "status": "403 Forbidden",
+      "directly_observed": false,
+      "retry": false
+    }
+  ],
+  "implementation_gate": "HOLD_VIDEO_REQUIRED",
+  "notes": [
+    "Downloaded references are research-only; not production assets.",
+    "Research only; no generated art or app implementation."
+  ]
+}

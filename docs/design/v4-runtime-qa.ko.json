@@ -1,0 +1,34 @@
+{
+  "version": "v4-four-keypose-limited-preview",
+  "date": "2026-10-24",
+  "scope": "Independent static art review plus scoped desktop runtime verification. Not final natural animation or exact original-video playback.",
+  "individual_art_review": {
+    "A_R6": "LIMITED_STATIC_CAMEO_VISUAL_PASS",
+    "A1_R7": "LIMITED_STATIC_CAMEO_VISUAL_PASS",
+    "B_R6": "LIMITED_STATIC_CAMEO_VISUAL_PASS",
+    "C_R6": "LIMITED_STATIC_CAMEO_VISUAL_PASS",
+    "display_size": "approximately120px; derived upper-body only"
+  },
+  "desktop_runtime_verified": [
+    "A/B/C rendered; lower clip and window ledge conceal intentional torso cutoff and alpha dust",
+    "Observed B top is approximately6px higher than A/C; not uniform whole-body scale pumping, still a transition-quality limitation",
+    "C remains static after one pass, with no reverse or automatic loop",
+    "Base character excluded while preview is active and restored according to current visibility",
+    "Pause-mode explicit preview stays A static; hide removes preview and preserves hidden preference",
+    "Pending decode Escape invalidates generation and does not appear later",
+    "Pending decode next-button Enter changes study word and cancels preview permanently",
+    "Pending decode ArrowLeft changes study word and cancels preview permanently",
+    "Existing known/unknown learning state preserved; no application-origin console errors",
+    "Cross-preview start cancels the former cameo and restores its base actor"
+  ],
+  "automated_only_or_remaining": [
+    "A1 short320ms transition was not separately captured in runtime screenshots; individual A1 art passed and A→A1→B→C order is unit-tested",
+    "Post-completion replay ownership retention has automated regression coverage; final runtime flash check remains",
+    "Actual narrow viewport and OS reduced-motion verification remain pending",
+    "Continuous intermediate frames, exact source timing and natural final-motion quality are not completed"
+  ],
+  "timing": "420/320/450/600ms are authored web UX values, not converted source frame timestamps",
+  "original_full_motion_registry_enabled": 0,
+  "published_site_changed": false,
+  "tests": {"node":63,"python":32}
+}

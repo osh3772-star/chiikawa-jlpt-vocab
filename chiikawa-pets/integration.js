@@ -4,6 +4,8 @@
   __EVIDENCE_HELPERS__
   __VISIBILITY_HELPERS__
   __MOMONGA_PREVIEW_HELPERS__
+  __STATIC_CAMEO_HELPERS__
+  const staticCameoAsset = __STATIC_CAMEO_CONFIG__;
   const momongaPreviewAsset = __MOMONGA_PREVIEW_CONFIG__;
   const motionEvidence = __MOTION_EVIDENCE__;
   const spriteSources = JSON.parse(document.getElementById('pet-sprites').textContent);
@@ -21,7 +23,8 @@
   try { const saved=localStorage.getItem(preferenceKey); if(Object.hasOwn(groups,saved)) picker.value=saved; } catch (_) {}
   let userPaused = preferences.paused;
   let pets;
-  let momongaPreview;
+  let momongaPreview,staticCameo;
+  const previewCoordinator=createPreviewCoordinator();
 
   const visibilityTools = document.createElement('details');
   visibilityTools.className = 'cv-visibility-tools'; visibilityTools.open = true;
@@ -95,13 +98,32 @@
     readObstacles:()=>[...document.querySelectorAll('main, button, input, select, textarea, a, [tabindex]')]
       .filter(el=>!previewRail.contains(el)&&!el.closest('.cv-pet-layer'))
       .map(el=>el.getBoundingClientRect()).filter(r=>r.width>0&&r.height>0)});
-  previewStart.addEventListener('click',()=>momongaPreview.start());
+  previewCoordinator.register('momonga',momongaPreview);
+  previewStart.addEventListener('click',()=>previewCoordinator.start('momonga'));
   previewClose.addEventListener('click',()=>momongaPreview.cancel('closed'));
-  for(const type of ['resize','blur','pagehide'])window.addEventListener(type,()=>momongaPreview.cancel(type));
-  window.addEventListener('scroll',()=>{if(momongaPreview.getState().active)momongaPreview.cancel('scroll');},{passive:true,capture:true});
-  document.addEventListener('visibilitychange',()=>momongaPreview.cancel('visibility'));
-  document.addEventListener('keydown',event=>{if(event.key==='Escape'&&momongaPreview.getState().active){event.preventDefault();momongaPreview.cancel('escape');}});
-  motionQuery.addEventListener('change',()=>momongaPreview.cancel('reduced-motion'));
+  for(const type of ['resize','blur','pagehide'])window.addEventListener(type,()=>previewCoordinator.cancelAll(type));
+  window.addEventListener('scroll',()=>{if(previewCoordinator.anyActive())previewCoordinator.cancelAll('scroll');},{passive:true,capture:true});
+  document.addEventListener('visibilitychange',()=>previewCoordinator.cancelAll('visibility'));
+  document.addEventListener('keydown',event=>{if(event.key==='Escape'&&previewCoordinator.hasOpen()){event.preventDefault();previewCoordinator.cancelAll('escape');}});
+  motionQuery.addEventListener('change',()=>previewCoordinator.cancelAll('reduced-motion'));
+
+
+  const cameoTools=document.createElement('section');cameoTools.className='cv-momonga-preview-tools';cameoTools.setAttribute('aria-label','치이카와 EP2 4포즈 상체 미리보기');
+  cameoTools.innerHTML='<strong>EP2 참고 · 치이카와 확인된 4포즈</strong><p>관찰된 A→A1→B→C 순서의 파생 상체 4포즈만 한 번 표시합니다. 제작 UI 리듬이며 원작 연속동작·정확한 속도가 아닙니다. 중간각도·하체·발은 추가하지 않고 끝에는 C 정지 자세를 유지합니다.</p><button type="button" id="chiikawa-cameo-start">치이카와 4포즈 상체 보기</button><button type="button" id="chiikawa-cameo-close">카메오 무대 닫기</button><span id="chiikawa-cameo-status" role="status">기본 꺼짐 · 명시적 호출만</span>';
+  previewRail.after(cameoTools);
+  const cameoRail=document.createElement('div');cameoRail.className='cv-static-cameo-rail';cameoRail.hidden=true;
+  cameoRail.innerHTML='<span>상체 전용 창 · 확인된 4포즈 / 동작 줄이기는 A 정지</span>';
+  const cameoClip=document.createElement('div');cameoClip.className='cv-static-cameo-clip';
+  const cameoImage=document.createElement('img');cameoImage.alt='EP2 정면 말린 앞팔 자세 참고 파생 상체';cameoImage.draggable=false;cameoImage.hidden=true;cameoClip.appendChild(cameoImage);cameoRail.appendChild(cameoClip);cameoTools.after(cameoRail);
+  const cameoStart=document.getElementById('chiikawa-cameo-start'),cameoClose=document.getElementById('chiikawa-cameo-close'),cameoStatus=document.getElementById('chiikawa-cameo-status');
+  staticCameo=createStaticCameoController({asset:staticCameoAsset,image:cameoImage,clip:cameoClip,rail:cameoRail,status:cameoStatus,
+    getContext:()=>({visible:preferences.visible.chiikawa,paused:pets?.isPaused()??true,reduced:motionQuery.matches}),
+    onBegin:()=>pets?.beginExternalPresentation('chiikawa')??false,onEnd:()=>pets?.endExternalPresentation('chiikawa'),
+    prepareStage:async()=>{const r=cameoRail.getBoundingClientRect();if(r.top<0||r.bottom>window.innerHeight)cameoRail.scrollIntoView({block:'nearest',behavior:'auto'});await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));},
+    readObstacles:()=>[...document.querySelectorAll('main, button, input, select, textarea, a, [tabindex]')].filter(el=>!cameoRail.contains(el)&&!el.closest('.cv-pet-layer')).map(el=>el.getBoundingClientRect()).filter(r=>r.width>0&&r.height>0)});
+  previewCoordinator.register('chiikawa-cameo',staticCameo);
+  cameoStart.addEventListener('click',()=>previewCoordinator.start('chiikawa-cameo'));
+  cameoClose.addEventListener('click',()=>staticCameo.cancel('closed'));
 
 
   function saveVisibility(){preferences.paused=userPaused;try{localStorage.setItem(visibilityKey,JSON.stringify(preferences));}catch(_) {}}
@@ -109,6 +131,7 @@
     for(const id of groups.all){visibleInputs[id].checked=preferences.visible[id];mobileStages[id].hidden=!preferences.visible[id];}
     const count=selectedPetIds(preferences).length;mobileDock.hidden=count===0;
     previewStart.disabled=!momongaPreviewAsset||!preferences.visible.momonga;
+    cameoStart.disabled=!staticCameoAsset||!preferences.visible.chiikawa;
     visibilityStatus.textContent=`${count}명 꺼냄 · 자동 동작 설정: ${pets?.isPaused()?'일시정지':'재개'}`;
     betaStage.hidden=!betaToggle.checked||!preferences.visible.chiikawa||window.innerWidth<640;
     betaWalk.disabled=!betaToggle.checked||!preferences.visible.chiikawa;
@@ -121,21 +144,22 @@
     toggle.title=motionQuery.matches?'시스템 동작 줄이기 설정이 적용 중입니다':'보이는 캐릭터는 그대로 두고 자동 동작만 조절합니다';
     syncVisibilityUI();
   }
-  function applyVisibility(){momongaPreview?.cancel('visibility-change');syncVisibilityUI();pets?.setVisibleCharacters(selectedPetIds(preferences));saveVisibility();}
+  function applyVisibility(){previewCoordinator.cancelAll('visibility-change');syncVisibilityUI();pets?.setVisibleCharacters(selectedPetIds(preferences));saveVisibility();}
   function mount(){
+    previewCoordinator.cancelAll('engine-remount');
     syncVisibilityUI();const mobile=groups[picker.value];
     pets=mountChiikawaPets({spriteSources,characterProfiles,enabledCharacters:groups.all,
       visibleCharacters:selectedPetIds(preferences),mobilePetStages:mobileStages,mobileStageViewport:mobileDock,
       onCharacterHidden:(id,{hadFocus})=>{if(hadFocus)visibleInputs[id].focus();},
-      onPresentationCancelled:reason=>momongaPreview?.cancel(reason),
-      avoidSelector:'#card, button, select, input, textarea, a, .table-scroll, .cv-momonga-preview-rail:not([hidden])',
+      onPresentationCancelled:reason=>previewCoordinator.cancelAll(reason),
+      avoidSelector:'#card, button, select, input, textarea, a, .table-scroll, .cv-momonga-preview-rail:not([hidden]), .cv-static-cameo-rail:not([hidden])',
       experimentalCharacters:betaToggle.checked?['chiikawa']:[],experimentalStage:betaStage,
       startPaused:userPaused,maxVisibleMobile:mobile.length,mobilePriority:mobile});
     syncToggle();
   }
   document.getElementById('pets-show-all').addEventListener('click',()=>{for(const id of groups.all)preferences.visible[id]=true;applyVisibility();});
   document.getElementById('pets-hide-all').addEventListener('click',()=>{for(const id of groups.all)preferences.visible[id]=false;applyVisibility();});
-  toggle.addEventListener('click',()=>{userPaused=!pets.isPaused();if(userPaused)pets.pause();else pets.resume();saveVisibility();syncToggle();});
+  toggle.addEventListener('click',()=>{previewCoordinator.cancelAll('pause-change');userPaused=!pets.isPaused();if(userPaused)pets.pause();else pets.resume();saveVisibility();syncToggle();});
   picker.addEventListener('change',()=>{pets.setMobileCharacters(groups[picker.value]);try{localStorage.setItem(preferenceKey,picker.value);}catch(_) {}});
   betaToggle.addEventListener('change',()=>{pets.destroy();mount();try{localStorage.setItem(betaPreferenceKey,String(betaToggle.checked));}catch(_) {}if(betaToggle.checked)pets.playAction('walk','chiikawa');});
   betaWalk.addEventListener('click',()=>pets.playAction('walk','chiikawa'));
@@ -143,5 +167,7 @@
   window.addEventListener('resize',syncVisibilityUI);
   window.addEventListener('pagehide',()=>pets.destroy());
   window.addEventListener('pageshow',event=>{if(event.persisted)mount();});
+  for(const type of ['click','change','keydown'])document.addEventListener(type,event=>{if(shouldCancelPreviewForStudyInput(event,!document.getElementById('study').hidden))previewCoordinator.cancelAll('study-input');},{capture:true});
+  for(const type of ['start','correct','wrong','complete','view'])document.addEventListener(`vocab:${type}`,()=>previewCoordinator.cancelAll('study-input'));
   mount();
 })();

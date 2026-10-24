@@ -1,0 +1,65 @@
+{
+  "schema": "design-only/1",
+  "status": "PROPOSED_NOT_RUNTIME_CONFIG",
+  "probability_provenance": "Authored UX hypotheses, not measured anime frequencies",
+  "runtime_activation_authorized": false,
+  "weights_unit": "relative-weight-per-eligible-autonomous-decision",
+  "characters": {
+    "chiikawa": {
+      "idle": 85,
+      "walk": 15,
+      "approved_special_actions": {},
+      "video_candidate_weight": 0
+    },
+    "hachiware": {
+      "idle": 75,
+      "walk": 25,
+      "approved_special_actions": {},
+      "video_candidate_weight": 0
+    },
+    "usagi": {
+      "idle": 65,
+      "walk": 35,
+      "approved_special_actions": {},
+      "video_candidate_weight": 0
+    },
+    "shisa": {
+      "idle": 85,
+      "walk": 15,
+      "approved_special_actions": {},
+      "video_candidate_weight": 0
+    },
+    "momonga": {
+      "idle": 75,
+      "walk": 25,
+      "approved_special_actions": {},
+      "video_candidate_weight": 0
+    },
+    "rakko": {
+      "idle": 90,
+      "walk": 10,
+      "approved_special_actions": {},
+      "video_candidate_weight": 0
+    }
+  },
+  "durations_seconds": {
+    "idle_uniform": [
+      8,
+      16
+    ],
+    "walk_uniform": [
+      1.6,
+      3.2
+    ],
+    "post_walk_quiet": 2
+  },
+  "walk_history": {
+    "minimum_visible_unpaused_seconds_since_end": 20,
+    "exclude_if_previous_decision_was_walk": true
+  },
+  "global_motion_slots": 1,
+  "autonomous_pair_probability": 0,
+  "video_autonomy_enabled": false,
+  "preview_autonomy_enabled": false,
+  "production_walk_assumption": "No approved production walk manifest: effective idle=100 until separately approved; beta opt-in is a separate lane, not approval."
+}

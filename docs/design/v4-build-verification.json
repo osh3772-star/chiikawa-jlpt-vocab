@@ -1,0 +1,18 @@
+{
+  "baselineCommit": "dd0aac67cf66b341e3ea8a0d715bc46abf7e1a2d",
+  "verifiedAtUTC": "2026-10-24T15:43:58.421939+00:00",
+  "gitApplyCheck": true,
+  "cleanBaselineReplay": {
+    "build": 0,
+    "preview-build": 0,
+    "node": 0,
+    "python": 0
+  },
+  "tests": {
+    "node": 63,
+    "python": 32
+  },
+  "appSha256": "f24278d7d6d53844029b8faed0a6585e545325467d6f38a311e85ac1a41780b5",
+  "originalActionsEnabled": 0,
+  "scope": "Limited four-keypose upperbody preview; not continuous final animation. Runtime visual QA is separately recorded."
+}

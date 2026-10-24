@@ -1,0 +1,498 @@
+{
+  "title_ko": "치이카와 캐릭터 쌍 상호작용 연구와 설계",
+  "as_of": "2026-10-24",
+  "status": "RESEARCH_AND_DESIGN_ONLY",
+  "implementation_allowed": false,
+  "activation_allowed": false,
+  "reported_individual_original_motion_active_count": 0,
+  "gate": "individual QA then pair-specific art/evidence/reservation/cancellation/learning-protection QA",
+  "full_report": "pair_interaction_research_design.ko.txt",
+  "sources": [
+    {
+      "id": "official_profiles",
+      "url": "https://www.chiikawaofficial.com/characters",
+      "kind": "official_profile_text_verified",
+      "supports": [
+        "Chiikawa–Hachiware/Usagi friendship",
+        "Rakko helps friends improve hunting",
+        "Shisa respects Ramen Yoroi-san",
+        "Momonga demands do not establish counterpart compliance"
+      ]
+    },
+    {
+      "id": "ep2",
+      "url": "https://www.tiktok.com/@chiikawa.anime/video/7678574490330107152",
+      "kind": "prior_partial_video_observation_ledger_not_new_watch",
+      "supports": [
+        "Chiikawa holds book with Hachiware foreground"
+      ],
+      "missing": [
+        "complete exchange",
+        "recovery",
+        "precise frame timing"
+      ],
+      "private_reference_media_included": false
+    },
+    {
+      "id": "ep7",
+      "url": "https://www.tiktok.com/@chiikawa.eps/video/7665392516249685279",
+      "kind": "prior_partial_video_observation_ledger_not_new_watch",
+      "supports": [
+        "Hachiware holds card",
+        "both smile with paws at card"
+      ],
+      "missing": [
+        "complete handoff",
+        "synchronized full cycle"
+      ],
+      "private_reference_media_included": false
+    },
+    {
+      "id": "ep9",
+      "url": "https://www.tiktok.com/@chiikawa.eps/video/7665435508394282270",
+      "kind": "prior_partial_video_observation_ledger_not_new_watch",
+      "supports": [
+        "Usagi eating reaction differs from Chiikawa holding hot noodles"
+      ],
+      "missing": [
+        "complete paired cycle"
+      ],
+      "private_reference_media_included": false
+    },
+    {
+      "id": "ep6_stills",
+      "url": "https://www.tiktok.com/@chiikawa562/video/7448691479851175214",
+      "kind": "two_existing_stills_directly_inspected",
+      "supports": [
+        "Usagi elevation difference",
+        "Hachiware and Chiikawa foreground"
+      ],
+      "missing": [
+        "independent two-character encounter",
+        "Hachiware reaction sequence",
+        "landing"
+      ],
+      "private_reference_media_included": false
+    },
+    {
+      "id": "ep252",
+      "url": "https://mezamashi.media/articles/-/133327",
+      "kind": "official_episode_synopsis_verified_not_video",
+      "supports": [
+        "Chiikawa and Hachiware nurse sick Shisa",
+        "Chiikawa asked to shop"
+      ],
+      "missing": [
+        "gesture sequence",
+        "specific props",
+        "two-character-only framing"
+      ]
+    },
+    {
+      "id": "ep332",
+      "url": "https://mezamashi.media/articles/-/278785",
+      "kind": "official_episode_synopsis_verified_not_video",
+      "supports": [
+        "Hachiware begins special training with Rakko"
+      ],
+      "missing": [
+        "sword motion",
+        "reaction",
+        "Momonga demand counterpart identity"
+      ]
+    },
+    {
+      "id": "ep326",
+      "url": "https://mezamashi.media/articles/-/269437",
+      "kind": "official_episode_synopsis_verified_not_video",
+      "supports": [
+        "Chiikawa and Hachiware report ranking to Rakko"
+      ],
+      "missing": [
+        "Rakko subsequent response"
+      ]
+    },
+    {
+      "id": "ep179",
+      "url": "https://mezamashi.media/articles/-/5053",
+      "kind": "official_episode_synopsis_text",
+      "supports": [
+        "Rakko sees Chiikawa singing"
+      ],
+      "missing": [
+        "paired response sequence"
+      ]
+    },
+    {
+      "id": "movie_interview",
+      "url": "https://mezamashi.media/articles/-/334208?page=2",
+      "kind": "official_publisher_cast_interview_not_direct_scene_view",
+      "supports": [
+        "Actor describes Momonga pulling Chiikawa ear while helping near cliff"
+      ],
+      "missing": [
+        "direct motion observation"
+      ],
+      "design_disposition": "exclude_physical_gag_from_learning_pair"
+    }
+  ],
+  "shortlist": [
+    {
+      "id": "A",
+      "pair": [
+        "chiikawa",
+        "hachiware"
+      ],
+      "name_ko": "함께 살펴보기",
+      "priority": 1,
+      "evidence": [
+        "official_profiles",
+        "ep2",
+        "ep7"
+      ],
+      "trigger": "explicit_pause_and_pair_request",
+      "adaptation": "blank decorative card; not canonical JLPT study",
+      "roles": [
+        "Hachiware presents",
+        "Chiikawa observes and responds"
+      ],
+      "art_needs": [
+        "inward gaze",
+        "two-paw card hold",
+        "Chiikawa response",
+        "both neutral recoveries",
+        "decline recovery"
+      ],
+      "missing": [
+        "complete two-character cycle"
+      ],
+      "implementation_allowed": false,
+      "all_sequence_timing_and_triggers": "product_design_not_canon"
+    },
+    {
+      "id": "B",
+      "pair": [
+        "chiikawa",
+        "usagi"
+      ],
+      "name_ko": "나란히 쉬기",
+      "priority": 2,
+      "evidence": [
+        "official_profiles",
+        "ep9"
+      ],
+      "trigger": "explicit_break_pair_request",
+      "adaptation": "non-contact contrasting snack reactions",
+      "roles": [
+        "Usagi finishes reaction earlier",
+        "Chiikawa waits"
+      ],
+      "art_needs": [
+        "separate cups and paws",
+        "Usagi mouth/recovery",
+        "Chiikawa waiting/recovery"
+      ],
+      "missing": [
+        "complete paired cycle"
+      ],
+      "implementation_allowed": false,
+      "all_sequence_timing_and_triggers": "product_design_not_canon"
+    },
+    {
+      "id": "C",
+      "pair": [
+        "hachiware",
+        "usagi"
+      ],
+      "name_ko": "짧은 인사와 반응",
+      "priority": 3,
+      "evidence": [
+        "ep6_stills"
+      ],
+      "trigger": "explicit_break_pair_request",
+      "adaptation": "three-character scene reduced to pair",
+      "roles": [
+        "Usagi small jump",
+        "Hachiware observes"
+      ],
+      "art_needs": [
+        "jump onset/landing/recovery",
+        "Hachiware counterpart response"
+      ],
+      "missing": [
+        "landing",
+        "counterpart sequence"
+      ],
+      "implementation_allowed": false,
+      "all_sequence_timing_and_triggers": "product_design_not_canon"
+    },
+    {
+      "id": "D",
+      "pair": [
+        "hachiware",
+        "rakko"
+      ],
+      "name_ko": "특훈 보고",
+      "priority": 4,
+      "evidence": [
+        "official_profiles",
+        "ep332",
+        "ep326"
+      ],
+      "trigger": "explicit_request_after_practice_summary_dismissed",
+      "adaptation": "non-combat report, no score-to-ranking mapping",
+      "roles": [
+        "Hachiware presents",
+        "Rakko attends without invented praise gesture"
+      ],
+      "art_needs": [
+        "mutual gaze",
+        "cape/sheathed sword silhouette",
+        "response/recovery"
+      ],
+      "missing": [
+        "direct scene observation"
+      ],
+      "implementation_allowed": false,
+      "all_sequence_timing_and_triggers": "product_design_not_canon"
+    },
+    {
+      "id": "E",
+      "pair": [
+        "chiikawa",
+        "shisa"
+      ],
+      "name_ko": "돌봄을 받는 시사",
+      "priority": 5,
+      "evidence": [
+        "ep252"
+      ],
+      "trigger": "explicit_break_request_not_wrong_answer",
+      "adaptation": "three-character care event reduced to pair",
+      "roles": [
+        "Chiikawa attends",
+        "Shisa rests"
+      ],
+      "art_needs": [
+        "verified resting pose",
+        "counterpart/recovery"
+      ],
+      "missing": [
+        "poses",
+        "props",
+        "action sequence"
+      ],
+      "implementation_allowed": false,
+      "all_sequence_timing_and_triggers": "product_design_not_canon"
+    }
+  ],
+  "pair_matrix": [
+    {
+      "pair": [
+        "chiikawa",
+        "hachiware"
+      ],
+      "status": "design_candidate_implementation_locked",
+      "references": [
+        "A"
+      ]
+    },
+    {
+      "pair": [
+        "chiikawa",
+        "usagi"
+      ],
+      "status": "design_candidate_implementation_locked",
+      "references": [
+        "B"
+      ]
+    },
+    {
+      "pair": [
+        "chiikawa",
+        "momonga"
+      ],
+      "status": "reported_event_excluded_physical_gag",
+      "references": [
+        "movie_interview"
+      ]
+    },
+    {
+      "pair": [
+        "chiikawa",
+        "rakko"
+      ],
+      "status": "relationship_confirmed_motion_hold",
+      "references": [
+        "ep179",
+        "ep326"
+      ]
+    },
+    {
+      "pair": [
+        "chiikawa",
+        "shisa"
+      ],
+      "status": "design_candidate_implementation_locked",
+      "references": [
+        "E"
+      ]
+    },
+    {
+      "pair": [
+        "hachiware",
+        "usagi"
+      ],
+      "status": "design_candidate_implementation_locked",
+      "references": [
+        "C"
+      ]
+    },
+    {
+      "pair": [
+        "hachiware",
+        "momonga"
+      ],
+      "status": "no_verified_pair_behavior_in_this_evidence_set",
+      "references": []
+    },
+    {
+      "pair": [
+        "hachiware",
+        "rakko"
+      ],
+      "status": "design_candidate_implementation_locked",
+      "references": [
+        "D"
+      ]
+    },
+    {
+      "pair": [
+        "hachiware",
+        "shisa"
+      ],
+      "status": "three_character_event_confirmed_motion_hold",
+      "references": [
+        "ep252"
+      ]
+    },
+    {
+      "pair": [
+        "usagi",
+        "momonga"
+      ],
+      "status": "no_verified_pair_behavior_in_this_evidence_set",
+      "references": []
+    },
+    {
+      "pair": [
+        "usagi",
+        "rakko"
+      ],
+      "status": "no_verified_pair_behavior_in_this_evidence_set",
+      "references": []
+    },
+    {
+      "pair": [
+        "usagi",
+        "shisa"
+      ],
+      "status": "no_verified_pair_behavior_in_this_evidence_set",
+      "references": []
+    },
+    {
+      "pair": [
+        "momonga",
+        "rakko"
+      ],
+      "status": "no_verified_pair_behavior_in_this_evidence_set",
+      "references": []
+    },
+    {
+      "pair": [
+        "momonga",
+        "shisa"
+      ],
+      "status": "no_verified_pair_behavior_in_this_evidence_set",
+      "references": []
+    },
+    {
+      "pair": [
+        "rakko",
+        "shisa"
+      ],
+      "status": "no_verified_pair_behavior_in_this_evidence_set",
+      "references": []
+    }
+  ],
+  "constraints": {
+    "automatic_default": false,
+    "active_pair_limit": 1,
+    "user_opt_out": "global and per character/pair; stop requires explicit new request to resume",
+    "participant_consent_meaning": "UI permission plus eligible actor state, not invented fictional willingness",
+    "reservation": "atomic two actors plus destinations, paths and props; fail releases all; one action owner per actor",
+    "states": [
+      "candidate",
+      "reserved",
+      "path_validated",
+      "approaching",
+      "ready",
+      "acting",
+      "recovering",
+      "released",
+      "cooldown"
+    ],
+    "revalidate_at_ready": true,
+    "stale_callbacks": "reservation id and generation mismatch ignored",
+    "cancel_events": [
+      "grab",
+      "hide",
+      "disable",
+      "route_change",
+      "learning_resume",
+      "input_focus",
+      "IME_composition",
+      "answer_reveal",
+      "audio_play",
+      "resize",
+      "tab_hidden",
+      "reduced_motion",
+      "user_stop"
+    ],
+    "cancellation": "both actors safe-neutral, props removed, all reservations released, no chase, no delayed replay",
+    "protected_regions": "question, answer, input, audio, navigation and scroll regions including full body/ears/tail/cape/props/shadow/path",
+    "learning_state_mutation_allowed": false,
+    "sound_default": false,
+    "reduced_motion": "static existing individual characters, no moving pair",
+    "design_numbers_not_canon": {
+      "same_pair_success_cooldown_seconds": 120,
+      "actor_success_cooldown_seconds": 60,
+      "failed_proposal_cooldown_seconds": 30,
+      "arrival_timeout_seconds": 3,
+      "scene_timeout_seconds": 4
+    },
+    "stop_or_rejection": "no automatic retry even after cooldown"
+  },
+  "blocked_assets": [
+    {
+      "url": "https://mezamashi.ismcdn.jp/mwimgs/5/d/708/img_5db50cb2bda164828f5ef6f955ed9c8492156.jpg",
+      "result": "Cache miss",
+      "viewed": false
+    },
+    {
+      "url": "https://mezamashi.ismcdn.jp/mwimgs/f/1/708/img_f1909b39d190251e989348c183b42596229823.jpg",
+      "result": "Internal Error",
+      "viewed": false
+    }
+  ],
+  "provenance_limits": [
+    "No new video playback",
+    "Research observations do not constitute implementation QA",
+    "No additional continuous video observation claimed",
+    "No production asset creation",
+    "No implementation or motion activation",
+    "Prior ledgers are attributed, not claimed as newly watched",
+    "Excluded episode 2 title/decorative sample not used as behavioral evidence",
+    "No canonical affinity score or behavior frequency inferred"
+  ]
+}

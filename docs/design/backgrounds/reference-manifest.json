@@ -1,0 +1,48 @@
+{
+  "date_utc": "2026-10-24",
+  "purpose": "Research comparison only; not background assets or implementation approval",
+  "references": [
+    {
+      "source_url": "https://www.anime-chiikawa.jp/images/episodes/005.jpg",
+      "source_authority": "official_anime_site",
+      "sha256": "7d183ca3616f4676d218a606999bbb4cad22f1bfc228b7745c9bdac146e94bb5",
+      "production_asset_approved": false,
+      "reference_media_included": false
+    },
+    {
+      "source_url": "https://www.anime-chiikawa.jp/images/episodes/006.jpg",
+      "source_authority": "official_anime_site",
+      "sha256": "a57811d0dd61b4b3d5f9a7ef086c4f96949fc342a67e228751d5689153b564ba",
+      "production_asset_approved": false,
+      "reference_media_included": false
+    },
+    {
+      "source_url": "https://anigala-rew.jp/wp-content/uploads/ce557605479df537204c16e0e5b5f568.jpeg",
+      "source_authority": "secondary_official_attributed",
+      "sha256": "df286385b5201538bd6f1c5e2052b10e2621ee59a4c871bfd854bcf5d06ff346",
+      "production_asset_approved": false,
+      "reference_media_included": false
+    },
+    {
+      "source_url": "https://www.anime-chiikawa.jp/images/episodes/024.jpg",
+      "source_authority": "official_anime_site",
+      "sha256": "113c82eb9a51201e72e214b2bb1fec9f2376e8c2cfdc97c2917d5ca192713c28",
+      "production_asset_approved": false,
+      "reference_media_included": false
+    },
+    {
+      "source_url": "https://anigala-rew.jp/wp-content/uploads/b2cf7bb0574bb8a623320b83a84ecb4f.jpeg",
+      "source_authority": "secondary_official_attributed",
+      "sha256": "c876fb69eba86c89eacb62eba55d0211aca1ac1934f550b6e5b42a4478298c63",
+      "production_asset_approved": false,
+      "reference_media_included": false
+    },
+    {
+      "source_url": "https://www.anime-chiikawa.jp/images/episodes/002.jpg",
+      "source_authority": "official_anime_site",
+      "sha256": "add4cde7b3f7c21faf68c0f0a71321d1df6c7c7358f0114177069095653afa52",
+      "production_asset_approved": false,
+      "reference_media_included": false
+    }
+  ]
+}

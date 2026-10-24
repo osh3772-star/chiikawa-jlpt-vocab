@@ -111,3 +111,10 @@
 .cv-momonga-preview-rail > span { position:absolute; top:5px; left:12px; font:500 11px/1.4 system-ui,sans-serif; color:#6d8292; }
 .cv-momonga-preview-rail img { position:absolute; top:0; left:0; object-fit:contain; pointer-events:none; user-select:none; -webkit-user-drag:none; }
 @media(max-width:639px){.cv-momonga-preview-rail,.cv-momonga-preview-tools{margin-left:12px;margin-right:12px;}}
+/* Intentional upper-body window: crop is presentation only, never reconstructed feet. */
+.cv-static-cameo-rail { position:relative; height:170px; max-width:760px; margin:8px auto; border:1px dashed #d7c6bb; border-radius:14px; background:#fffaf5; pointer-events:none; overflow:hidden; }
+.cv-static-cameo-rail[hidden], .cv-static-cameo-clip img[hidden] { display:none !important; }
+.cv-static-cameo-rail > span { position:absolute;top:7px;left:12px;font:500 11px/1.4 system-ui,sans-serif;color:#846e61; }
+.cv-static-cameo-clip { position:absolute;left:50%;bottom:18px;transform:translateX(-50%);overflow:hidden;border-bottom:5px solid #d6bba5;box-sizing:content-box; background:transparent; }
+.cv-static-cameo-clip img { position:absolute;max-width:none;object-fit:fill;user-select:none;pointer-events:none; }
+@media(max-width:639px){.cv-static-cameo-rail{margin-left:12px;margin-right:12px;}}

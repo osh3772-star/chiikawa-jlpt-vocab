@@ -1,0 +1,107 @@
+{
+  "schemaVersion": 2,
+  "previewId": "chiikawa.ep2.four-keypose-cameo",
+  "characterId": "chiikawa",
+  "enabledByDefault": false,
+  "productionEnabled": false,
+  "testingAuthorized": true,
+  "reviewScope": "LIMITED_FOUR_KEYPOSE_PREVIEW",
+  "reviewId": "CHIIKAWA_EP2_FOUR_KEYPOSE_COMPOSITION_20261024",
+  "sourceRepresentation": "DERIVED_UPPERBODY_CAMEO",
+  "bodyPoseCount": 4,
+  "frames": [
+    {
+      "poseId": "A",
+      "assetPath": "chiikawa-pets/limited-previews/assets/chiikawa-ep2/front-curled-r6.png",
+      "assetSha256": "5c9a928e461ffb63263820743967af4b29b5b478ee41c4eabb6989a2f1d25039",
+      "assetSize": [
+        1448,
+        1086
+      ],
+      "sourceRect": [
+        245,
+        99,
+        972,
+        915
+      ],
+      "displayWidth": 120,
+      "durationMs": 420,
+      "reviewScope": "LIMITED_STATIC_CAMEO_VISUAL_PASS"
+    },
+    {
+      "poseId": "A1",
+      "assetPath": "chiikawa-pets/limited-previews/assets/chiikawa-ep2/threequarter-r7.png",
+      "assetSha256": "871eb59aadbb940b1d16c430e3c109bf896e60900ebea69b8d019829079b0879",
+      "assetSize": [
+        1448,
+        1086
+      ],
+      "sourceRect": [
+        343,
+        151,
+        812,
+        807
+      ],
+      "displayWidth": 114,
+      "durationMs": 320,
+      "reviewScope": "LIMITED_STATIC_CAMEO_VISUAL_PASS"
+    },
+    {
+      "poseId": "B",
+      "assetPath": "chiikawa-pets/limited-previews/assets/chiikawa-ep2/profile-r6.png",
+      "assetSha256": "1a0a801f163034ade003f00d90595e3e1b55cc8dfcae38dc0a7d2332fc358eef",
+      "assetSize": [
+        1448,
+        1086
+      ],
+      "sourceRect": [
+        316,
+        116,
+        817,
+        852
+      ],
+      "displayWidth": 114,
+      "durationMs": 450,
+      "reviewScope": "LIMITED_STATIC_CAMEO_VISUAL_PASS"
+    },
+    {
+      "poseId": "C",
+      "assetPath": "chiikawa-pets/limited-previews/assets/chiikawa-ep2/front-return-r6.png",
+      "assetSha256": "ba9b9fce7675b6301e358dc937076e926ffa9888c39f7ab2deb6e58f419f6844",
+      "assetSize": [
+        1448,
+        1086
+      ],
+      "sourceRect": [
+        263,
+        120,
+        963,
+        902
+      ],
+      "displayWidth": 120,
+      "durationMs": 600,
+      "reviewScope": "LIMITED_STATIC_CAMEO_VISUAL_PASS"
+    }
+  ],
+  "windowSize": [
+    140,
+    124
+  ],
+  "timingOrigin": "AUTHORED_WEB_UX",
+  "loop": false,
+  "interpolation": false,
+  "completion": "C_STATIC_UNTIL_CLOSE",
+  "reducedMotionPose": "A",
+  "runtimeQA": "PENDING",
+  "observationRef": {
+    "recordId": "CHIIKAWA_EP2_FRONT_PROFILE_RETURN_REFERENCE_20261024",
+    "url": "https://www.tiktok.com/@chiikawa.anime/video/7678574490330107152",
+    "timePolicy": "Sampled confirmed pose order only, not exact continuous source timing."
+  },
+  "limitations": [
+    "A→A1→B→C discrete poses only, no invented in-between angles",
+    "No reconstructed feet or lower body",
+    "No reverse/loop/interpolation",
+    "Body drawing differences remain subject to runtime visual review"
+  ]
+}
