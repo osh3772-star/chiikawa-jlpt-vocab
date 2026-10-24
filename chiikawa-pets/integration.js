@@ -7,6 +7,11 @@
   __STATIC_CAMEO_HELPERS__
   const staticCameoAsset = __STATIC_CAMEO_CONFIG__;
   const momongaPreviewAsset = __MOMONGA_PREVIEW_CONFIG__;
+  const HachiwareModule=__HACHIWARE_MODULE__;
+  const UsagiModule=__USAGI_MODULE__;
+  const fragmentSources=__FRAGMENT_SOURCES__;
+  const ShisaModule=__SHISA_MODULE__;
+  const shisaSource=__SHISA_SOURCE__;
   const motionEvidence = __MOTION_EVIDENCE__;
   const spriteSources = JSON.parse(document.getElementById('pet-sprites').textContent);
   const characterProfiles = JSON.parse(document.getElementById('pet-profiles').textContent);
@@ -23,7 +28,7 @@
   try { const saved=localStorage.getItem(preferenceKey); if(Object.hasOwn(groups,saved)) picker.value=saved; } catch (_) {}
   let userPaused = preferences.paused;
   let pets;
-  let momongaPreview,staticCameo;
+  let momongaPreview,staticCameo,hachiwarePreview,usagiPreview;
   const previewCoordinator=createPreviewCoordinator();
 
   const visibilityTools = document.createElement('details');
@@ -66,6 +71,11 @@
   } catch (_) { evidenceHeading.textContent='영상 근거 목록 검증 실패 · 새 동작 비활성'; }
   mobileDock.after(evidencePanel);
 
+  const previewPanel=document.createElement('details');previewPanel.id='motion-preview-panel';previewPanel.className='cv-preview-panel';
+  previewPanel.innerHTML='<summary id="motion-preview-summary">동작 미리보기 · 검토용</summary><p class="cv-preview-intro">검토 중인 관찰 조각을 명시적으로 확인하는 영역입니다. 펼치기만으로 재생하지 않습니다. 자연스러운 최종 애니메이션 완료본이 아닙니다.</p>';
+  evidencePanel.after(previewPanel);
+  const previewAvailable=id=>previewPanel.open&&preferences.visible[id]&&!document.hidden;
+
   const betaTools=document.createElement('div');betaTools.className='cv-beta-tools';
   betaTools.innerHTML='<label><input id="chiikawa-beta" type="checkbox"> 기존 창작 동작 베타 (영상 재현 아님)</label><button id="chiikawa-beta-walk" type="button" disabled>걷기 보기</button><span id="chiikawa-beta-note" role="status"></span>';
   evidencePanel.after(betaTools);
@@ -92,7 +102,7 @@
     await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
   };
   momongaPreview=createMomongaPreviewController({asset:momongaPreviewAsset,image:previewImage,rail:previewRail,status:previewStatus,
-    getContext:()=>({visible:preferences.visible.momonga,paused:pets?.isPaused()??true,reduced:motionQuery.matches}),
+    getContext:()=>({visible:previewAvailable('momonga'),paused:pets?.isPaused()??true,reduced:motionQuery.matches}),
     onBegin:()=>pets?.beginExternalPresentation('momonga')??false,onEnd:()=>pets?.endExternalPresentation('momonga'),
     prepareStage:preparePreviewStage,
     readObstacles:()=>[...document.querySelectorAll('main, button, input, select, textarea, a, [tabindex]')]
@@ -117,7 +127,7 @@
   const cameoImage=document.createElement('img');cameoImage.alt='EP2 정면 말린 앞팔 자세 참고 파생 상체';cameoImage.draggable=false;cameoImage.hidden=true;cameoClip.appendChild(cameoImage);cameoRail.appendChild(cameoClip);cameoTools.after(cameoRail);
   const cameoStart=document.getElementById('chiikawa-cameo-start'),cameoClose=document.getElementById('chiikawa-cameo-close'),cameoStatus=document.getElementById('chiikawa-cameo-status');
   staticCameo=createStaticCameoController({asset:staticCameoAsset,image:cameoImage,clip:cameoClip,rail:cameoRail,status:cameoStatus,
-    getContext:()=>({visible:preferences.visible.chiikawa,paused:pets?.isPaused()??true,reduced:motionQuery.matches}),
+    getContext:()=>({visible:previewAvailable('chiikawa'),paused:pets?.isPaused()??true,reduced:motionQuery.matches}),
     onBegin:()=>pets?.beginExternalPresentation('chiikawa')??false,onEnd:()=>pets?.endExternalPresentation('chiikawa'),
     prepareStage:async()=>{const r=cameoRail.getBoundingClientRect();if(r.top<0||r.bottom>window.innerHeight)cameoRail.scrollIntoView({block:'nearest',behavior:'auto'});await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));},
     readObstacles:()=>[...document.querySelectorAll('main, button, input, select, textarea, a, [tabindex]')].filter(el=>!cameoRail.contains(el)&&!el.closest('.cv-pet-layer')).map(el=>el.getBoundingClientRect()).filter(r=>r.width>0&&r.height>0)});
@@ -126,15 +136,58 @@
   cameoClose.addEventListener('click',()=>staticCameo.cancel('closed'));
 
 
+  function fragmentPanel({id,title,note,label,windowClass}){
+    const tools=document.createElement('section');tools.className='cv-momonga-preview-tools';tools.setAttribute('aria-label',title);
+    const heading=document.createElement('strong');heading.textContent=title;const text=document.createElement('p');text.textContent=note;
+    const start=document.createElement('button');start.type='button';start.id=`${id}-start`;start.textContent=label;
+    const close=document.createElement('button');close.type='button';close.id=`${id}-close`;close.textContent='미리보기 무대 닫기';
+    const status=document.createElement('span');status.id=`${id}-status`;status.setAttribute('role','status');status.textContent='기본 꺼짐 · 명시적 호출만';
+    tools.append(heading,text,start,close,status);
+    const rail=document.createElement('div');rail.className='cv-fragment-rail';rail.hidden=true;
+    const clip=document.createElement('div');clip.className=`cv-fragment-clip ${windowClass}`;
+    const image=document.createElement('img');image.alt=title+' 파생 자세';image.draggable=false;image.hidden=true;clip.appendChild(image);rail.appendChild(clip);
+    return {tools,start,close,status,rail,clip,image};
+  }
+  const hachiUI=fragmentPanel({id:'hachiware-preview',title:'EP5 참고 · 하치와레 봉지 2포즈',note:'같은 봉지를 두 앞발로 지지한 작은 상승 A→B만 표시합니다. 제작 UI 리듬이며 개봉·먹기·내리기 동작은 없습니다.',label:'하치와레 2포즈 보기',windowClass:'cv-fragment-upperbody'});
+  const usagiUI=fragmentPanel({id:'usagi-preview',title:'EP6 참고 · 우사기 관찰 조각',note:'확인된 A→B만 한 번 표시한 뒤 숨깁니다. 착지 구간은 미관찰이므로 C까지 자연스럽게 연결하지 않습니다.',label:'우사기 A→B 조각 보기',windowClass:'cv-fragment-fullbody'});
+  const safePrepare=rail=>async({signal}={})=>{if(signal?.aborted||!previewPanel.open)return;const r=rail.getBoundingClientRect();if(r.top<0||r.bottom>window.innerHeight)rail.scrollIntoView({block:'nearest',behavior:'auto'});await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));};
+  const obstaclesFor=rail=>()=>[...document.querySelectorAll('main, button, input, select, textarea, a, [tabindex]')].filter(el=>!rail.contains(el)&&!el.closest('.cv-pet-layer')).map(el=>el.getBoundingClientRect()).filter(r=>r.width>0&&r.height>0);
+  hachiwarePreview=HachiwareModule.createHachiwareTwoPoseController({...hachiUI,asset:fragmentSources.hachiware?HachiwareModule.hachiwareTwoPoseAsset(...fragmentSources.hachiware):null,
+    getContext:()=>({visible:previewAvailable('hachiware'),paused:pets?.isPaused()??true,reduced:motionQuery.matches}),onBegin:()=>pets?.beginExternalPresentation('hachiware')??false,onEnd:()=>pets?.endExternalPresentation('hachiware'),prepareStage:safePrepare(hachiUI.rail),readObstacles:obstaclesFor(hachiUI.rail)});
+  usagiPreview=UsagiModule.createUsagiFragmentController({...usagiUI,asset:fragmentSources.usagi?UsagiModule.usagiFragmentAsset(...fragmentSources.usagi):null,
+    getContext:()=>({visible:previewAvailable('usagi'),paused:pets?.isPaused()??true,reduced:motionQuery.matches}),onBegin:()=>pets?.beginExternalPresentation('usagi')??false,onEnd:()=>pets?.endExternalPresentation('usagi'),prepareStage:safePrepare(usagiUI.rail),readObstacles:obstaclesFor(usagiUI.rail)});
+  previewCoordinator.register('hachiware',hachiwarePreview);previewCoordinator.register('usagi',usagiPreview);
+  hachiUI.start.addEventListener('click',()=>previewCoordinator.start('hachiware'));hachiUI.close.addEventListener('click',()=>hachiwarePreview.cancel('closed'));
+  usagiUI.start.addEventListener('click',()=>previewCoordinator.start('usagi'));usagiUI.close.addEventListener('click',()=>usagiPreview.cancel('closed'));
+  const usagiLater=document.createElement('button');usagiLater.type='button';usagiLater.id='usagi-later-still';usagiLater.textContent='별도 컷 C 정지 · 착지 구간 미관찰';
+  usagiUI.tools.insertBefore(usagiLater,usagiUI.status);
+  usagiLater.addEventListener('click',()=>{if(!previewAvailable('usagi')||usagiPreview.getState().mode!=='off')return;previewCoordinator.cancelAll('separate-still');usagiPreview.showLaterStill();});
+  const shisaUI=fragmentPanel({id:'shisa-preview',title:'시사 · 정적 UI 재배치',note:'관찰 자세 1장과 별도로 제작한 고정 UI 컵입니다. 원작에서는 쿠리만쥬가 잔을 듭니다. 붓기 애니메이션·관계 장면 재현이 아닙니다.',label:'시사 정적 구성 보기',windowClass:'cv-fragment-unused'});
+  shisaUI.clip.remove();shisaUI.rail.classList.add('cv-shisa-host');
+  const shisaPreview=ShisaModule.createShisaStaticController({host:shisaUI.rail,assetUrl:shisaSource,enabled:!!shisaSource,
+    getContext:()=>({visible:previewAvailable('shisa'),viewport:{width:window.innerWidth,height:window.innerHeight}}),
+    onBegin:()=>pets?.beginExternalPresentation('shisa')??false,onEnd:()=>pets?.endExternalPresentation('shisa'),readObstacles:obstaclesFor(shisaUI.rail),
+    onState:({state,reason})=>{shisaUI.status.textContent=state==='loading'?'검토된 정적 구성 준비 중':state==='visible'?'정적 UI 재배치 · 동작 재생 없음':reason==='unavailable-or-no-safe-path'?'안전한 빈 무대가 없어 생략했습니다':'시사 미리보기 숨김';}});
+  previewCoordinator.register('shisa',shisaPreview);
+  shisaUI.start.addEventListener('click',()=>{if(!previewAvailable('shisa'))return;previewCoordinator.cancelAll('switch');shisaUI.rail.hidden=false;const r=shisaUI.rail.getBoundingClientRect();if(r.top<0||r.bottom>window.innerHeight)shisaUI.rail.scrollIntoView({block:'nearest',behavior:'auto'});previewCoordinator.start('shisa');});
+  shisaUI.close.addEventListener('click',()=>{shisaPreview.cancel('closed');shisaUI.rail.hidden=true;});
+  previewPanel.append(betaTools,betaStage,previewTools,previewRail,cameoTools,cameoRail,hachiUI.tools,hachiUI.rail,usagiUI.tools,usagiUI.rail,shisaUI.tools,shisaUI.rail);
+  previewPanel.addEventListener('toggle',()=>{if(!previewPanel.open){previewCoordinator.cancelAll('panel-closed');if(previewPanel.contains(document.activeElement)&&document.activeElement.id!=='motion-preview-summary')document.getElementById('motion-preview-summary').focus();}pets?.destroy();mount();});
+  document.addEventListener('keydown',event=>{if(isCharacterManagementArrow(event))event.stopPropagation();},{capture:true});
+
+
   function saveVisibility(){preferences.paused=userPaused;try{localStorage.setItem(visibilityKey,JSON.stringify(preferences));}catch(_) {}}
   function syncVisibilityUI(){
     for(const id of groups.all){visibleInputs[id].checked=preferences.visible[id];mobileStages[id].hidden=!preferences.visible[id];}
     const count=selectedPetIds(preferences).length;mobileDock.hidden=count===0;
-    previewStart.disabled=!momongaPreviewAsset||!preferences.visible.momonga;
-    cameoStart.disabled=!staticCameoAsset||!preferences.visible.chiikawa;
+    previewStart.disabled=!momongaPreviewAsset||!previewAvailable('momonga');
+    cameoStart.disabled=!staticCameoAsset||!previewAvailable('chiikawa');
+    shisaUI.start.disabled=!shisaSource||!previewAvailable('shisa');
+    hachiUI.start.disabled=!fragmentSources.hachiware||!previewAvailable('hachiware');
+    usagiUI.start.disabled=!fragmentSources.usagi||!previewAvailable('usagi');usagiLater.disabled=usagiUI.start.disabled;
     visibilityStatus.textContent=`${count}명 꺼냄 · 자동 동작 설정: ${pets?.isPaused()?'일시정지':'재개'}`;
-    betaStage.hidden=!betaToggle.checked||!preferences.visible.chiikawa||window.innerWidth<640;
-    betaWalk.disabled=!betaToggle.checked||!preferences.visible.chiikawa;
+    betaStage.hidden=!previewPanel.open||!betaToggle.checked||!preferences.visible.chiikawa||window.innerWidth<640;
+    betaWalk.disabled=!previewPanel.open||!betaToggle.checked||!preferences.visible.chiikawa;
     const directional=!!characterProfiles.chiikawa?.betaManifest?.actions?.walk;
     betaWalk.textContent=directional?'걷기 보기':'제자리 동작 보기';
     betaNote.textContent=!preferences.visible.chiikawa?'치이카와 숨김 · 베타 선택은 보존됩니다':betaToggle.checked?'기존 창작 베타 · 영상 재현 아님 · 외형/발 미끄럼 검수 중':'선택 시 기존 창작 원화를 사용합니다 · 영상 근거 동작과 별도';
@@ -152,8 +205,8 @@
       visibleCharacters:selectedPetIds(preferences),mobilePetStages:mobileStages,mobileStageViewport:mobileDock,
       onCharacterHidden:(id,{hadFocus})=>{if(hadFocus)visibleInputs[id].focus();},
       onPresentationCancelled:reason=>previewCoordinator.cancelAll(reason),
-      avoidSelector:'#card, button, select, input, textarea, a, .table-scroll, .cv-momonga-preview-rail:not([hidden]), .cv-static-cameo-rail:not([hidden])',
-      experimentalCharacters:betaToggle.checked?['chiikawa']:[],experimentalStage:betaStage,
+      avoidSelector:'#card, button, select, input, textarea, a, .table-scroll, .cv-momonga-preview-rail:not([hidden]), .cv-static-cameo-rail:not([hidden]), .cv-fragment-rail:not([hidden])',
+      experimentalCharacters:betaToggle.checked&&previewPanel.open?['chiikawa']:[],experimentalStage:betaStage,
       startPaused:userPaused,maxVisibleMobile:mobile.length,mobilePriority:mobile});
     syncToggle();
   }
@@ -161,7 +214,7 @@
   document.getElementById('pets-hide-all').addEventListener('click',()=>{for(const id of groups.all)preferences.visible[id]=false;applyVisibility();});
   toggle.addEventListener('click',()=>{previewCoordinator.cancelAll('pause-change');userPaused=!pets.isPaused();if(userPaused)pets.pause();else pets.resume();saveVisibility();syncToggle();});
   picker.addEventListener('change',()=>{pets.setMobileCharacters(groups[picker.value]);try{localStorage.setItem(preferenceKey,picker.value);}catch(_) {}});
-  betaToggle.addEventListener('change',()=>{pets.destroy();mount();try{localStorage.setItem(betaPreferenceKey,String(betaToggle.checked));}catch(_) {}if(betaToggle.checked)pets.playAction('walk','chiikawa');});
+  betaToggle.addEventListener('change',()=>{pets.destroy();mount();try{localStorage.setItem(betaPreferenceKey,String(betaToggle.checked));}catch(_) {}if(betaToggle.checked&&previewPanel.open)pets.playAction('walk','chiikawa');});
   betaWalk.addEventListener('click',()=>pets.playAction('walk','chiikawa'));
   motionQuery.addEventListener('change',syncToggle);
   window.addEventListener('resize',syncVisibilityUI);

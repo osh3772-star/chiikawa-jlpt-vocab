@@ -1,0 +1,69 @@
+{
+  "schemaVersion": 1,
+  "enabledByDefault": false,
+  "productionEnabled": false,
+  "testingAuthorized": true,
+  "characters": {
+    "hachiware": {
+      "scope": "LIMITED_TWO_STATIC_CAMEOS_VISUAL_PASS",
+      "sourceUrl": "https://www.tiktok.com/@chiikawaesp/video/7499647539407326471",
+      "timingOrigin": "AUTHORED_WEB_UX",
+      "frames": [
+        {
+          "poseId": "A",
+          "assetPath": "chiikawa-pets/limited-previews/assets/hachiware-ep5/hachiware-packet-start-r1.png",
+          "assetSha256": "f6a144ee522c65f8d5f39d848808db98ba3cc9d9407da082dcb54eeb129e7849",
+          "assetSize": [
+            1536,
+            1024
+          ]
+        },
+        {
+          "poseId": "B",
+          "assetPath": "chiikawa-pets/limited-previews/assets/hachiware-ep5/hachiware-packet-end-r3.png",
+          "assetSha256": "1421a8f741624ceabafb23817d62af90332b44af23cc43b2b09fcf7a6ea3dadc",
+          "assetSize": [
+            1536,
+            1024
+          ]
+        }
+      ],
+      "limitations": "A→B only; no opening/eating/return"
+    },
+    "usagi": {
+      "scope": "LIMITED_EP6_REGISTERED_FRAGMENT",
+      "sourceUrl": "https://www.tiktok.com/@chiikawa562/video/7448691479851175214",
+      "timingOrigin": "AUTHORED_WEB_UX",
+      "frames": [
+        {
+          "poseId": "A",
+          "assetPath": "chiikawa-pets/limited-previews/assets/usagi-ep6/usagi-ep6-A-v1.png",
+          "assetSha256": "e99a8394a5f3a197fa33d5a7545e4b6c6be070606b97ef042a9e99619371c76b",
+          "assetSize": [
+            1295,
+            1214
+          ]
+        },
+        {
+          "poseId": "B",
+          "assetPath": "chiikawa-pets/limited-previews/assets/usagi-ep6/usagi-ep6-B-v2.png",
+          "assetSha256": "f758443800258cf493fcf6d489ca446b1afc0d9cc01c16887294bc1d42d39125",
+          "assetSize": [
+            1254,
+            1254
+          ]
+        },
+        {
+          "poseId": "C",
+          "assetPath": "chiikawa-pets/limited-previews/assets/usagi-ep6/usagi-ep6-C-v1.png",
+          "assetSha256": "34bdc56336774d67d68717c3fc89efd8555f9f2bd0164061589120ac7445ae63",
+          "assetSize": [
+            1254,
+            1254
+          ]
+        }
+      ],
+      "limitations": "A→B fragment then hidden. C later still only by separate explicit cut; no landing/tween."
+    }
+  }
+}

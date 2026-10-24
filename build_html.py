@@ -28,7 +28,6 @@ for who, character in new_config['characters'].items():
 # Audited damaged Momonga originals are preserved on disk, but runtime receives
 # only an explicit intact idle alias; no invented replacement motion.
 from art_quarantine import apply_art_quarantine
-apply_art_quarantine(sprites, profiles)
 # Keep the existing Usagi reaction and use the new pack's documented Rakko start.
 profiles['usagi']['vocab']['wrong'] = 'landing'
 profiles['rakko']['vocab']['start'] = 'blink'
@@ -66,7 +65,12 @@ for who, weights in behaviors.items():
     assert weights and all(isinstance(w, (int, float)) and not isinstance(w, bool) and w >= 0 for w in weights.values()), who
     assert abs(sum(weights.values()) - 100) < 1e-6, f'{who}: probabilities must sum to 100'
     assert all(action in ('idle', 'walk') or action in sprites[who] for action in weights), who
-    profiles[who]['behavior'] = weights
+    profiles[who]['behavior'] = dict(weights)
+# Quarantine after all refreshed art and behavior maps have been selected.
+apply_art_quarantine(sprites, profiles)
+from art_corrections import load_usagi_prop_correction, apply_usagi_prop_correction, load_chiikawa_prop_correction, apply_chiikawa_prop_correction
+apply_usagi_prop_correction(load_usagi_prop_correction(root, data_uri), sprites, profiles)
+apply_chiikawa_prop_correction(load_chiikawa_prop_correction(root, data_uri), sprites, profiles)
 # Optional reviewed cycles override no old poses. Missing files/manifests keep
 # explicit static fallback; unapproved candidates are never embedded as animation.
 from animation_manifest import load_manifests
@@ -100,8 +104,22 @@ cameo_asset = load_static_cameo(root, data_uri)
 cameo_helpers = (root / 'chiikawa-pets/static-cameo.js').read_text(encoding='utf-8').replace('export function ', 'function ')
 preview_helpers = (root / 'chiikawa-pets/momonga-preview.js').read_text(encoding='utf-8').replace('export function ', 'function ')
 
+from fragment_assets import load_fragment_sources
+fragment_sources = load_fragment_sources(root, data_uri)
+def inline_module(filename, exports):
+    code = (root / 'chiikawa-pets' / filename).read_text(encoding='utf-8').replace('export async function ', 'async function ').replace('export function ', 'function ').replace('export const ', 'const ')
+    return '(() => {\n' + code + '\nreturn {' + ','.join(exports) + '};\n})()'
+hachiware_module = inline_module('hachiware-two-pose.mjs', ['hachiwareTwoPoseAsset', 'createHachiwareTwoPoseController'])
+usagi_module = inline_module('usagi-fragment.mjs', ['usagiFragmentAsset', 'createUsagiFragmentController'])
+
+from shisa_static_gate import load_shisa_source
+shisa_source = load_shisa_source(root, data_uri)
+shisa_module = inline_module('shisa-static-controller.mjs', ['createShisaStaticController'])
+
 engine = (root / 'chiikawa-pets/pet-engine.js').read_text(encoding='utf-8').replace('export function ', 'function ')
 integration = (root / 'chiikawa-pets/integration.js').read_text(encoding='utf-8').replace('__PET_ENGINE__', engine)
+integration = integration.replace('__SHISA_MODULE__', shisa_module).replace('__SHISA_SOURCE__', json.dumps(shisa_source))
+integration = integration.replace('__HACHIWARE_MODULE__', hachiware_module).replace('__USAGI_MODULE__', usagi_module).replace('__FRAGMENT_SOURCES__', json.dumps(fragment_sources, ensure_ascii=False, separators=(',', ':')).replace('<', '\\u003c'))
 integration = integration.replace('__STATIC_CAMEO_HELPERS__', cameo_helpers).replace('__STATIC_CAMEO_CONFIG__', json.dumps(cameo_asset, ensure_ascii=False, separators=(',', ':')).replace('<', '\\u003c'))
 integration = integration.replace('__MOMONGA_PREVIEW_HELPERS__', preview_helpers).replace('__MOMONGA_PREVIEW_CONFIG__', json.dumps(momonga_preview, ensure_ascii=False, separators=(',', ':')).replace('<', '\\u003c')).replace('__VISIBILITY_HELPERS__', visibility_helpers).replace('__EVIDENCE_HELPERS__', evidence_helpers).replace('__MOTION_EVIDENCE__', json.dumps(motion_evidence, ensure_ascii=False, separators=(',', ':')).replace('<', '\\u003c'))
 html = html.replace('__THEME_CSS__', theme)

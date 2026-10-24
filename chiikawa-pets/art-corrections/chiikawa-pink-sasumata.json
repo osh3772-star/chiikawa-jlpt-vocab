@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "characterId": "chiikawa",
+  "legacyFrameKey": "sasumata",
+  "legacyKeyMeaning": "Pink default-character sasumata; only color/model repair",
+  "reviewScope": "PASS_STATIC_PROP_COLOR_CORRECTION",
+  "runtimeStaticRepairAuthorized": true,
+  "autonomousActivation": false,
+  "motionActivation": false,
+  "assetPath": "chiikawa-pets/art-corrections/assets/chiikawa-pink-sasumata-r1.png",
+  "assetSha256": "a0afa4a9be0708789a454efa286adc996b554d55ba5aad96336094fbfcf0f1e6",
+  "assetSize": [
+    1086,
+    1448
+  ],
+  "sourceUrl": "https://chiikawamarket.jp/products/4571609354970",
+  "originalPreserved": "chiikawa_hachiware_usagi_assets/chiikawa/assets/characters/chiikawa/sasumata.png",
+  "registration": "same 3:4 canvas, isotropic display; no bbox body rescaling",
+  "remainingReview": "subpixel to about 1px anchor difference; not exact official prop geometry approval"
+}

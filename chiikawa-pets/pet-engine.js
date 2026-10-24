@@ -79,6 +79,7 @@ export function mountChiikawaPets(options = {}) {
   document.body.appendChild(root);
   const query = window.matchMedia?.('(prefers-reduced-motion: reduce)');
   let reduced = query?.matches ?? false, manualPaused = Boolean(startPaused), destroyed = false;
+  let ticking = false;
   let raf = 0, lastTime = 0, started = false, mobileLimit = maxVisibleMobile, mobileOrder = [...mobilePriority];
   let obstacles = [], dirty = true, pending = null, eventSerial = 0, representative = 0, pair = null;
   const listeners = [], pets = [], preloads = [], failed = new Set(), seen = new Map();
@@ -101,6 +102,17 @@ export function mountChiikawaPets(options = {}) {
   const xBounds = p => { const r = stageRect(p); return r ? [r.left + 8, r.right - p.width - 8] : [0, viewport().w - p.width]; };
   const constrainX = (p, x) => { const [left, right] = xBounds(p); return clamp(x, left, right); };
   const ground = p => { const r = stageRect(p); return Math.max(0, (r ? r.bottom : viewport().h) - p.height - floorOffset); };
+  // Paused/reduced actors still finish explicit reactions and direct-input physics.
+  // Unpaused idle retains the existing autonomous decision clock.
+  function needsFrame() {
+    return !destroyed && !document.hidden && pets.some(p => !p.el.hidden) &&
+      (!paused() || dirty || pending || pair || pets.some(p => !p.el.hidden &&
+        (p.action || p.touch || p.airborne || p.pointerId !== null)));
+  }
+  function wake() {
+    if (started && !ticking && !raf && needsFrame()) { lastTime = 0; raf = requestAnimationFrame(tick); }
+  }
+  function invalidate() { dirty = true; wake(); }
   function listen(el, type, fn, opts) { el.addEventListener(type, fn, opts); listeners.push([el, type, fn, opts]); }
   function pose(p, name = 'idle') {
     if (isBeta(p) && name === 'idle') { const neutral = sequenceFor(p, 'idle', 'front')?.frames[0]; if (neutral && !failed.has(neutral.source)) { display(p, neutral.frameId, neutral.source, 'beta-static', neutral); return; } }
@@ -134,6 +146,7 @@ export function mountChiikawaPets(options = {}) {
     p.action = { id: action, sequence, elapsed: 0, duration, next, fallback };
     mode(p, action); pose(p, fallback);
     if (sequence) advance(p, 0);
+    wake();
   }
   function idle(p) { p.action = null; p.wait = rand(1.5, 4.5); mode(p, 'idle'); pose(p); }
   function advance(p, dt) {
@@ -201,7 +214,7 @@ export function mountChiikawaPets(options = {}) {
   function pointerDown(p, e) {
     if (e.button !== 0 || e.isPrimary === false || destroyed || p.el.hidden || p.pointerId !== null || document.hidden) return;
     // Long press to drag on touch; vertical gestures remain browser scrolling.
-    if (e.pointerType === 'touch') { p.touch = { pointerId: e.pointerId, clientX: e.clientX, clientY: e.clientY, at: performance.now() }; return; }
+    if (e.pointerType === 'touch') { p.touch = { pointerId: e.pointerId, clientX: e.clientX, clientY: e.clientY, at: performance.now() }; wake(); return; }
     if (e.cancelable) e.preventDefault(); beginGrab(p, e);
   }
   function pointerMove(p, e) {
@@ -249,8 +262,8 @@ export function mountChiikawaPets(options = {}) {
       p.stageLeft = stageRect(p)?.left ?? null;
       p.y = ground(p); render(p);
     }
-    if (started) { if (!ids.length) { cancelAnimationFrame(raf); raf = 0; lastTime = 0; } else if (!raf) raf = requestAnimationFrame(tick); }
-    root.dataset.visibleCount = String(ids.length); dirty = true;
+    if (!ids.length || document.hidden) { cancelAnimationFrame(raf); raf = 0; lastTime = 0; }
+    root.dataset.visibleCount = String(ids.length); invalidate();
   }
   for (const info of selected) {
     const el = document.createElement('div'); el.className = 'cv-pet'; el.dataset.character = info.id;
@@ -315,6 +328,7 @@ export function mountChiikawaPets(options = {}) {
     // Coalesce same-turn correct + complete; latest event replaces, never a backlog.
     if (pending?.type === 'complete' && type === 'correct' && now - pending.at < 100) return;
     pending = { type, target, at: now, ready: now + 45 };
+    wake();
   }
   function decide(p) {
     if (externalPresentation) { p.wait = 1; return; }
@@ -329,7 +343,9 @@ export function mountChiikawaPets(options = {}) {
     } else start(p, action, action, rand(1.0, 1.8));
   }
   function tick(now) {
+    raf = 0;
     if (destroyed) return;
+    ticking = true;
     const dt = lastTime ? clamp((now - lastTime) / 1000, 0, .04) : 0; lastTime = now;
     if (dirty) { obstacles = [...document.querySelectorAll(avoidSelector)].map(el => el.getBoundingClientRect()).filter(r => r.width > 0 && r.height > 0); dirty = false; }
     if (!document.hidden) {
@@ -347,21 +363,22 @@ export function mountChiikawaPets(options = {}) {
         render(p);
       }
     }
-    raf = pets.some(p => !p.el.hidden) ? requestAnimationFrame(tick) : 0;
+    ticking = false;
+    raf = needsFrame() ? requestAnimationFrame(tick) : 0;
   }
-  for (const type of ['start', 'correct', 'wrong', 'complete']) listen(document, `vocab:${type}`, e => { react(type, e.detail?.character ?? 'all', e.detail ?? {}); dirty = true; });
-  for (const type of ['click', 'change', 'vocab:view']) listen(document, type, () => { dirty = true; });
-  listen(window, 'scroll', () => { dirty = true; for (const p of pets) if (stageRect(p) && PHYSICAL.has(p.mode)) safeReset(p); }, { passive: true, capture: true });
+  for (const type of ['start', 'correct', 'wrong', 'complete']) listen(document, `vocab:${type}`, e => { react(type, e.detail?.character ?? 'all', e.detail ?? {}); invalidate(); });
+  for (const type of ['click', 'change', 'vocab:view']) listen(document, type, () => { invalidate(); });
+  listen(window, 'scroll', () => { invalidate(); for (const p of pets) if (stageRect(p) && PHYSICAL.has(p.mode)) safeReset(p); }, { passive: true, capture: true });
   listen(document, 'keydown', e => { if (e.key === 'Escape' && pets.some(p => PHYSICAL.has(p.mode))) { e.preventDefault(); resetAll(); } });
   listen(window, 'resize', () => { cancelExternalPresentation('resize'); layout(); });
   listen(window, 'blur', () => { cancelExternalPresentation('blur'); layout(); });
-  listen(document, 'visibilitychange', () => { cancelExternalPresentation('visibility'); layout(); dirty = true; });
-  listen(window, 'pagehide', () => { cancelExternalPresentation('pagehide'); layout(); }); listen(window, 'pageshow', () => { layout(); dirty = true; });
-  const observer = typeof ResizeObserver === 'function' ? new ResizeObserver(() => { dirty = true; }) : null;
+  listen(document, 'visibilitychange', () => { cancelExternalPresentation('visibility'); layout(); invalidate(); });
+  listen(window, 'pagehide', () => { cancelExternalPresentation('pagehide'); layout(); }); listen(window, 'pageshow', () => { layout(); invalidate(); });
+  const observer = typeof ResizeObserver === 'function' ? new ResizeObserver(invalidate) : null;
   observer?.observe(document.querySelector('main') || document.body);
   function syncPaused() { cancelExternalPresentation('pause-or-motion-preference'); layout(); root.dataset.paused = String(paused()); }
   if (query) listen(query, 'change', e => { reduced = e.matches; syncPaused(); });
-  layout(); root.dataset.paused = String(paused()); started = true; if (visibleIds().length) raf = requestAnimationFrame(tick);
+  layout(); root.dataset.paused = String(paused()); started = true; wake();
   function playAction(action, target = 'chiikawa') {
     const p = pets.find(p => p.id === target);
     if (!p || !isBeta(p) || p.el.hidden || paused() || PHYSICAL.has(p.mode) || action !== 'walk') return false;

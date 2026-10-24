@@ -10,3 +10,8 @@ export function normalizePetVisibilityPreferences(value) {
 export function selectedPetIds(preferences) {
   return PET_VISIBILITY_IDS.filter(id => preferences.visible[id] === true);
 }
+
+/** Character-management focus must never trigger vocabulary arrow grading/navigation. */
+export function isCharacterManagementArrow(event) {
+  return ['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(event.key) && Boolean(event.target?.closest?.('.pet-tools, .cv-visibility-tools, .cv-mobile-pet-dock, .cv-evidence-status, .cv-preview-panel'));
+}

@@ -31,7 +31,6 @@ export function createMomongaPreviewController(options) {
   let generation=0,frameHandle=0,active=false,acquired=false,mode='off',path=null,startTime=null,position=null;
   const valid=asset?.testingAuthorized===true&&asset.enabledByDefault===false&&asset.productionEnabled===false&&
     asset.bodyPoseCount===1&&asset.sourceRepresentation==='DERIVED_REFERENCE_CUTOUT'&&asset.durationOrigin==='AUTHORED_WEB_UX';
-  if(valid)image.src=asset.source;
   image.hidden=true;rail.hidden=true;
   function announce(text){status.textContent=text;}
   function cancel(reason='cancelled'){
@@ -46,7 +45,7 @@ export function createMomongaPreviewController(options) {
     const context=getContext();
     if(!valid||!context.visible){announce(context.visible?'검토된 미리보기 자산이 없어 실행하지 않았습니다':'모몽가를 먼저 꺼내 주세요');return false;}
     mode='loading';announce('검토된 정지 자세 준비 중');
-    try{await loadImage();if(token!==generation)return false;rail.hidden=false;await prepareStage();if(token!==generation)return false;}
+    try{image.src=asset.source;await loadImage();if(token!==generation)return false;rail.hidden=false;await prepareStage();if(token!==generation)return false;}
     catch(_){if(token===generation){cancel('image-error');announce('그림을 불러오지 못해 미리보기만 생략했습니다');}return false;}
     const latest=getContext();
     if(!latest.visible){cancel('hidden');return false;}

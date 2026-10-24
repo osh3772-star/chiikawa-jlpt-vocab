@@ -118,3 +118,17 @@
 .cv-static-cameo-clip { position:absolute;left:50%;bottom:18px;transform:translateX(-50%);overflow:hidden;border-bottom:5px solid #d6bba5;box-sizing:content-box; background:transparent; }
 .cv-static-cameo-clip img { position:absolute;max-width:none;object-fit:fill;user-select:none;pointer-events:none; }
 @media(max-width:639px){.cv-static-cameo-rail{margin-left:12px;margin-right:12px;}}
+/* Optional research previews stay collapsed; core study and character switches remain outside. */
+.cv-preview-panel { max-width:760px; margin:10px auto; border:1px solid #d7ddd2; border-radius:14px; background:#fbfff8; text-align:left; }
+.cv-preview-panel > summary { padding:11px 14px; cursor:pointer; font:600 12px/1.5 system-ui,sans-serif; color:#53644f; }
+.cv-preview-intro { margin:0 14px 10px;font:500 11px/1.6 system-ui,sans-serif;color:#65745e; }
+.cv-preview-panel .cv-momonga-preview-tools { margin:10px 8px; }
+.cv-fragment-rail { position:relative; display:flex;align-items:flex-end;justify-content:center;padding:0 0 18px;box-sizing:border-box;height:202px; margin:8px; border:1px dashed #c5d6cf; border-radius:14px; background:#fcfffc; overflow:hidden; pointer-events:none; }
+.cv-fragment-rail[hidden], .cv-fragment-clip img[hidden] { display:none !important; }
+.cv-fragment-clip { position:relative; left:auto; bottom:auto; transform:none; overflow:hidden; flex:0 0 auto; }
+.cv-fragment-upperbody { border-bottom:5px solid #c7c6ae; box-sizing:content-box; }
+.cv-fragment-clip img { position:absolute; max-width:none; pointer-events:none; user-select:none; }
+@media(max-width:639px){.cv-preview-panel{margin-left:12px;margin-right:12px;}}
+
+.cv-shisa-host{height:202px;min-height:202px;padding:0;border:0;display:flex;align-items:center;justify-content:center;}
+.cv-shisa-host[hidden]{display:none;}

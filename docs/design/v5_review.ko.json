@@ -1,0 +1,54 @@
+{
+  "version": "v5-integrated-limited-fragments",
+  "baselineCommit": "d80154ddf3af706b11e241e7a37ab219fe95066b",
+  "originalFullMotionActionsActivated": 0,
+  "automatedTests": {
+    "node": 190,
+    "python": 45,
+    "result": "PASS"
+  },
+  "build": {
+    "offlineWordCount": 7180,
+    "inlineJavaScriptSyntax": "PASS",
+    "docsIndexModified": false
+  },
+  "browserPassed": [
+    "Default-collapsed experimental disclosure; opening is not autoplay",
+    "Hachiware B ear crop regression fixed with flex-aligned stage",
+    "Hachiware paused A static, hide cancellation, base restoration",
+    "Usagi separate C complete ears-to-feet crop, Escape restoration",
+    "Disclosure collapse cancels preview and restores six selected base actors while pause preference stays independent",
+    "Pending start then study next / Escape cancels without resurrection",
+    "Clear unobstructed actor drag / Escape / resume does not stick",
+    "Lazy Momonga and EP2 initially have no IMG src; source assigned on explicit start only",
+    "Lazy pending Escape / close and EP2 restart C / exclusive actor restoration",
+    "Corrected pink Chiikawa and yellow Usagi static props fit actual 126px engine canvas without ear, staff or foot clipping",
+    "No app-origin console error observed; browser-extension metadata errors excluded",
+    "Integrated Shisa fixed receiver, mandatory Kurimanju source-context caption, full crop and separate learning layout; panel close restores base",
+    "Usagi A→B completion reports explicit no-landing hide and restores six base actors"
+  ],
+  "remainingBrowserGates": [],
+  "notClaimed": [
+    "OS reduced-motion real-device test",
+    "320px viewport test",
+    "New v5 narrow responsive tests",
+    "Natural smooth full animations or exact original video timing",
+    "Real battery savings or measured RAM reduction",
+    "Separate live screenshots of every short Usagi A/B pose; individual art registration and sequence tests are separate evidence"
+  ],
+  "staticPropLimitations": {
+    "chiikawa": "Corrected prop identity and crop pass. Original weapon-composition body appears about25% smaller and feet about20displaypx above ordinary idle in this comparison. Natural idle-to-weapon transition NOT approved. No arbitrary warp/anchor correction applied.",
+    "usagi": "Corrected prop identity/crop pass; ordinary idle comparison broadly stable. Legacy sasumata key means compatibility, not actual weapon naming.",
+    "autonomousSasumataWeight": {
+      "chiikawa": 0,
+      "usagi": 0,
+      "hachiware": 5
+    }
+  },
+  "performanceScope": "Only settled paused/reduced render demand and initial hidden preview load triggers changed. Mock scheduler measures are not real-world memory/battery claims.",
+  "hotkeySafetyHotfix": {
+    "scope": "Character-management arrows cannot navigate or grade vocabulary; native Space/Enter/Escape and study arrows preserved",
+    "automatedTests": 6,
+    "independentBrowserRetest": "PASS: pet-toggle, character-settings summary and show-all focused ArrowRight no longer navigate; Space/Enter pause and study next ArrowRight remain usable; preview Enter/Escape preserved"
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "characterId": "usagi",
+  "legacyFrameKey": "sasumata",
+  "legacyKeyMeaning": "Compatibility only; corrected image depicts yellow straight subjugation staff with white ends",
+  "reviewScope": "STATIC_PROP_IDENTITY_REPAIR_VISUAL_PASS",
+  "runtimeStaticRepairAuthorized": true,
+  "autonomousActivation": false,
+  "motionActivation": false,
+  "assetPath": "chiikawa-pets/art-corrections/assets/usagi-rod-r1.png",
+  "assetSha256": "2d699edad7185d7217f1b1feb704b0aec7951176155302dcf6c5a2da1bd7c0d3",
+  "assetSize": [
+    1086,
+    1448
+  ],
+  "sourceUrl": "https://chiikawamarket.jp/products/4571609354970",
+  "originalPreserved": "chiikawa_hachiware_usagi_assets/usagi/assets/characters/usagi/sasumata.png",
+  "registration": "same 3:4 canvas, isotropic display; no bbox body rescaling",
+  "remainingReview": "runtime feet and staff lower end may differ by about 2–3 display pixels"
+}

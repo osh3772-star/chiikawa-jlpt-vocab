@@ -1,7 +1,7 @@
 export function shouldCancelPreviewForStudyInput(event, studyVisible) {
   if(['click','change'].includes(event.type))return Boolean(event.target?.closest?.('main'));
   if(event.type!=='keydown'||!studyVisible||event.altKey||event.ctrlKey||event.metaKey||event.isComposing)return false;
-  if(event.target?.closest?.('select, input, textarea, [contenteditable="true"], .cv-pet'))return false;
+  if(event.target?.closest?.('select, input, textarea, [contenteditable="true"], .cv-pet, .cv-preview-panel, .pet-tools, .cv-visibility-tools, .cv-mobile-pet-dock, .cv-evidence-status'))return false;
   return ['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(event.key)&&!event.repeat;
 }
 /** Exclusive preview lifecycle. Registration never grants art/motion approval. */
@@ -40,7 +40,7 @@ export function createStaticCameoController(options) {
   const windowSize=sequence?asset.windowSize:[geometries?.[0]?.width,geometries?.[0]?.height];
   const loadImage=options.loadImage??(async()=>{await Promise.all(frames.map(frame=>{const preload=new Image();preload.src=frame.source;return preload.decode();}));});
   let generation=0,active=false,acquired=false,mode='off',frameHandle=0,startTime=null,currentIndex=0;
-  image.hidden=true;rail.hidden=true;if(valid)image.src=frames[0].source;
+  image.hidden=true;rail.hidden=true;
   function cancel(reason='cancelled'){
     generation++;if(frameHandle)cancelFrame(frameHandle);frameHandle=0;startTime=null;
     const wasOpen=mode!=='off';mode='off';active=false;image.hidden=true;
