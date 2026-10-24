@@ -31,3 +31,6 @@ __pycache__/
 /chiikawa_vocab_codex_pack/src/
 /chiikawa_three_pet_integration/src/
 /chiikawa_vocab_codex_pack/assets/backgrounds/pastel-meadow.png
+
+# Isolated generated art lab (build with python build_preview.py)
+치이카와_동작_초안.html

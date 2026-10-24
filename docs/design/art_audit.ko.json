@@ -1,0 +1,222 @@
+{
+  "title": "6캐릭터 그림체·색감·외형 실픽셀 감사",
+  "date": "2026-10-24",
+  "scope": "Public runtime-art findings only. Private source-cutout metadata, review capture paths/hashes and internal inventories are omitted.",
+  "findings": [
+    {
+      "id": "M01",
+      "character": "momonga",
+      "asset_paths": [
+        "chiikawa_three_pet_integration/assets/characters/momonga/hang.png",
+        "chiikawa_three_pet_integration/assets/characters/momonga/sleep.png"
+      ],
+      "usage": "임베드/프리로드되지만 현재 자율행동·퀴즈·공개 playAction 경로 미선택",
+      "observed_mismatch": "390×520 원본에서 본체가 거의 전부 투명. hang: 가지·꼬리 조각·선만, alpha>0 4060(2.002%), bbox[137,401,253,505]. sleep: 가지·곡선만,1704(0.840%),bbox[144,413,246,505]. 정상 idle 72089(35.547%). 자세/조명이 아닌 데이터 결함.",
+      "severity": "critical-latent",
+      "decision": "quarantine-then-regenerate-later",
+      "priority": "P1-before-any-activation",
+      "references": [
+        "https://www.anime-chiikawa.jp/images/characters/img_charapage.png"
+      ]
+    },
+    {
+      "id": "M02",
+      "character": "momonga",
+      "asset_paths": [
+        "chiikawa_three_pet_integration/assets/characters/momonga/pout.png",
+        "chiikawa_three_pet_integration/assets/characters/momonga/fake-cry.png"
+      ],
+      "usage": "pout: 오답/자율7%; fake-cry: 자율5%",
+      "observed_mismatch": "두 이미지 모두 화면 왼쪽 볼 외곽이 세로 직선으로 잘림. 오른쪽 볼에 회색 빗살 같은 잔여 얼룩. 같은 밝은 웃는 얼굴에 눈물만 덧붙여 표정 구별도 약함. 얼굴 절단은 공식 털 실루엣/조명 변화로 설명 불가.",
+      "severity": "high",
+      "decision": "regenerate-later; interim-safe-fallback-recommended",
+      "priority": "P1",
+      "references": [
+        "https://www.anime-chiikawa.jp/images/characters/img_charapage.png"
+      ]
+    },
+    {
+      "id": "M03",
+      "character": "momonga",
+      "asset_paths": [
+        "chiikawa_three_pet_integration/assets/characters/momonga/grabbed.png",
+        "chiikawa_three_pet_integration/assets/characters/momonga/jump.png"
+      ],
+      "usage": "grabbed: 드래그/낙하 정적 fallback; jump: 임베드되나 일반 경로 선택 미확인",
+      "observed_mismatch": "grabbed는 오른쪽 캔버스 끝과 바닥에 닿으며 몸·꼬리 하단 대각 절단. jump는 하단이 수평으로 끊겨 꼬리/몸 경계 소실. 여백 문제와 본체 절단을 구분하여 전신을 다시 확보해야 함.",
+      "severity": "high",
+      "decision": "regenerate-later; grabbed-interim-fallback-recommended",
+      "priority": "P1",
+      "references": [
+        "https://www.anime-chiikawa.jp/images/characters/img_charapage.png"
+      ]
+    },
+    {
+      "id": "M04",
+      "character": "momonga",
+      "asset_paths": [
+        "chiikawa_three_pet_integration/assets/characters/momonga/glide.png"
+      ],
+      "usage": "자율13%, 완료 이벤트",
+      "observed_mismatch": "공식/사용자 제공 공중 프레임은 양팔·다리를 벌린 사각 비막 실루엣. 현재 glide는 둥근 서 있는 몸을 비스듬히 기울인 모습으로 비막/사지 펼침 없음. 얼굴·파란 꼬리는 식별 가능하므로 모몽가 자체가 아닌 비행 포즈 부정확.",
+      "severity": "high",
+      "decision": "regenerate-later-with-airborne-reference",
+      "priority": "P1",
+      "references": [
+        "https://www.anime-chiikawa.jp/images/characters/img_charapage.png"
+      ]
+    },
+    {
+      "id": "M05",
+      "character": "momonga",
+      "asset_paths": [
+        "chiikawa_three_pet_integration/assets/characters/momonga/*.png"
+      ],
+      "usage": "팩 전체; 사용/미사용은 inventory로 분리",
+      "observed_mismatch": "기본 흰 몸·하늘색 코/꼬리는 유지. 그러나 공식은 넓은 얼굴과 옆 볼의 몇 가닥 털, 현재는 둥근 솜뭉치 같은 잔털 외곽. 저해상도/흰 테두리와 끊긴 얇은 선이 타 캐릭터의 선명한 진한 연속선과 충돌. 포즈마다 귀 크기·눈 윤곽·꼬리 폭이 달라짐. 단지 꼬리가 가려진 정면이라는 이유만으로 결함 판정하지 않음.",
+      "severity": "medium",
+      "decision": "recheck-model-sheet-then-regenerate-selected-poses",
+      "priority": "P2",
+      "references": [
+        "https://www.anime-chiikawa.jp/images/characters/img_charapage.png"
+      ]
+    },
+    {
+      "id": "R01",
+      "character": "rakko",
+      "asset_paths": [
+        "chiikawa_three_pet_integration/assets/characters/rakko/*.png"
+      ],
+      "usage": "13개 임베드; idle/blink/sword/dessert/study/sleep 등 사용",
+      "observed_mismatch": "정정: 공식 시트 랏코도 머리/몸 외곽을 짧은 갈색 털선으로 띄엄띄엄 표현하며 연속 외곽선 없는 구간이 넓다. 따라서 현재 자산의 끊긴 털선/연속선 부재는 정상 특징으로 유지하며, 이를 외곽선 소실 결함으로 판정한 최초 문구를 철회한다. 별 흉터·작은 수염·크림 몸·흰 망토는 유지. 실제 PNG에는 확대 시 밝은 프린지와 약간 거친 alpha 경계가 보이나, 코드 기준 desktop 120×160 캔버스 재현 비교에서는 옅은 배경에선 눈에 잘 띄지 않고 어두운 배경에서 가는 밝은 테두리로 남는다. 실 UI에서 심한 결함이라고 단정하지 않는다. 별도 외형 차이는 공식 정면 시트에 없는 큰 검은 중앙 매듭/덩어리와 더 좁고 한쪽으로 몰린 망토이다. 기울어진 자세 차이는 오류로 세지 않고 매듭·망토 모양은 다른 공식 의상 각도 확인 후 판단한다.",
+      "severity": "low-to-medium-confirmation-needed",
+      "decision": "keep-intentional-broken-fur-outline; recheck-matte-and-cloak-reference; no-regeneration-yet",
+      "priority": "P3",
+      "references": [
+        "https://www.anime-chiikawa.jp/images/characters/img_charapage.png",
+        "https://www.tiktok.com/@mikachiii0.5/video/7384926690696301840"
+      ]
+    },
+    {
+      "id": "R02",
+      "character": "rakko",
+      "asset_paths": [
+        "chiikawa_three_pet_integration/assets/characters/rakko/sleep.png",
+        "chiikawa_three_pet_integration/assets/characters/rakko/landing.png"
+      ],
+      "usage": "sleep 자율5%; landing 원본은 현재 engine 착지 fallback에서 미사용",
+      "observed_mismatch": "sleep는 눈을 뜬 동일 정면 캐릭터를 옆으로 돌린 모습에 방울만 추가; landing은 같은 그림의 세로 압축처럼 납작함. 단순 회전/압축은 수면/착지의 별도 신체 포즈 근거가 아님. 색보다 포즈 제작 방식 문제.",
+      "severity": "medium",
+      "decision": "regenerate-later-if-action-retained",
+      "priority": "P2",
+      "references": [
+        "https://www.anime-chiikawa.jp/images/characters/img_charapage.png"
+      ]
+    },
+    {
+      "id": "S01",
+      "character": "shisa",
+      "asset_paths": [
+        "chiikawa_three_pet_integration/assets/characters/shisa/*.png"
+      ],
+      "usage": "11개 임베드; 자율/퀴즈 사용",
+      "observed_mismatch": "연노랑 몸·주황 갈기/눈썹·분홍 볼 유지, 포즈 간 팔레트 비교적 안정. 공식 둥글게 말린 귀/안쪽 굴곡에 비해 idle/blink/happy 등 귀가 작고 뾰족한 고양이 귀처럼 단순화. 머리 위 폭·갈기 덩어리 비례도 작아짐. bow의 낮아진 얼굴은 고개 숙임으로 설명 가능하여 오류로 세지 않음.",
+      "severity": "medium",
+      "decision": "recheck-ear-and-mane-model-before-selective-regeneration",
+      "priority": "P2",
+      "references": [
+        "https://www.anime-chiikawa.jp/images/characters/img_charapage.png",
+        "https://www.tiktok.com/@anzu_anzu04/video/7535691427284520210"
+      ]
+    },
+    {
+      "id": "H01",
+      "character": "hachiware",
+      "asset_paths": [
+        "chiikawa_hachiware_usagi_assets/hachiware/assets/characters/hachiware/*.png"
+      ],
+      "usage": "8개 원포즈 사용; 5개 compatibility 파일은 build의 별도 alias로 덮여 미사용",
+      "observed_mismatch": "파란 가르마 무늬/뾰족 귀·흰 몸·파란 꼬리는 일관. 공식 시트의 차분한 연청색보다 현재 머리 무늬가 더 짙고 채도 높게 보임. 선은 더 검고 두꺼움. 무늬 중앙 V 및 눈 사이 간격을 기준화하되 동작 기울기 차이를 오류로 보지 않음.",
+      "severity": "low-to-medium",
+      "decision": "keep-until-palette-model-review; no-wholesale-regeneration",
+      "priority": "P3",
+      "references": [
+        "https://www.anime-chiikawa.jp/images/characters/img_charapage.png"
+      ]
+    },
+    {
+      "id": "U01",
+      "character": "usagi",
+      "asset_paths": [
+        "chiikawa_hachiware_usagi_assets/usagi/assets/characters/usagi/*.png"
+      ],
+      "usage": "8개 원포즈+alias 사용",
+      "observed_mismatch": "노랑/크림 몸·분홍 귀 안쪽·긴 눈썹·둥근 입 등 식별점 유지. 공식 정면 시트 대비 귀가 머리 높이에 비해 짧고 몸이 더 둥글어 보임(idle/wave에서 비교 가능). 노랑은 약간 더 진함. run/jump의 기울어진 귀는 포즈 변화이므로 별도 결함으로 세지 않음.",
+      "severity": "medium",
+      "decision": "recheck-front-ear-proportion-before-selective-regeneration",
+      "priority": "P2",
+      "references": [
+        "https://www.anime-chiikawa.jp/images/characters/img_charapage.png"
+      ]
+    },
+    {
+      "id": "C01",
+      "character": "chiikawa",
+      "asset_paths": [
+        "chiikawa_hachiware_usagi_assets/chiikawa/assets/characters/chiikawa/*.png"
+      ],
+      "usage": "8개 원포즈+alias 사용",
+      "observed_mismatch": "흰 몸/둥근 귀/갈색~검은 선/볼 홍조 등 기본 식별점 유지. 공식보다 따뜻한 아이보리 음영과 약간 둥글고 짧은 몸; 대형 눈/두꺼운 선 경향. 소품 포즈와 표정 변형을 정체성 결함으로 일괄 판정할 수준은 아님.",
+      "severity": "low",
+      "decision": "keep; palette-and-lineweight-recheck",
+      "priority": "P3",
+      "references": [
+        "https://www.anime-chiikawa.jp/images/characters/img_charapage.png"
+      ]
+    },
+    {
+      "id": "C02",
+      "character": "chiikawa",
+      "asset_paths": [
+        "chiikawa-pets/draft-preview/assets/*.png"
+      ],
+      "usage": "5시트×4키포즈; opt-in beta와 별도 초안에서만 사용",
+      "observed_mismatch": "공식 정면 대비 눈·볼이 크고 검은 선이 매우 두꺼움. 현재 기본 정적 치이카와와도 얼굴 대비/몸 크기/선굵기가 바뀌어 beta 진입·이탈 때 그림체가 교체되어 보일 수 있음. 시트 내부의 얼굴·색은 대체로 안정. 좌우 프로필은 방향별 그림을 갖추었지만 공식 프로필 실루엣 확인은 추가 필요.",
+      "severity": "medium",
+      "decision": "recheck-at-runtime-size; regenerate-later-only-after-model-sheet-lock",
+      "priority": "P2",
+      "references": [
+        "https://www.anime-chiikawa.jp/images/characters/img_charapage.png"
+      ]
+    },
+    {
+      "id": "L01",
+      "character": "trio",
+      "asset_paths": [
+        "chiikawa_vocab_codex_pack/assets/characters/*/*.png"
+      ],
+      "usage": "24개 구3인팩 그림: build에서 새 팩으로 전부 덮임",
+      "observed_mismatch": "24개 모두 컨택트시트 확인. grabbed에 인간 손/상단 잘림, 포즈 가장자리 잡티, landing 압축 등 있으나 현재 3인 런타임 그림은 아님. 구팩의 상대적으로 더 노란 우사기를 현재 색 문제의 근거로 혼동 금지.",
+      "severity": "legacy-only",
+      "decision": "keep-archived-do-not-regenerate-now",
+      "priority": "P4",
+      "references": [
+        "https://www.anime-chiikawa.jp/images/characters/img_charapage.png"
+      ]
+    },
+    {
+      "id": "M06",
+      "character": "momonga",
+      "asset_paths": [
+        "chiikawa-pets/limited-previews/assets/momonga-ep27-derived-body-r3.png"
+      ],
+      "usage": "감사 도중 추가된 R3 제한 몸체 프리뷰; 기존 glide.png 교체본 아님",
+      "observed_mismatch": "사용자 공중 스틸의 사지 펼친 비막 실루엣·하늘색 꼬리·큰 눈·벌린 입을 확보. 기존 glide의 둥근 몸 회전 문제와 구분해야 한다. 다만 원본보다 외곽선/눈/입 선이 굵고 균일하며 팔 안쪽 회색 음영이 추가되어 원작 픽셀컷아웃이나 공식 그림체 동일본은 아님. 고리/줄무늬 꼬리는 이 후보에서 보이지 않음.",
+      "severity": "medium-style-only",
+      "decision": "keep-limited-preview; recheck-lineweight-and-shading-before-production",
+      "priority": "P2",
+      "references": []
+    }
+  ],
+  "color_policy": "공식 PNG에선 선화가 진갈색, 몸은 순백보다 약한 오프화이트/크림 계열. 현재 생성 그림의 미세 그라데이션·안티앨리어싱과 애니 장면 조명 차이를 같은 RGB 불일치로 취급하지 않는다. 한 장면 색을 고유 RGB로 단정하지 않으며 숫자 팔레트 승인 전 기준 이미지/색공간을 고정한다."
+}

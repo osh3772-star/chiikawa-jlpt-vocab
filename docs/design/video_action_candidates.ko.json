@@ -1,0 +1,654 @@
+{
+  "version": "2.1-video-only",
+  "characters": [
+    {
+      "id": "chiikawa",
+      "candidate_actions": [
+        {
+          "id": "chiikawa.video_turn",
+          "title": "정면→옆→정면과 팔 내림",
+          "status": "OBSERVED_PARTIAL",
+          "source": {
+            "episode": 2,
+            "url": "https://www.tiktok.com/@chiikawa.eps/video/7665040641147047198",
+            "ledger": "vocab-motion-research/gap_review.json",
+            "window_index": 0,
+            "pre_image_player_readings_seconds": [
+              3.243275,
+              3.52338,
+              3.804922,
+              4.04067,
+              4.304151,
+              4.545058,
+              4.762745,
+              5.06203
+            ],
+            "timing_limit": "캡처 직전 읽음값. 정확한 프레임 시각 아님.",
+            "reported_observations": [
+              "Chiikawa front-facing turns face/upper body right into profile around sample preceded by3.804922s reading, holds, then returns front around4.762745s reading.",
+              "Arms lower from curled at belly to sides; ears and head silhouette follow turn."
+            ],
+            "observation_indices": [
+              0,
+              1
+            ]
+          },
+          "visible_keyposes": {
+            "anticipation": "정면, 앞발을 배 앞에 모은 자세가 기록됨. 별도 눈 선행은 미확인.",
+            "action": "얼굴/상체가 오른쪽 옆으로 돌아 잠깐 머묾",
+            "recovery": "정면으로 돌아오며 앞발이 옆으로 내려감"
+          },
+          "missing_evidence": "세부 각도·눈동자 선행·포즈간 정확한 프레임수 미확인.",
+          "acceptance": [
+            "동작 순서는 EP2와 같고 몸 전체 흔들기로 대체하지 않음.",
+            "미확인 방향을 채워 대칭 루프를 만들지 않음."
+          ]
+        },
+        {
+          "id": "chiikawa.video_greeting",
+          "title": "눈 감은 미소와 앞발 들기",
+          "status": "OBSERVED_PARTIAL",
+          "source": {
+            "episode": 6,
+            "url": "https://www.tiktok.com/@chiikawa.eps/video/7665208365328469278",
+            "ledger": "vocab-motion-research/gap_review.json",
+            "window_index": 1,
+            "pre_image_player_readings_seconds": [
+              10.026674,
+              10.026674,
+              10.258874,
+              10.488171,
+              10.83647,
+              11.126719,
+              11.698511,
+              12.05842
+            ],
+            "timing_limit": "캡처 직전 읽음값. 정확한 프레임 시각 아님.",
+            "reported_observations": [
+              "Chiikawa and Hachiware side-by-side; Chiikawa closes eyes smiling and raises paw.",
+              "Cut to Usagi facing them, arms out, bouncing then still."
+            ],
+            "observation_indices": [
+              0
+            ]
+          },
+          "visible_keyposes": {
+            "anticipation": "치이카와·하치와레가 나란히 있는 샷. 그 전 준비는 미확인.",
+            "action": "치이카와가 눈 감고 웃으며 앞발을 듦",
+            "recovery": "이후 우사기 샷으로 컷. 치이카와 팔 내림은 이 구간에서 미확인."
+          },
+          "missing_evidence": "초기 paused 중복 제외. 컷 이후 팔 내림 미확인.",
+          "acceptance": [
+            "만세·반복 waving을 만들어 붙이지 않음.",
+            "unknown에 실패/불안 반응을 넣지 않음."
+          ]
+        },
+        {
+          "id": "chiikawa.video_balance",
+          "title": "기울어진 한발 자세→양발 바로서기",
+          "status": "OBSERVED_PARTIAL",
+          "source": {
+            "episode": 25,
+            "url": "https://www.tiktok.com/@chiikawa.eps/video/7667658522963774751",
+            "ledger": "vocab-motion-research/gap_review.json",
+            "window_index": 2,
+            "pre_image_player_readings_seconds": [
+              41.902376,
+              42.474168,
+              42.712172,
+              42.92329,
+              43.162059,
+              43.411674,
+              43.630102,
+              43.832535,
+              44.073442,
+              44.341346
+            ],
+            "timing_limit": "캡처 직전 읽음값. 정확한 프레임 시각 아님.",
+            "reported_observations": [
+              "Peeking sequence: Momonga appears right beside Chiikawa, sweating with large blue tail, then moves into left foreground.",
+              "Chiikawa tilts right with foot lifted; red candy stick on ground by sample preceded by43.162059s reading.",
+              "Chiikawa regains upright stance with both feet down by sample preceded by43.832535s reading."
+            ],
+            "observation_indices": [
+              1,
+              2
+            ]
+          },
+          "visible_keyposes": {
+            "anticipation": "모몽가가 옆에 나타나는 구간; 정확한 접촉은 미확인.",
+            "action": "치이카와가 오른쪽으로 기울고 발 하나가 들림",
+            "recovery": "양발을 내리고 다시 바로 섬"
+          },
+          "missing_evidence": "정확한 충돌/접촉·미끄러짐 원인·도약 낙하는 미확인.",
+          "acceptance": [
+            "원작 기울기 회복을 등에서 놓인 낙하로 소개하지 않음.",
+            "사용자 모른다 선택 뒤 넘어지는 벌로 배치하지 않음."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hachiware",
+      "candidate_actions": [
+        {
+          "id": "hachiware.video_packet_lift",
+          "title": "두 앞발로 봉지 들어 보여주기",
+          "status": "OBSERVED_PARTIAL",
+          "source": {
+            "episode": 5,
+            "url": "https://www.tiktok.com/@chiikawa.eps/video/7665154740417826078",
+            "ledger": "vocab-motion-research/gap_review.json",
+            "window_index": 0,
+            "pre_image_player_readings_seconds": [
+              5.011402,
+              5.011402,
+              5.081062,
+              5.461289,
+              5.739928,
+              5.968129,
+              6.239157,
+              6.548107
+            ],
+            "timing_limit": "캡처 직전 읽음값. 정확한 프레임 시각 아님.",
+            "reported_observations": [
+              "Chiikawa draws at box table, crayon in paw; paper contains blue curl, red face and yellow sun.",
+              "Hachiware holds red Charumera packet with both paws, lifting it from chest toward lower face."
+            ],
+            "observation_indices": [
+              1
+            ]
+          },
+          "visible_keyposes": {
+            "anticipation": "붉은 라멘 봉지를 두 앞발로 가슴에 듦",
+            "action": "봉지를 얼굴 아래 쪽으로 들어 올림",
+            "recovery": "같은 연속 창에서 완전한 내림은 미확인. 다른 샷의 가슴봉지/미소와 자동 연결 금지."
+          },
+          "missing_evidence": "초기 paused 중복 제외. 내려놓기/물건 펼치기 연결 미확인.",
+          "acceptance": [
+            "원소품을 들어올리는 실제 손순서만 유지.",
+            "표정은 본 창에서 확인한 것만; 별도 후속샷 웃음을 인위적으로 합치지 않음."
+          ]
+        },
+        {
+          "id": "hachiware.video_card_reaction",
+          "title": "카드를 든 미소→눈 뜸과 몸 상승",
+          "status": "REACQUIRE_TIME",
+          "source": {
+            "episode": 7,
+            "url": "https://www.tiktok.com/@chiikawa.eps/video/7665392516249685279",
+            "ledger": "vocab-motion-research/episode_observations.json",
+            "window_index": null,
+            "pre_image_player_readings_seconds": [],
+            "timing_limit": "구간 시각 기록 없음. 새로 확인해야 함.",
+            "reported_observations": [
+              "Six adjacent frames: Chiikawa seated on floor with orange cushion to left and pink table to right; holds small light bottle at mouth, raises it, then lowers forepaw while bottle remains at mouth.",
+              "Later rear view of Hachiware facing red vending/card machine beneath tree, paw at round control; Chiikawa watches from behind.",
+              "Card close-up: shiny rainbow KING BEETLE card and another black-and-white card.",
+              "Six-frame sequence: Hachiware holds orange card back in two paws at chest; eyes-closed smile changes to open eyes, feet shift from staggered to aligned and body rises/bobs with motion marks.",
+              "Ending sample: duo shoulder-to-shoulder, both with paws at orange card, happy open mouths, giant card-art background."
+            ],
+            "observation_indices": [
+              3
+            ]
+          },
+          "visible_keyposes": {
+            "anticipation": "주황 카드 뒷면을 두 앞발로 가슴에 듦",
+            "action": "눈 감은 미소에서 눈 뜸; 발은 엇갈림에서 나란히, 몸 작은 상승",
+            "recovery": "최종 중립 복귀는 기록에 없음."
+          },
+          "missing_evidence": "출처는 있지만 이 시퀀스 구간 시각이 없음. EP7의 다른33~39초 보완 구간과 혼동 금지.",
+          "acceptance": [
+            "시간 미확인 상태를 영상 제작용 최종 샷으로 표시하지 않음.",
+            "몸 상승을 큰 점프나 두손 만세로 바꾸지 않음."
+          ]
+        },
+        {
+          "id": "hachiware.video_outward_paw",
+          "title": "옆에서 앞발을 밖으로 내미는 제스처",
+          "status": "REACQUIRE_TIME",
+          "source": {
+            "episode": 8,
+            "url": "https://www.tiktok.com/@chiikawa.eps/video/7665415467812556062",
+            "ledger": "vocab-motion-research/episode_observations.json",
+            "window_index": null,
+            "pre_image_player_readings_seconds": [],
+            "timing_limit": "구간 시각 기록 없음. 새로 확인해야 함.",
+            "reported_observations": [
+              "First eight-frame sample: Usagi seated on tree stump holds small cream bottle with red marking at mouth; Chiikawa and Hachiware watch in foreground. Mostly held pose, with tiny arm/tail-side motion marks.",
+              "Later cave scene: Hachiware beside Chiikawa gestures forepaw outward; mouth opens/closes and tail angle changes.",
+              "Next eight-frame sequence: Hachiware foreground has eyes shut, smile and sweat drop; mouth changes from small to open. Chiikawa behind raises/lowers arms with slight side sway, worried eyebrows, sweat marks overhead and tense open mouth.",
+              "Ending six-frame sequence: Hachiware holds pale bundled cloth between paws, then lifts it to mouth while lowering head; Chiikawa watches close beside."
+            ],
+            "observation_indices": [
+              1
+            ]
+          },
+          "visible_keyposes": {
+            "anticipation": "동굴 장면에서 치이카와 옆에 있음; 시작팔 위치 미확인.",
+            "action": "앞발을 밖으로 내밀고 입이 열렸다 닫힘, 꼬리 각도 변화",
+            "recovery": "완전한 손회수/중립 연결은 미확인."
+          },
+          "missing_evidence": "구간 시각·손 되돌림·입과 꼬리의 정확한 선후가 없음.",
+          "acceptance": [
+            "입 대사를 창작해 원작 음성으로 주장하지 않음.",
+            "부위 순서 미확인을 리깅 추정으로 채우지 않음."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "usagi",
+      "candidate_actions": [
+        {
+          "id": "usagi.video_circle",
+          "title": "풀밭의 원형 달리기/뛰기",
+          "status": "OBSERVED_PARTIAL",
+          "source": {
+            "episode": 6,
+            "url": "https://www.tiktok.com/@chiikawa.eps/video/7665208365328469278",
+            "ledger": "vocab-motion-research/gap_review.json",
+            "window_index": 0,
+            "pre_image_player_readings_seconds": [
+              5.013337,
+              5.114924,
+              5.474834,
+              5.712838,
+              5.962453,
+              6.194652,
+              6.423949,
+              6.754834
+            ],
+            "timing_limit": "캡처 직전 읽음값. 정확한 프레임 시각 아님.",
+            "reported_observations": [
+              "Usagi runs/hops along circular path on grass while Chiikawa watches in foreground. Orientation changes front to right profile to back to left profile to front.",
+              "Feet alternate with short body rises; ears sweep backward/straighten with orientation; dust puffs at rear."
+            ],
+            "observation_indices": [
+              0,
+              1
+            ]
+          },
+          "visible_keyposes": {
+            "anticipation": "원형 이동 시작 전 준비자세는 미확인.",
+            "action": "정면→오른옆→등→왼옆→정면으로 방향 변경, 발 교대·작은 몸 상승",
+            "recovery": "원형 이동 끝의 감속/정지 전환은 미확인."
+          },
+          "missing_evidence": "시작/감속/루프 연결 미확인. 공중제비는 관찰 안 됨.",
+          "acceptance": [
+            "색을 가려도 이동의 방향변화/발 교대로 다른 캐릭터와 구분.",
+            "동작을 화면 크기에 맞춘다고 원형 대신 새 경로를 만들지 않음."
+          ]
+        },
+        {
+          "id": "usagi.video_air_contact",
+          "title": "푸딩 위 공중 팔벌림→접촉·반동",
+          "status": "OBSERVED_PARTIAL",
+          "source": {
+            "episode": 1,
+            "url": "https://www.tiktok.com/@chiikawa.eps/video/7664889241553440031",
+            "ledger": "vocab-motion-research/gap_review.json",
+            "window_index": 0,
+            "pre_image_player_readings_seconds": [
+              4.155015,
+              4.432482,
+              4.735514,
+              4.973519,
+              5.214275,
+              5.584023,
+              5.844267,
+              6.073564
+            ],
+            "timing_limit": "캡처 직전 읽음값. 정확한 프레임 시각 아님.",
+            "reported_observations": [
+              "Usagi moves toward pudding with alternating little feet and body bounce.",
+              "Usagi is high above ground, then arms wide airborne over caramel.",
+              "Contact on top around the sample preceded by5.584023s reading; then turns profile to back as body rebounds in samples preceded by5.844267–6.073564s readings."
+            ],
+            "observation_indices": [
+              0,
+              1,
+              2
+            ]
+          },
+          "visible_keyposes": {
+            "anticipation": "푸딩 쪽으로 작은 발 교대/몸 오르내림이 관찰됨. 완전한 이륙 연결은 미확인.",
+            "action": "공중 높은 위치→팔벌림→푸딩 위 접촉",
+            "recovery": "옆→등 방향으로 몸이 반동. 최종 정지까지는 미확인."
+          },
+          "missing_evidence": "이륙 전체/최종회복 공백. 연속표본 안에서도 컷 여부/지지물 관계를 재확인해야 함.",
+          "acceptance": [
+            "허공 출발 웅크림을 새로 넣지 않음.",
+            "푸딩 접촉 반동을 일반 평지 점프로 동일시하지 않음."
+          ]
+        },
+        {
+          "id": "usagi.video_bounce_still",
+          "title": "앞을 향해 팔 벌리고 튀었다 정지",
+          "status": "OBSERVED_PARTIAL",
+          "source": {
+            "episode": 6,
+            "url": "https://www.tiktok.com/@chiikawa.eps/video/7665208365328469278",
+            "ledger": "vocab-motion-research/gap_review.json",
+            "window_index": 1,
+            "pre_image_player_readings_seconds": [
+              10.026674,
+              10.026674,
+              10.258874,
+              10.488171,
+              10.83647,
+              11.126719,
+              11.698511,
+              12.05842
+            ],
+            "timing_limit": "캡처 직전 읽음값. 정확한 프레임 시각 아님.",
+            "reported_observations": [
+              "Chiikawa and Hachiware side-by-side; Chiikawa closes eyes smiling and raises paw.",
+              "Cut to Usagi facing them, arms out, bouncing then still."
+            ],
+            "observation_indices": [
+              1
+            ]
+          },
+          "visible_keyposes": {
+            "anticipation": "치이카와·하치와레 샷 뒤 우사기 샷으로 컷. 도약준비는 미확인.",
+            "action": "그들을 향해 정면, 팔 밖으로, 몸이 튀듯 움직임",
+            "recovery": "그 자세에서 정지"
+          },
+          "missing_evidence": "표본 창에 다른 캐릭터 샷도 포함. 우사기만의 정확 시작/끝 구간 재확인 필요.",
+          "acceptance": [
+            "원본의 정지 끝을 존중하며 무한 바운스 금지.",
+            "같은 바운스를 나머지5종에 복사하지 않음."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "momonga",
+      "candidate_actions": [
+        {
+          "id": "momonga.video_appear_move",
+          "title": "치이카와 옆에 등장→왼쪽 전경 이동",
+          "status": "OBSERVED_PARTIAL",
+          "source": {
+            "episode": 25,
+            "url": "https://www.tiktok.com/@chiikawa.eps/video/7667658522963774751",
+            "ledger": "vocab-motion-research/gap_review.json",
+            "window_index": 2,
+            "pre_image_player_readings_seconds": [
+              41.902376,
+              42.474168,
+              42.712172,
+              42.92329,
+              43.162059,
+              43.411674,
+              43.630102,
+              43.832535,
+              44.073442,
+              44.341346
+            ],
+            "timing_limit": "캡처 직전 읽음값. 정확한 프레임 시각 아님.",
+            "reported_observations": [
+              "Peeking sequence: Momonga appears right beside Chiikawa, sweating with large blue tail, then moves into left foreground.",
+              "Chiikawa tilts right with foot lifted; red candy stick on ground by sample preceded by43.162059s reading.",
+              "Chiikawa regains upright stance with both feet down by sample preceded by43.832535s reading."
+            ],
+            "observation_indices": [
+              0
+            ]
+          },
+          "visible_keyposes": {
+            "anticipation": "치이카와가 내다보는 구간. 모몽가 출발 전 자세는 미확인.",
+            "action": "치이카와 바로 옆에 땀과 큰 푸른 꼬리가 보이며 나타남→왼쪽 전경으로 이동",
+            "recovery": "이동 후 완전 정지/착지는 기록되지 않음."
+          },
+          "missing_evidence": "보행 방식·정확접촉·완전 진입/퇴장 연결 미확인.",
+          "acceptance": [
+            "비행으로 부르지 않고 존재하는 위치 변화만 기록."
+          ]
+        },
+        {
+          "id": "momonga.video_airborne_spread",
+          "title": "영상에서 확인한 공중 펼침 자세",
+          "status": "VIDEO_SAMPLED_CONFIRMED",
+          "source": {
+            "episode": 27,
+            "url": "https://www.tiktok.com/@jherby.y/video/7498263134847667474",
+            "ledger": "vocab-motion-research/missing_character_video_observations.json",
+            "record_id": "MOMONGA_EP27_AIRBORNE_20261024",
+            "window_index": 5,
+            "pre_image_player_readings_seconds": [
+              51.176606,
+              51.322718,
+              51.459403,
+              52.534528,
+              52.677569,
+              53.736234,
+              53.973557,
+              54.131492,
+              54.281603,
+              54.449316
+            ],
+            "timing_limit": "캡처 직전 읽음값, 정확한 프레임 시각/동작길이 아님. 편집zoom/crop 반복.",
+            "reported_observations": [
+              "Momonga airborne against blue sky and leaf border, limbs wide with continuous broad membrane visible, mouth open and blue tail behind.",
+              "53.736234 pre-image reading: toothy creature rises at lower edge, red tongue and yellow fur visible.",
+              "54.449316 pre-image reading: crop shows creature below."
+            ],
+            "observation_indices": [
+              0,
+              1,
+              2
+            ]
+          },
+          "visible_keyposes": {
+            "anticipation": "47.425–50.342 나무에 붙어 있는 다른 창은 확인됐으나 공중자세로 이어지는 접촉해제/이륙은 갭. 이어붙이지 않음.",
+            "action": "푸른 하늘/잎 경계 앞에서 사지와 연속된 넓은 막이 펼쳐짐, 열린 입, 뒤 큰 푸른 꼬리. 관찰된 방향 범위만.",
+            "recovery": "아래에 이빨/빨간혀/노란털 괴물이 나타남. 모몽가 착지·막 접기·중립회복은 없음."
+          },
+          "missing_evidence": "나무접촉 해제→공중 연결, 실제 세계좌표 이동/선회, 착지, 물리속도/동작길이. 편집크롭을 캐릭터 translation으로 사용할 수 없음.",
+          "acceptance": [
+            "STILL_ONLY에서 실제 영상 자세 확인으로 승격하되 full-flight와 구분.",
+            "새형 날갯짓/박쥐형 재해석 금지; 실제 넓은 막 윤곽을 따른다.",
+            "이동 재생은 실세계 이동 근거와 유효아트가 확보되기 전 off."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "rakko",
+      "candidate_actions": [
+        {
+          "id": "rakko.video_cup_eye_fragment",
+          "title": "컵을 입에 댄 채 눈 감았다 다시 뜨는 조각",
+          "status": "VIDEO_SAMPLED_ACTION_FRAGMENT",
+          "source": {
+            "episode": 179,
+            "url": "https://www.tiktok.com/@mikachiii0.5/video/7384926690696301840",
+            "ledger": "vocab-motion-research/missing_character_video_observations.json",
+            "record_id": "RAKKO_EP179_CUP_CREAM_20261024",
+            "window_index": 4,
+            "observation_indices": [
+              0
+            ],
+            "support_window_indices": [
+              5
+            ],
+            "pre_image_player_readings_seconds": [
+              46.506273,
+              46.624012,
+              46.737482,
+              47.631103,
+              47.74491,
+              47.897898
+            ],
+            "reference_frames": [
+              {
+                "path": "reference-frames/rakko179_0.jpg",
+                "pre_image_timestamp_seconds": 46.846069,
+                "observed": "Eyes open, cup at mouth"
+              },
+              {
+                "path": "reference-frames/rakko179_1.jpg",
+                "pre_image_timestamp_seconds": 46.965152,
+                "observed": "Eyes open, cup at mouth"
+              },
+              {
+                "path": "reference-frames/rakko179_2.jpg",
+                "pre_image_timestamp_seconds": 47.066027,
+                "observed": "Eyes closed, cup at mouth"
+              },
+              {
+                "path": "reference-frames/rakko179_3.jpg",
+                "pre_image_timestamp_seconds": 47.713591,
+                "observed": "Eyes open"
+              },
+              {
+                "path": "reference-frames/rakko179_4.jpg",
+                "pre_image_timestamp_seconds": 47.819217,
+                "observed": "Eyes closed"
+              },
+              {
+                "path": "reference-frames/rakko179_5.jpg",
+                "pre_image_timestamp_seconds": 47.920031,
+                "observed": "Eyes open, cream visible"
+              }
+            ],
+            "timing_limit": "캡처직전시각이며 프레임PTS 아님. 반복된 눈감기주기일 수 있어 드문표본을 긴한번감음으로 연결하지 않음.",
+            "reported_observations": [
+              "Cup at mouth. At47.631103s pre-image reading eyes open; at47.74491 eyes closed; at47.897898 open again."
+            ]
+          },
+          "visible_keyposes": {
+            "anticipation": "컵을 이미 입에 댄 관찰포즈로 시작. 컵을 들어올리는 시작은 제외.",
+            "action": "눈 뜸→감음→다시 뜸. 컵/손은 관찰위치를 유지.",
+            "recovery": "후속창의 컵이 입 아래/하얀크림이 묻은 자세는 별도 확인. 컵내림 연결/삼킴/테이블에 놓기는 재현하지 않음. 종료는 관찰포즈정지 또는 UI숨김."
+          },
+          "missing_evidence": "컵들기시작/삼킴/내리는연결/놓기 미확인. 한차례눈감음만 재현할 때 미관찰전후를 필수로 요구할 필요 없음.",
+          "acceptance": [
+            "눈감은모습과 다시뜬모습이 실제참조와 맞음.",
+            "표본간간격을 눈감은지속시간으로 오인하지 않음.",
+            "크림발견→양손기쁨 같은 성격기반 새연출 없음.",
+            "컵내림/삼킴/놓기를 확인한것처럼 부르지 않음."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "shisa",
+      "candidate_actions": [
+        {
+          "id": "shisa.video_pour_fragment",
+          "title": "기울어진 병에서 갈색 줄기가 잔으로 들어가는 제한 붓기",
+          "status": "VIDEO_SAMPLED_ACTION_FRAGMENT",
+          "source": {
+            "episode": 264,
+            "url": "https://www.tiktok.com/@anzu_anzu04/video/7535691427284520210",
+            "ledger": "vocab-motion-research/missing_character_video_observations.json",
+            "record_id": "SHISA_EP264_POUR_20261024",
+            "window_index": 1,
+            "observation_indices": [
+              1,
+              2
+            ],
+            "support_window_indices": [
+              2,
+              3
+            ],
+            "pre_image_player_readings_seconds": [
+              15.022512,
+              15.190582,
+              15.349469,
+              15.519813,
+              15.620077,
+              15.741223
+            ],
+            "timing_limit": "캡처직전 읽음값, 정확 프레임 시각 아님. 0→1은 컷/갭. 1–3도 표본간 간격이 있으므로 실제 리듬은 재대조.",
+            "reported_observations": [
+              "After gap/cut, tilted bottle beside Kurimanju at15.022512s pre-image reading.",
+              "At15.190582s pre-image reading bottle near-horizontal, mouth above Kurimanju blue ice glass.",
+              "At15.349469s pre-image reading Shisa mouth opens smiling and thin brown stream enters glass; subsequent samples show same pour."
+            ]
+          },
+          "visible_keyposes": {
+            "anticipation": "새 준비동작 없음. 이미 거의 수평인 병을 잔 위에 든 관찰자세로 시작. 앞창의 직립병→기울임 연결은 제외.",
+            "action": "병입구 아래 갈색 줄기가 파란 얼음잔으로 들어감. 시사의 입이 열린 미소, 표본에서 같은 붓기 지속.",
+            "recovery": "원작 손회복은 없음. 후속창에서 입 닫은 미소와 갈색 잔이 보임; 이를 검토할 수 있으나 세우기/놓기는 추가하지 않음. 종료는 UI 컷/숨김."
+          },
+          "missing_evidence": "직립→기울임연결/붓기시작/원위치/병놓기 없음. 실제타이밍 미측정. 현재 관찰된 중간줄기만 재현하려면 이 전후를 새로 찾느라 무기한 막을 필요는 없음.",
+          "acceptance": [
+            "병입구·줄기·잔 위치관계가 관찰자료에 맞음.",
+            "직립병을 시작으로 매끈하게 기울이는 새동작을 발명하지 않음.",
+            "기울어진 본동작만 승인범위로 표기, full serving cycle이라 부르지 않음.",
+            "손이올라감/내려감·절·발걸음은 새로 넣지 않음."
+          ]
+        }
+      ]
+    }
+  ],
+  "layout_mappings": [
+    {
+      "id": "momonga.web_airborne_pass",
+      "title": "관찰된 펼침 자세 + 별도 작성한 단어장 바깥 경로",
+      "status": "VIDEO_BODY_AUTHORED_LAYOUT_PROPOSED",
+      "evidence_unit": "몸 자세는 momonga.video_airborne_spread와 동일. 위치 변화만 웹 UX 작성안. 원작 비행궤적 재현 아님.",
+      "source": {
+        "episode": 27,
+        "url": "https://www.tiktok.com/@jherby.y/video/7498263134847667474",
+        "ledger": "vocab-motion-research/missing_character_video_observations.json",
+        "record_id": "MOMONGA_EP27_AIRBORNE_20261024",
+        "window_index": 5,
+        "pre_image_player_readings_seconds": [
+          51.176606,
+          51.322718,
+          51.459403,
+          52.534528,
+          52.677569,
+          53.736234,
+          53.973557,
+          54.131492,
+          54.281603,
+          54.449316
+        ],
+        "timing_limit": "캡처 직전 읽음값, 정확한 프레임 시각/동작길이 아님. 편집zoom/crop 반복.",
+        "reported_observations": [
+          "Momonga airborne against blue sky and leaf border, limbs wide with continuous broad membrane visible, mouth open and blue tail behind.",
+          "53.736234 pre-image reading: toothy creature rises at lower edge, red tongue and yellow fur visible.",
+          "54.449316 pre-image reading: crop shows creature below."
+        ],
+        "observation_indices": [
+          0,
+          1,
+          2
+        ]
+      },
+      "visible_keyposes": {
+        "anticipation": "새 신체 예고 없음. 공중 A위치에 관찰된 펼침 자세를 UI로 표시.",
+        "action": "같은 자세/방향/비율을 고정한 채 안전여백의 화면좌표 A→B로 이동.",
+        "recovery": "새 착지/접기 없음. B에서 같은 자세로 멈춘 뒤 UI 숨김."
+      },
+      "parts_roles_observed_only": "몸/얼굴/팔다리/막/꼬리는 영상에서 확인한 펼침 실루엣으로 고정. 이동부위는 actor의 화면좌표뿐. 독립 펄럭임/지연/몸기울기 없음.",
+      "drawing_inventory_proposal": [
+        "R3 imagegen-derived BODY1개가 제한preview범위로 검수됨. 원본픽셀동일아님. manifest: character-design/momonga_preview_art_manifest.ko.json"
+      ],
+      "missing_views": "반대 방향/다른 각도 없이도 1회 경로는 제안 가능. 미러/몸회전으로 미확인 방향을 만들지 않음.",
+      "web_mapping_proposal": "사용자가 원한 단어장 주위를 나는 시각 효과의 제한안. A/B는 카드·버튼 바깥 전용 여백, 전체 막/꼬리 bbox와 경로가 안전할 때만 표시. 원작 배경이동에서 궤적을 추출하지 않음.",
+      "missing_evidence": "몸펼침근거와 제한BODY아트검수는 확보. project maintainer는 작성경로 preview테스트를 승인. 남은것은 실제runtime 안전/접근성 QA이며 이륙/착지/펄럭임은 범위밖.",
+      "transition_cancel_repeat": "한 번 이동 후 숨김. 반복 입력은 중복 actor/큐를 만들지 않음. 중단은 UI 숨김, 없는 회복동작 없음. reduced-motion에서는 동일 자세 정지표시 또는 생략. 공간 부족이면 이동 대신 표시생략.",
+      "acceptance": [
+        "몸 내부 픽셀/부위관계가 경로 내내 고정되어 원작에 없는 동작을 추가하지 않음.",
+        "위치경로·재생시간은 authored UX임을 명세에 분리.",
+        "학습영역 swept bounds 침범0, 입력차단0, 불필요한 반복0.",
+        "project maintainer 검토 및 실제아트 검수 전 enabled=false."
+      ],
+      "storyboard_gate": "제한preview설계/project maintainer검토/단일BODY아트검수 완료. 온오프UI 후 runtime구현·QA 진행가능. production자동활성화는 QA후.",
+      "review_outcome": {
+        "decision": "APPROVED_LIMITED_PREVIEW_TESTING",
+        "art_manifest": "character-design/momonga_preview_art_manifest.ko.json",
+        "art_review_id": "ART_MOMONGA_EP27_PREVIEW_20261024_R3",
+        "production_enabled": false,
+        "remaining": "안전/접근성 runtime QA. 독립원작비행/이륙착지승인아님."
+      }
+    }
+  ]
+}

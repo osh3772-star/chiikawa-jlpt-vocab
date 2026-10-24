@@ -1,0 +1,403 @@
+{
+  "characterId": "chiikawa",
+  "approvalStatus": "draft",
+  "description": "정면 보행 4키포즈 실험 · 공식 외형/12프레임 연속 동작 미승인",
+  "assetPath": "chiikawa-pets/draft-preview/assets/chiikawa-four-keyposes.png",
+  "assetSize": [
+    1247,
+    1261
+  ],
+  "loop": true,
+  "rootDistancePx": 84,
+  "frames": [
+    {
+      "frameId": "contact-A",
+      "durationMs": 240,
+      "sourceRect": [
+        20,
+        10,
+        600,
+        610
+      ],
+      "pivot": [
+        0.509167,
+        0.968852
+      ],
+      "contactFlags": {
+        "L": true,
+        "R": false
+      }
+    },
+    {
+      "frameId": "passing-A",
+      "durationMs": 200,
+      "sourceRect": [
+        620,
+        10,
+        600,
+        610
+      ],
+      "pivot": [
+        0.484167,
+        0.955738
+      ],
+      "contactFlags": {
+        "L": true,
+        "R": false
+      }
+    },
+    {
+      "frameId": "contact-B",
+      "durationMs": 240,
+      "sourceRect": [
+        20,
+        635,
+        600,
+        610
+      ],
+      "pivot": [
+        0.5125,
+        0.918033
+      ],
+      "contactFlags": {
+        "L": false,
+        "R": true
+      }
+    },
+    {
+      "frameId": "passing-B",
+      "durationMs": 200,
+      "sourceRect": [
+        620,
+        635,
+        600,
+        610
+      ],
+      "pivot": [
+        0.504167,
+        0.909836
+      ],
+      "contactFlags": {
+        "L": false,
+        "R": true
+      }
+    }
+  ],
+  "held": {
+    "assetPath": "chiikawa-pets/draft-preview/assets/chiikawa-grab-keyposes.png",
+    "assetSize": [
+      1086,
+      1448
+    ],
+    "loop": true,
+    "frames": [
+      {
+        "frameId": "held-arms-A",
+        "durationMs": 220,
+        "sourceRect": [
+          0,
+          100,
+          543,
+          600
+        ],
+        "pivot": [
+          0.4972375690607735,
+          0.9583333333333334
+        ]
+      },
+      {
+        "frameId": "held-arms-open",
+        "durationMs": 180,
+        "sourceRect": [
+          543,
+          100,
+          543,
+          600
+        ],
+        "pivot": [
+          0.4972375690607735,
+          0.9583333333333334
+        ]
+      },
+      {
+        "frameId": "held-arms-B",
+        "durationMs": 220,
+        "sourceRect": [
+          0,
+          750,
+          543,
+          600
+        ],
+        "pivot": [
+          0.5027624309392266,
+          0.9683333333333334
+        ]
+      }
+    ],
+    "releaseFrame": {
+      "frameId": "held-relax",
+      "sourceRect": [
+        543,
+        750,
+        543,
+        600
+      ],
+      "pivot": [
+        0.4972375690607735,
+        0.975
+      ]
+    },
+    "uniformScale": 1.08
+  },
+  "uniformScale": 1,
+  "landing": {
+    "assetPath": "chiikawa-pets/draft-preview/assets/chiikawa-landing-keyposes.png",
+    "assetSize": [
+      1263,
+      1245
+    ],
+    "uniformScale": 0.99,
+    "loop": false,
+    "frames": [
+      {
+        "frameId": "landing-contact",
+        "durationMs": 170,
+        "sourceRect": [
+          20,
+          20,
+          600,
+          600
+        ],
+        "pivot": [
+          0.525,
+          0.9516666666666667
+        ]
+      },
+      {
+        "frameId": "landing-bent-legs",
+        "durationMs": 210,
+        "sourceRect": [
+          630,
+          20,
+          600,
+          600
+        ],
+        "pivot": [
+          0.5116666666666667,
+          0.9366666666666666
+        ]
+      },
+      {
+        "frameId": "landing-balance",
+        "durationMs": 180,
+        "sourceRect": [
+          20,
+          630,
+          600,
+          600
+        ],
+        "pivot": [
+          0.525,
+          0.9
+        ]
+      },
+      {
+        "frameId": "landing-neutral",
+        "durationMs": 180,
+        "sourceRect": [
+          630,
+          630,
+          600,
+          600
+        ],
+        "pivot": [
+          0.5091666666666667,
+          0.9016666666666666
+        ]
+      }
+    ]
+  },
+  "calibrationNote": "Uniform per-sheet scale only: walk1.00, held1.08, landing0.99. Approximate head/torso width comparison walk489px, held451px, landing495px. Residual face/body differences remain; not official-model approval. Explicit left/right profile sheets each have4keyposes, uniformScale1.24; approximate head width377/379px (front489px), height~440px (front535px). Conservative distance56px/cycle at240px reference width. Foot identity/contact locking unverified.",
+  "directionalWalks": {
+    "right": {
+      "assetPath": "chiikawa-pets/draft-preview/assets/chiikawa-walk-right-keyposes.png",
+      "assetSize": [
+        1261,
+        1247
+      ],
+      "direction": "right",
+      "uniformScale": 1.24,
+      "loop": true,
+      "rootDistancePx": 56,
+      "contactLock": false,
+      "frames": [
+        {
+          "frameId": "right-contact-A",
+          "durationMs": 180,
+          "sourceRect": [
+            125,
+            100,
+            460,
+            510
+          ],
+          "pivot": [
+            0.5184782608695652,
+            0.9490196078431372
+          ],
+          "contactFlags": {
+            "L": false,
+            "R": false
+          },
+          "contactEvidence": "Visible lowest sole aligned to ground; anatomical support-foot identity unconfirmed; contact lock disabled."
+        },
+        {
+          "frameId": "right-passing-A",
+          "durationMs": 220,
+          "sourceRect": [
+            705,
+            100,
+            460,
+            510
+          ],
+          "pivot": [
+            0.5163043478260869,
+            0.9607843137254902
+          ],
+          "contactFlags": {
+            "L": false,
+            "R": false
+          },
+          "contactEvidence": "Visible lowest sole aligned to ground; anatomical support-foot identity unconfirmed; contact lock disabled."
+        },
+        {
+          "frameId": "right-contact-B",
+          "durationMs": 180,
+          "sourceRect": [
+            125,
+            650,
+            460,
+            510
+          ],
+          "pivot": [
+            0.5184782608695652,
+            0.9568627450980393
+          ],
+          "contactFlags": {
+            "L": false,
+            "R": false
+          },
+          "contactEvidence": "Visible lowest sole aligned to ground; anatomical support-foot identity unconfirmed; contact lock disabled."
+        },
+        {
+          "frameId": "right-passing-B",
+          "durationMs": 220,
+          "sourceRect": [
+            705,
+            650,
+            460,
+            510
+          ],
+          "pivot": [
+            0.5163043478260869,
+            0.9568627450980393
+          ],
+          "contactFlags": {
+            "L": false,
+            "R": false
+          },
+          "contactEvidence": "Visible lowest sole aligned to ground; anatomical support-foot identity unconfirmed; contact lock disabled."
+        }
+      ]
+    },
+    "left": {
+      "assetPath": "chiikawa-pets/draft-preview/assets/chiikawa-walk-left-keyposes.png",
+      "assetSize": [
+        1261,
+        1247
+      ],
+      "direction": "left",
+      "uniformScale": 1.24,
+      "loop": true,
+      "rootDistancePx": 56,
+      "contactLock": false,
+      "frames": [
+        {
+          "frameId": "left-contact-A",
+          "durationMs": 180,
+          "sourceRect": [
+            110,
+            100,
+            460,
+            510
+          ],
+          "pivot": [
+            0.5206521739130435,
+            0.9372549019607843
+          ],
+          "contactFlags": {
+            "L": false,
+            "R": false
+          },
+          "contactEvidence": "Visible lowest sole aligned to ground; anatomical support-foot identity unconfirmed; contact lock disabled."
+        },
+        {
+          "frameId": "left-passing-A",
+          "durationMs": 220,
+          "sourceRect": [
+            672,
+            100,
+            460,
+            510
+          ],
+          "pivot": [
+            0.5217391304347826,
+            0.9549019607843138
+          ],
+          "contactFlags": {
+            "L": false,
+            "R": false
+          },
+          "contactEvidence": "Visible lowest sole aligned to ground; anatomical support-foot identity unconfirmed; contact lock disabled."
+        },
+        {
+          "frameId": "left-contact-B",
+          "durationMs": 180,
+          "sourceRect": [
+            110,
+            650,
+            460,
+            510
+          ],
+          "pivot": [
+            0.5206521739130435,
+            0.9431372549019608
+          ],
+          "contactFlags": {
+            "L": false,
+            "R": false
+          },
+          "contactEvidence": "Visible lowest sole aligned to ground; anatomical support-foot identity unconfirmed; contact lock disabled."
+        },
+        {
+          "frameId": "left-passing-B",
+          "durationMs": 220,
+          "sourceRect": [
+            672,
+            650,
+            460,
+            510
+          ],
+          "pivot": [
+            0.5217391304347826,
+            0.9509803921568627
+          ],
+          "contactFlags": {
+            "L": false,
+            "R": false
+          },
+          "contactEvidence": "Visible lowest sole aligned to ground; anatomical support-foot identity unconfirmed; contact lock disabled."
+        }
+      ]
+    }
+  }
+}

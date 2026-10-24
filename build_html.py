@@ -25,6 +25,10 @@ new_config = json.loads((new_pack / 'animation-config.json').read_text(encoding=
 profiles = {**config['characters'], **new_config['characters']}
 for who, character in new_config['characters'].items():
     sprites[who] = {frame: data_uri(new_pack / path) for frame, path in character['frames'].items()}
+# Audited damaged Momonga originals are preserved on disk, but runtime receives
+# only an explicit intact idle alias; no invented replacement motion.
+from art_quarantine import apply_art_quarantine
+apply_art_quarantine(sprites, profiles)
 # Keep the existing Usagi reaction and use the new pack's documented Rakko start.
 profiles['usagi']['vocab']['wrong'] = 'landing'
 profiles['rakko']['vocab']['start'] = 'blink'
@@ -52,7 +56,7 @@ for who, aliases in pose_aliases.items():
     sprites[who] = {name: data_uri(directory / path) for name, path in frames.items()}
     profiles[who]['frames'] = frames
     profiles[who]['poseAliases'] = aliases
-    profiles[who]['assetType'] = 'static-poses-with-css-motion'
+    profiles[who]['assetType'] = 'static-poses'
     profiles[who]['motion'] = {'walkPose': 'run' if who == 'usagi' else 'idle', 'blinkPose': 'idle'}
     profiles[who]['vocab'] = events[who]
 
@@ -63,12 +67,39 @@ for who, weights in behaviors.items():
     assert abs(sum(weights.values()) - 100) < 1e-6, f'{who}: probabilities must sum to 100'
     assert all(action in ('idle', 'walk') or action in sprites[who] for action in weights), who
     profiles[who]['behavior'] = weights
+# Optional reviewed cycles override no old poses. Missing files/manifests keep
+# explicit static fallback; unapproved candidates are never embedded as animation.
+from animation_manifest import load_manifests
+for who, manifest in load_manifests(root, profiles, data_uri).items():
+    profiles[who]['animationManifest'] = manifest
+
+# Separate opt-in beta assets are NEVER promoted to an approved manifest.
+from beta_manifest import load_chiikawa_beta
+beta = load_chiikawa_beta(root, data_uri)
+if beta:
+    profiles['chiikawa']['betaManifest'] = beta
+
 theme = (root / 'theme.css').read_text(encoding='utf-8')
 theme = theme.replace('__MEADOW_IMAGE__', data_uri(pack / config['background']))
 theme = theme.replace('__FLOWER_IMAGE__', data_uri(pack / 'assets/ui/flower.svg'))
 theme = theme.replace('__STAR_IMAGE__', data_uri(pack / 'assets/ui/star.svg'))
+from evidence_registry import load_motion_registry
+motion_evidence = load_motion_registry(root)
+evidence_helpers = (root / 'chiikawa-pets/evidence-registry.js').read_text(encoding='utf-8').replace('export function ', 'function ')
+visibility_helpers = (root / 'chiikawa-pets/visibility-preferences.js').read_text(encoding='utf-8').replace('export function ', 'function ')
+from limited_preview import load_momonga_preview
+momonga_preview = load_momonga_preview(root, data_uri)
+if momonga_preview:
+    from evidence_registry import require
+    match = next((m for m in (motion_evidence or {}).get('mappings', []) if m['mappingId'] == momonga_preview['mappingId']), {})
+    require(match.get('previewTestingAuthorized') is True and match.get('previewReviewId') == momonga_preview['reviewId'] and
+            match.get('bodyActionRef') == momonga_preview['bodyActionRef'] and
+            match.get('previewAssetSha256') == momonga_preview['assetSha256'], 'Limited preview is not linked to current reviewed registry')
+preview_helpers = (root / 'chiikawa-pets/momonga-preview.js').read_text(encoding='utf-8').replace('export function ', 'function ')
+
 engine = (root / 'chiikawa-pets/pet-engine.js').read_text(encoding='utf-8').replace('export function ', 'function ')
 integration = (root / 'chiikawa-pets/integration.js').read_text(encoding='utf-8').replace('__PET_ENGINE__', engine)
+integration = integration.replace('__MOMONGA_PREVIEW_HELPERS__', preview_helpers).replace('__MOMONGA_PREVIEW_CONFIG__', json.dumps(momonga_preview, ensure_ascii=False, separators=(',', ':')).replace('<', '\\u003c')).replace('__VISIBILITY_HELPERS__', visibility_helpers).replace('__EVIDENCE_HELPERS__', evidence_helpers).replace('__MOTION_EVIDENCE__', json.dumps(motion_evidence, ensure_ascii=False, separators=(',', ':')).replace('<', '\\u003c'))
 html = html.replace('__THEME_CSS__', theme)
 html = html.replace('__STAR_IMAGE__', data_uri(pack / 'assets/ui/star.svg'))
 html = html.replace('__PET_CSS__', (root / 'chiikawa-pets/chiikawa-pets.css').read_text(encoding='utf-8'))

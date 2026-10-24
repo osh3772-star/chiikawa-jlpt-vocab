@@ -1,0 +1,336 @@
+{
+  "method": "Sampled visual observations, not continuous footage or exact frame timestamps. No motion inferred from camera crop/zoom. Private captures are not included.",
+  "records": [
+    {
+      "id": "MOMONGA_EP27_AIRBORNE_20261024",
+      "source": "https://www.tiktok.com/@jherby.y/video/7498263134847667474",
+      "windows": [
+        {
+          "pre_image_timestamps_seconds": [
+            41.598443,
+            41.772317,
+            41.927134,
+            42.060698,
+            42.204016,
+            42.88491,
+            43.060234,
+            43.203,
+            43.343015,
+            43.567173
+          ],
+          "observations": [
+            "Momonga rear/profile runs on forest path, large blue tail behind. Observed body orientation changes rear to left profile to rear across samples."
+          ]
+        },
+        {
+          "pre_image_timestamps_seconds": [
+            44.674637,
+            44.837724,
+            45.01083
+          ],
+          "observations": [
+            "44.674637 pre-image reading: rear/profile Momonga with yellow-furred horned toothy creature pursuing from right.",
+            "44.837724 pre-image reading: Momonga horizontally airborne toward left bush.",
+            "45.01083 pre-image reading: Momonga disappearing behind bush."
+          ]
+        },
+        {
+          "pre_image_time_range_seconds": [
+            45.856895,
+            46.403372
+          ],
+          "observations": [
+            "Creature remains in foreground."
+          ]
+        },
+        {
+          "pre_image_timestamps_seconds": [
+            47.425348,
+            47.679336
+          ],
+          "observations": [
+            "Momonga hugs trunk at right, smiling in front/three-quarter view."
+          ]
+        },
+        {
+          "pre_image_timestamps_seconds": [
+            48.740303,
+            48.86888,
+            49.008197,
+            50.066154,
+            50.188747,
+            50.342103
+          ],
+          "observations": [
+            "Side face/body attached to trunk, looking up at pink fruit."
+          ]
+        },
+        {
+          "pre_image_timestamps_seconds": [
+            51.176606,
+            51.322718,
+            51.459403,
+            52.534528,
+            52.677569,
+            53.736234,
+            53.973557,
+            54.131492,
+            54.281603,
+            54.449316
+          ],
+          "observations": [
+            "Momonga airborne against blue sky and leaf border, limbs wide with continuous broad membrane visible, mouth open and blue tail behind.",
+            "53.736234 pre-image reading: toothy creature rises at lower edge, red tongue and yellow fur visible.",
+            "54.449316 pre-image reading: crop shows creature below."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "RAKKO_COMPILATION_STATIC_POSES_20261024",
+      "source": "https://www.tiktok.com/@chiikawa_engsub/video/7495951546983681302",
+      "windows": [
+        {
+          "pre_image_time_range_seconds": [
+            48.87039,
+            49.277894
+          ],
+          "observations": [
+            "Standing beside Chiikawa holding tied green sack. Star/X scar on forehead, yellow fur, brown arms/ears and white cape visible."
+          ]
+        },
+        {
+          "pre_image_time_range_seconds": [
+            82.826675,
+            83.731923
+          ],
+          "observations": [
+            "Front dining pose; same scar and cape visible."
+          ]
+        },
+        {
+          "pre_image_time_range_seconds": [
+            91.234191,
+            91.610863
+          ],
+          "observations": [
+            "Knife in image-left hand and fork in image-right hand over plate."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "SHISA_EP123_DIALOGUE_20261024",
+      "source": "https://www.tiktok.com/@haachiikawa/video/7579523742250978581",
+      "windows": [
+        {
+          "pre_image_timestamps_seconds": [
+            11.892023,
+            12.050353,
+            12.19317,
+            12.325112
+          ],
+          "observations": [
+            "Shisa cream face, orange curled mane/eyebrows, front-facing standing pose."
+          ]
+        },
+        {
+          "pre_image_timestamps_seconds": [
+            23.729966,
+            23.986185,
+            24.104701
+          ],
+          "observations": [
+            "Front pose with mouth open and arms at sides; no full action."
+          ]
+        },
+        {
+          "pre_image_timestamps_seconds": [
+            35.756799,
+            36.090974
+          ],
+          "observations": [
+            "Front face with mouth open."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "SHISA_EP124_CERTIFICATE_POSE_20261024",
+      "source": "https://www.tiktok.com/@mrchiikawa/video/7614460279186869511",
+      "windows": [
+        {
+          "pre_image_time_range_seconds": [
+            465.461658,
+            466.847587
+          ],
+          "observations": [
+            "Shisa sits on stump holding gold armor pieces against chest, facing armored worker."
+          ]
+        },
+        {
+          "pre_image_timestamps_seconds": [
+            499.593064,
+            499.720958,
+            499.849284
+          ],
+          "additional_pre_image_time_range_seconds": [
+            501.295542,
+            501.799545
+          ],
+          "observations": [
+            "Side-view Shisa holds rectangular object up toward seated worker; broad pale vignette visible."
+          ],
+          "inference": [
+            "Pale vignette appears flashback-like; not independently established narrative timing."
+          ]
+        },
+        {
+          "pre_image_timestamps_seconds": [
+            506.546637,
+            506.6796,
+            507.370719,
+            507.516045,
+            507.635984,
+            507.774318
+          ],
+          "observations": [
+            "Front smiling open-mouth pose. One paw supports yellow certificate with Japanese スーパーアルバイター and face icon. Other paw raised in three-lobed shape with curved palm line; droplet below eye.",
+            "Slight mouth-shape change visible; paw-raise onset and lowering recovery not observed."
+          ]
+        },
+        {
+          "pre_image_timestamps_seconds": [
+            514.123401,
+            514.245573
+          ],
+          "observations": [
+            "Front Shisa holds card low at chest while armored worker claps. Clapping is worker action, not Shisa action."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "SHISA_EP264_POUR_20261024",
+      "source": "https://www.tiktok.com/@anzu_anzu04/video/7535691427284520210",
+      "windows": [
+        {
+          "pre_image_timestamps_seconds": [
+            13.847971,
+            13.982727,
+            14.145216,
+            14.282288,
+            14.403852
+          ],
+          "observations": [
+            "Shisa front-facing, both paws holding upright brown plastic bottle labeled BLACK with white cap/beans label; eyes closed, smiling with mouth open."
+          ]
+        },
+        {
+          "pre_image_timestamps_seconds": [
+            15.022512,
+            15.190582,
+            15.349469,
+            15.519813,
+            15.620077,
+            15.741223
+          ],
+          "observations": [
+            "After gap/cut, tilted bottle beside Kurimanju at15.022512s pre-image reading.",
+            "At15.190582s pre-image reading bottle near-horizontal, mouth above Kurimanju blue ice glass.",
+            "At15.349469s pre-image reading Shisa mouth opens smiling and thin brown stream enters glass; subsequent samples show same pour."
+          ]
+        },
+        {
+          "pre_image_timestamps_seconds": [
+            16.405289,
+            16.529989,
+            16.644353
+          ],
+          "observations": [
+            "Bottle horizontal; Shisa eyes closed with mouth open, same pouring pose."
+          ]
+        },
+        {
+          "pre_image_timestamps_seconds": [
+            17.437898,
+            17.616619,
+            17.741664,
+            17.848753
+          ],
+          "observations": [
+            "Shisa mouth now closed smiling while bottle remains held.",
+            "At17.741664s pre-image reading glass is dark brown rather than blue.",
+            "At17.848753s pre-image reading cut to Kurimanju front-facing holding dark glass."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "RAKKO_EP179_CUP_CREAM_20261024",
+      "source": "https://www.tiktok.com/@mikachiii0.5/video/7384926690696301840",
+      "windows": [
+        {
+          "pre_image_timestamps_seconds": [
+            35.842184,
+            36.137592
+          ],
+          "observations": [
+            "Front Rakko amidst crowd: yellow fur, star forehead scar, white cape and sword behind. Feet alternate and lower cape outline changes in short walking fragment."
+          ]
+        },
+        {
+          "pre_image_timestamps_seconds": [
+            37.305805,
+            37.474723
+          ],
+          "observations": [
+            "Rakko from back passing through cafe door, then door closed; intervening transition lost."
+          ]
+        },
+        {
+          "pre_image_timestamps_seconds": [
+            43.379514,
+            43.915391,
+            44.048004
+          ],
+          "observations": [
+            "Rakko front at counter, arms down."
+          ]
+        },
+        {
+          "pre_image_time_range_seconds": [
+            44.834764,
+            45.240098
+          ],
+          "observations": [
+            "Insert of cream-heaped white cup."
+          ]
+        },
+        {
+          "pre_image_timestamps_seconds": [
+            46.506273,
+            46.624012,
+            46.737482,
+            47.631103,
+            47.74491,
+            47.897898
+          ],
+          "observations": [
+            "Cup at mouth. At47.631103s pre-image reading eyes open; at47.74491 eyes closed; at47.897898 open again."
+          ]
+        },
+        {
+          "pre_image_timestamps_seconds": [
+            48.533237,
+            48.693168,
+            49.120841
+          ],
+          "observations": [
+            "Cup below mouth, white cream around muzzle."
+          ]
+        }
+      ]
+    }
+  ]
+}

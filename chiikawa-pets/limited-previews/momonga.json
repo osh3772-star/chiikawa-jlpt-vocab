@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "enabledByDefault": false,
+  "assetPath": "chiikawa-pets/limited-previews/assets/momonga-ep27-derived-body-r3.png",
+  "assetSha256": "2b6068c38fdab9f0bc6ca54366729df0a2b25ab93524a68a12616b32cefbf580",
+  "durationMs": 1800,
+  "durationOrigin": "AUTHORED_WEB_UX",
+  "reviews": {
+    "art": {
+      "path": "chiikawa-pets/limited-previews/review/momonga_preview_art_manifest.ko.json",
+      "sha256": "bdb5d0975afc8c30e846326468d05239df8abe109ad5df486d3310cbe13c0f72"
+    },
+    "contract": {
+      "path": "chiikawa-pets/limited-previews/review/momonga_limited_preview_contract.ko.json",
+      "sha256": "d857f74026f7665b6822c4fec678ab3a866600accda4acc0c21d641f484389d3"
+    }
+  }
+}

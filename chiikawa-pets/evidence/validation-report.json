@@ -1,0 +1,533 @@
+{
+  "schemaVersion": 1,
+  "designVersion": "2.1-video-only",
+  "runtimeEnabled": false,
+  "activationSupported": false,
+  "candidateCount": 13,
+  "enabledCount": 0,
+  "entries": [
+    {
+      "actionId": "chiikawa.video_turn",
+      "characterId": "chiikawa",
+      "title": "정면→옆→정면과 팔 내림",
+      "evidenceStatus": "OBSERVED_PARTIAL",
+      "enabled": false,
+      "observationRef": {
+        "ledger": "vocab-motion-research/gap_review.json",
+        "episode": 2,
+        "record_id": null,
+        "window_index": 0,
+        "url": "https://www.tiktok.com/@chiikawa.eps/video/7665040641147047198",
+        "time_anchor_kind": "pre_image_player_reading",
+        "observation_indices": [
+          0,
+          1
+        ],
+        "support_window_indices": []
+      },
+      "observationDigest": "223664c9ecf64ff6045dde0ba57a581cca1a87a9cf901aaeb37ab9381784b642",
+      "evidenceApproval": "PENDING_FRAGMENT_REVIEW",
+      "designApproval": "CANDIDATE_ONLY",
+      "artValidation": "NOT_REVIEWED",
+      "blockingReasons": [
+        "runtime-binding-not-implemented",
+        "explicit-activation-off",
+        "video-fragment-not-approved",
+        "design-fragment-not-approved",
+        "art-not-reviewed",
+        "no-matching-art-manifest",
+        "safe-zone-and-cancel-not-reviewed",
+        "accessibility-not-reviewed"
+      ],
+      "missingEvidence": "세부 각도·눈동자 선행·포즈간 정확한 프레임수 미확인.",
+      "timingPolicy": "Player readings are provenance only; never converted into animation durations."
+    },
+    {
+      "actionId": "chiikawa.video_greeting",
+      "characterId": "chiikawa",
+      "title": "눈 감은 미소와 앞발 들기",
+      "evidenceStatus": "OBSERVED_PARTIAL",
+      "enabled": false,
+      "observationRef": {
+        "ledger": "vocab-motion-research/gap_review.json",
+        "episode": 6,
+        "record_id": null,
+        "window_index": 1,
+        "url": "https://www.tiktok.com/@chiikawa.eps/video/7665208365328469278",
+        "time_anchor_kind": "pre_image_player_reading",
+        "observation_indices": [
+          0
+        ],
+        "support_window_indices": []
+      },
+      "observationDigest": "852aaeecddc0da78ea3a669fa956af950689b095c61ec1aa5e2fbe802b51da69",
+      "evidenceApproval": "PENDING_FRAGMENT_REVIEW",
+      "designApproval": "CANDIDATE_ONLY",
+      "artValidation": "NOT_REVIEWED",
+      "blockingReasons": [
+        "runtime-binding-not-implemented",
+        "explicit-activation-off",
+        "video-fragment-not-approved",
+        "design-fragment-not-approved",
+        "art-not-reviewed",
+        "no-matching-art-manifest",
+        "safe-zone-and-cancel-not-reviewed",
+        "accessibility-not-reviewed"
+      ],
+      "missingEvidence": "초기 paused 중복 제외. 컷 이후 팔 내림 미확인.",
+      "timingPolicy": "Player readings are provenance only; never converted into animation durations."
+    },
+    {
+      "actionId": "chiikawa.video_balance",
+      "characterId": "chiikawa",
+      "title": "기울어진 한발 자세→양발 바로서기",
+      "evidenceStatus": "OBSERVED_PARTIAL",
+      "enabled": false,
+      "observationRef": {
+        "ledger": "vocab-motion-research/gap_review.json",
+        "episode": 25,
+        "record_id": null,
+        "window_index": 2,
+        "url": "https://www.tiktok.com/@chiikawa.eps/video/7667658522963774751",
+        "time_anchor_kind": "pre_image_player_reading",
+        "observation_indices": [
+          1,
+          2
+        ],
+        "support_window_indices": []
+      },
+      "observationDigest": "88f6b7b0d59e9d3f06fcd254e2ecf15c3314a7e305217f54730b4d39bfe40f38",
+      "evidenceApproval": "PENDING_FRAGMENT_REVIEW",
+      "designApproval": "CANDIDATE_ONLY",
+      "artValidation": "NOT_REVIEWED",
+      "blockingReasons": [
+        "runtime-binding-not-implemented",
+        "explicit-activation-off",
+        "video-fragment-not-approved",
+        "design-fragment-not-approved",
+        "art-not-reviewed",
+        "no-matching-art-manifest",
+        "safe-zone-and-cancel-not-reviewed",
+        "accessibility-not-reviewed"
+      ],
+      "missingEvidence": "정확한 충돌/접촉·미끄러짐 원인·도약 낙하는 미확인.",
+      "timingPolicy": "Player readings are provenance only; never converted into animation durations."
+    },
+    {
+      "actionId": "hachiware.video_packet_lift",
+      "characterId": "hachiware",
+      "title": "두 앞발로 봉지 들어 보여주기",
+      "evidenceStatus": "OBSERVED_PARTIAL",
+      "enabled": false,
+      "observationRef": {
+        "ledger": "vocab-motion-research/gap_review.json",
+        "episode": 5,
+        "record_id": null,
+        "window_index": 0,
+        "url": "https://www.tiktok.com/@chiikawa.eps/video/7665154740417826078",
+        "time_anchor_kind": "pre_image_player_reading",
+        "observation_indices": [
+          1
+        ],
+        "support_window_indices": []
+      },
+      "observationDigest": "ddf22b7a68b085a1ad5750faf2e666d4cec57be95ee8c730b3883b22ed70de38",
+      "evidenceApproval": "PENDING_FRAGMENT_REVIEW",
+      "designApproval": "CANDIDATE_ONLY",
+      "artValidation": "NOT_REVIEWED",
+      "blockingReasons": [
+        "runtime-binding-not-implemented",
+        "explicit-activation-off",
+        "video-fragment-not-approved",
+        "design-fragment-not-approved",
+        "art-not-reviewed",
+        "no-matching-art-manifest",
+        "safe-zone-and-cancel-not-reviewed",
+        "accessibility-not-reviewed"
+      ],
+      "missingEvidence": "초기 paused 중복 제외. 내려놓기/물건 펼치기 연결 미확인.",
+      "timingPolicy": "Player readings are provenance only; never converted into animation durations."
+    },
+    {
+      "actionId": "hachiware.video_card_reaction",
+      "characterId": "hachiware",
+      "title": "카드를 든 미소→눈 뜸과 몸 상승",
+      "evidenceStatus": "REACQUIRE_TIME",
+      "enabled": false,
+      "observationRef": {
+        "ledger": "vocab-motion-research/episode_observations.json",
+        "episode": 7,
+        "record_id": null,
+        "window_index": null,
+        "url": "https://www.tiktok.com/@chiikawa.eps/video/7665392516249685279",
+        "time_anchor_kind": "unrecorded",
+        "observation_indices": [
+          3
+        ],
+        "support_window_indices": []
+      },
+      "observationDigest": "41396dc56cf4822fb53bd21d434006bfb5f92e31b3a334e8debc86701c116fcc",
+      "evidenceApproval": "PENDING_FRAGMENT_REVIEW",
+      "designApproval": "CANDIDATE_ONLY",
+      "artValidation": "NOT_REVIEWED",
+      "blockingReasons": [
+        "runtime-binding-not-implemented",
+        "explicit-activation-off",
+        "source-window-unresolved",
+        "timestamp-reacquisition-required",
+        "video-fragment-not-approved",
+        "design-fragment-not-approved",
+        "art-not-reviewed",
+        "no-matching-art-manifest",
+        "safe-zone-and-cancel-not-reviewed",
+        "accessibility-not-reviewed"
+      ],
+      "missingEvidence": "출처는 있지만 이 시퀀스 구간 시각이 없음. EP7의 다른33~39초 보완 구간과 혼동 금지.",
+      "timingPolicy": "Player readings are provenance only; never converted into animation durations."
+    },
+    {
+      "actionId": "hachiware.video_outward_paw",
+      "characterId": "hachiware",
+      "title": "옆에서 앞발을 밖으로 내미는 제스처",
+      "evidenceStatus": "REACQUIRE_TIME",
+      "enabled": false,
+      "observationRef": {
+        "ledger": "vocab-motion-research/episode_observations.json",
+        "episode": 8,
+        "record_id": null,
+        "window_index": null,
+        "url": "https://www.tiktok.com/@chiikawa.eps/video/7665415467812556062",
+        "time_anchor_kind": "unrecorded",
+        "observation_indices": [
+          1
+        ],
+        "support_window_indices": []
+      },
+      "observationDigest": "eebb8dff36ae5b0caf1b81919097794e832cb1236bc5f47d7b8124321997a538",
+      "evidenceApproval": "PENDING_FRAGMENT_REVIEW",
+      "designApproval": "CANDIDATE_ONLY",
+      "artValidation": "NOT_REVIEWED",
+      "blockingReasons": [
+        "runtime-binding-not-implemented",
+        "explicit-activation-off",
+        "source-window-unresolved",
+        "timestamp-reacquisition-required",
+        "video-fragment-not-approved",
+        "design-fragment-not-approved",
+        "art-not-reviewed",
+        "no-matching-art-manifest",
+        "safe-zone-and-cancel-not-reviewed",
+        "accessibility-not-reviewed"
+      ],
+      "missingEvidence": "구간 시각·손 되돌림·입과 꼬리의 정확한 선후가 없음.",
+      "timingPolicy": "Player readings are provenance only; never converted into animation durations."
+    },
+    {
+      "actionId": "usagi.video_circle",
+      "characterId": "usagi",
+      "title": "풀밭의 원형 달리기/뛰기",
+      "evidenceStatus": "OBSERVED_PARTIAL",
+      "enabled": false,
+      "observationRef": {
+        "ledger": "vocab-motion-research/gap_review.json",
+        "episode": 6,
+        "record_id": null,
+        "window_index": 0,
+        "url": "https://www.tiktok.com/@chiikawa.eps/video/7665208365328469278",
+        "time_anchor_kind": "pre_image_player_reading",
+        "observation_indices": [
+          0,
+          1
+        ],
+        "support_window_indices": []
+      },
+      "observationDigest": "bf179cfc8ebcd789bac1e90ce8477262ce11dca5531b249ff6c0fc82f19f4da2",
+      "evidenceApproval": "PENDING_FRAGMENT_REVIEW",
+      "designApproval": "CANDIDATE_ONLY",
+      "artValidation": "NOT_REVIEWED",
+      "blockingReasons": [
+        "runtime-binding-not-implemented",
+        "explicit-activation-off",
+        "video-fragment-not-approved",
+        "design-fragment-not-approved",
+        "art-not-reviewed",
+        "no-matching-art-manifest",
+        "safe-zone-and-cancel-not-reviewed",
+        "accessibility-not-reviewed"
+      ],
+      "missingEvidence": "시작/감속/루프 연결 미확인. 공중제비는 관찰 안 됨.",
+      "timingPolicy": "Player readings are provenance only; never converted into animation durations."
+    },
+    {
+      "actionId": "usagi.video_air_contact",
+      "characterId": "usagi",
+      "title": "푸딩 위 공중 팔벌림→접촉·반동",
+      "evidenceStatus": "OBSERVED_PARTIAL",
+      "enabled": false,
+      "observationRef": {
+        "ledger": "vocab-motion-research/gap_review.json",
+        "episode": 1,
+        "record_id": null,
+        "window_index": 0,
+        "url": "https://www.tiktok.com/@chiikawa.eps/video/7664889241553440031",
+        "time_anchor_kind": "pre_image_player_reading",
+        "observation_indices": [
+          0,
+          1,
+          2
+        ],
+        "support_window_indices": []
+      },
+      "observationDigest": "99744dbe52049a7fb84f91341d5f99229be7bca50f9061563b133b4c3f4d1334",
+      "evidenceApproval": "PENDING_FRAGMENT_REVIEW",
+      "designApproval": "CANDIDATE_ONLY",
+      "artValidation": "NOT_REVIEWED",
+      "blockingReasons": [
+        "runtime-binding-not-implemented",
+        "explicit-activation-off",
+        "video-fragment-not-approved",
+        "design-fragment-not-approved",
+        "art-not-reviewed",
+        "no-matching-art-manifest",
+        "safe-zone-and-cancel-not-reviewed",
+        "accessibility-not-reviewed"
+      ],
+      "missingEvidence": "이륙 전체/최종회복 공백. 연속표본 안에서도 컷 여부/지지물 관계를 재확인해야 함.",
+      "timingPolicy": "Player readings are provenance only; never converted into animation durations."
+    },
+    {
+      "actionId": "usagi.video_bounce_still",
+      "characterId": "usagi",
+      "title": "앞을 향해 팔 벌리고 튀었다 정지",
+      "evidenceStatus": "OBSERVED_PARTIAL",
+      "enabled": false,
+      "observationRef": {
+        "ledger": "vocab-motion-research/gap_review.json",
+        "episode": 6,
+        "record_id": null,
+        "window_index": 1,
+        "url": "https://www.tiktok.com/@chiikawa.eps/video/7665208365328469278",
+        "time_anchor_kind": "pre_image_player_reading",
+        "observation_indices": [
+          1
+        ],
+        "support_window_indices": []
+      },
+      "observationDigest": "852aaeecddc0da78ea3a669fa956af950689b095c61ec1aa5e2fbe802b51da69",
+      "evidenceApproval": "PENDING_FRAGMENT_REVIEW",
+      "designApproval": "CANDIDATE_ONLY",
+      "artValidation": "NOT_REVIEWED",
+      "blockingReasons": [
+        "runtime-binding-not-implemented",
+        "explicit-activation-off",
+        "video-fragment-not-approved",
+        "design-fragment-not-approved",
+        "art-not-reviewed",
+        "no-matching-art-manifest",
+        "safe-zone-and-cancel-not-reviewed",
+        "accessibility-not-reviewed"
+      ],
+      "missingEvidence": "표본 창에 다른 캐릭터 샷도 포함. 우사기만의 정확 시작/끝 구간 재확인 필요.",
+      "timingPolicy": "Player readings are provenance only; never converted into animation durations."
+    },
+    {
+      "actionId": "momonga.video_appear_move",
+      "characterId": "momonga",
+      "title": "치이카와 옆에 등장→왼쪽 전경 이동",
+      "evidenceStatus": "OBSERVED_PARTIAL",
+      "enabled": false,
+      "observationRef": {
+        "ledger": "vocab-motion-research/gap_review.json",
+        "episode": 25,
+        "record_id": null,
+        "window_index": 2,
+        "url": "https://www.tiktok.com/@chiikawa.eps/video/7667658522963774751",
+        "time_anchor_kind": "pre_image_player_reading",
+        "observation_indices": [
+          0
+        ],
+        "support_window_indices": []
+      },
+      "observationDigest": "88f6b7b0d59e9d3f06fcd254e2ecf15c3314a7e305217f54730b4d39bfe40f38",
+      "evidenceApproval": "PENDING_FRAGMENT_REVIEW",
+      "designApproval": "CANDIDATE_ONLY",
+      "artValidation": "NOT_REVIEWED",
+      "blockingReasons": [
+        "runtime-binding-not-implemented",
+        "explicit-activation-off",
+        "video-fragment-not-approved",
+        "design-fragment-not-approved",
+        "art-not-reviewed",
+        "no-matching-art-manifest",
+        "safe-zone-and-cancel-not-reviewed",
+        "accessibility-not-reviewed"
+      ],
+      "missingEvidence": "보행 방식·정확접촉·완전 진입/퇴장 연결 미확인.",
+      "timingPolicy": "Player readings are provenance only; never converted into animation durations."
+    },
+    {
+      "actionId": "momonga.video_airborne_spread",
+      "characterId": "momonga",
+      "title": "영상에서 확인한 공중 펼침 자세",
+      "evidenceStatus": "VIDEO_SAMPLED_CONFIRMED",
+      "enabled": false,
+      "observationRef": {
+        "ledger": "vocab-motion-research/missing_character_video_observations.json",
+        "episode": 27,
+        "record_id": "MOMONGA_EP27_AIRBORNE_20261024",
+        "window_index": 5,
+        "url": "https://www.tiktok.com/@jherby.y/video/7498263134847667474",
+        "time_anchor_kind": "pre_image_player_reading",
+        "observation_indices": [
+          0,
+          1,
+          2
+        ],
+        "support_window_indices": []
+      },
+      "observationDigest": "91b845762cb9cfe19cc8e4ce2c6f436df16b28b2f87db071d03c13db02480f07",
+      "evidenceApproval": "APPROVED_VIDEO_FRAGMENT",
+      "designApproval": "APPROVED_REFERENCE_POSE_ONLY",
+      "artValidation": "PASS",
+      "blockingReasons": [
+        "runtime-binding-not-implemented",
+        "explicit-activation-off",
+        "design-fragment-not-approved",
+        "asset-review-binding-not-implemented",
+        "safe-zone-and-cancel-not-reviewed",
+        "accessibility-not-reviewed"
+      ],
+      "missingEvidence": "나무접촉 해제→공중 연결, 실제 세계좌표 이동/선회, 착지, 물리속도/동작길이. 편집크롭을 캐릭터 translation으로 사용할 수 없음.",
+      "timingPolicy": "Player readings are provenance only; never converted into animation durations."
+    },
+    {
+      "actionId": "rakko.video_cup_eye_fragment",
+      "characterId": "rakko",
+      "title": "컵을 입에 댄 채 눈 감았다 다시 뜨는 조각",
+      "evidenceStatus": "VIDEO_SAMPLED_ACTION_FRAGMENT",
+      "enabled": false,
+      "observationRef": {
+        "ledger": "vocab-motion-research/missing_character_video_observations.json",
+        "episode": 179,
+        "record_id": "RAKKO_EP179_CUP_CREAM_20261024",
+        "window_index": 4,
+        "url": "https://www.tiktok.com/@mikachiii0.5/video/7384926690696301840",
+        "time_anchor_kind": "pre_image_player_reading",
+        "observation_indices": [
+          0
+        ],
+        "support_window_indices": [
+          5
+        ]
+      },
+      "observationDigest": "1deac838faf8aaea6de32e44052f44b7819f627eef79baabd8f59080fbcf95ac",
+      "evidenceApproval": "PENDING_FRAGMENT_REVIEW",
+      "designApproval": "CANDIDATE_ONLY",
+      "artValidation": "NOT_REVIEWED",
+      "blockingReasons": [
+        "runtime-binding-not-implemented",
+        "explicit-activation-off",
+        "video-fragment-not-approved",
+        "design-fragment-not-approved",
+        "art-not-reviewed",
+        "no-matching-art-manifest",
+        "safe-zone-and-cancel-not-reviewed",
+        "accessibility-not-reviewed"
+      ],
+      "missingEvidence": "컵들기시작/삼킴/내리는연결/놓기 미확인. 한차례눈감음만 재현할 때 미관찰전후를 필수로 요구할 필요 없음.",
+      "timingPolicy": "Player readings are provenance only; never converted into animation durations."
+    },
+    {
+      "actionId": "shisa.video_pour_fragment",
+      "characterId": "shisa",
+      "title": "기울어진 병에서 갈색 줄기가 잔으로 들어가는 제한 붓기",
+      "evidenceStatus": "VIDEO_SAMPLED_ACTION_FRAGMENT",
+      "enabled": false,
+      "observationRef": {
+        "ledger": "vocab-motion-research/missing_character_video_observations.json",
+        "episode": 264,
+        "record_id": "SHISA_EP264_POUR_20261024",
+        "window_index": 1,
+        "url": "https://www.tiktok.com/@anzu_anzu04/video/7535691427284520210",
+        "time_anchor_kind": "pre_image_player_reading",
+        "observation_indices": [
+          1,
+          2
+        ],
+        "support_window_indices": [
+          2,
+          3
+        ]
+      },
+      "observationDigest": "065ba4b2625da92dbb79045aea22527d0f8932977fb1f3aae453f11b648fa02b",
+      "evidenceApproval": "PENDING_FRAGMENT_REVIEW",
+      "designApproval": "CANDIDATE_ONLY",
+      "artValidation": "NOT_REVIEWED",
+      "blockingReasons": [
+        "runtime-binding-not-implemented",
+        "explicit-activation-off",
+        "video-fragment-not-approved",
+        "design-fragment-not-approved",
+        "art-not-reviewed",
+        "no-matching-art-manifest",
+        "safe-zone-and-cancel-not-reviewed",
+        "accessibility-not-reviewed"
+      ],
+      "missingEvidence": "직립→기울임연결/붓기시작/원위치/병놓기 없음. 실제타이밍 미측정. 현재 관찰된 중간줄기만 재현하려면 이 전후를 새로 찾느라 무기한 막을 필요는 없음.",
+      "timingPolicy": "Player readings are provenance only; never converted into animation durations."
+    }
+  ],
+  "characters": {
+    "chiikawa": {
+      "candidateCount": 3,
+      "enabledCount": 0
+    },
+    "hachiware": {
+      "candidateCount": 3,
+      "enabledCount": 0
+    },
+    "usagi": {
+      "candidateCount": 3,
+      "enabledCount": 0
+    },
+    "momonga": {
+      "candidateCount": 2,
+      "enabledCount": 0
+    },
+    "rakko": {
+      "candidateCount": 1,
+      "enabledCount": 0
+    },
+    "shisa": {
+      "candidateCount": 1,
+      "enabledCount": 0
+    }
+  },
+  "nonActionCount": 1,
+  "holdCount": 9,
+  "mappingCount": 1,
+  "mappingEnabledCount": 0,
+  "mappings": [
+    {
+      "mappingId": "momonga.web_airborne_pass",
+      "characterId": "momonga",
+      "title": "관찰된 펼침 자세 + 별도 작성한 단어장 바깥 경로",
+      "kind": "AUTHORED_WEB_PLACEMENT",
+      "bodyActionRef": "momonga.video_airborne_spread",
+      "enabled": false,
+      "previewTestingAuthorized": true,
+      "previewReviewId": "ART_MOMONGA_EP27_PREVIEW_20261024_R3",
+      "previewAssetSha256": "2b6068c38fdab9f0bc6ca54366729df0a2b25ab93524a68a12616b32cefbf580",
+      "layoutProvenance": "웹UX 작성안, 원작 경로/속도 측정 아님",
+      "blockingReasons": [
+        "production-layout-binding-not-implemented",
+        "explicit-activation-off",
+        "asset-review-binding-not-implemented",
+        "safety-checks-not-reviewed",
+        "accessibility-checks-not-reviewed"
+      ],
+      "canonicalTrajectory": false
+    }
+  ],
+  "legacyBetaCanonical": false
+}

@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "runtimeEnabled": false,
+  "contractPath": "character-design/motion_activation_contract.ko.json",
+  "designPath": "character-design/six_character_action_design_v2.ko.json",
+  "inputs": [
+    {
+      "logicalPath": "character-design/momonga_preview_art_manifest.ko.json",
+      "snapshotPath": "chiikawa-pets/evidence/snapshots/061bb81335001461/character-design/momonga_preview_art_manifest.ko.json",
+      "sha256": "bdb5d0975afc8c30e846326468d05239df8abe109ad5df486d3310cbe13c0f72"
+    },
+    {
+      "logicalPath": "character-design/motion_activation_contract.ko.json",
+      "snapshotPath": "chiikawa-pets/evidence/snapshots/061bb81335001461/character-design/motion_activation_contract.ko.json",
+      "sha256": "11336854c65c5c0d70bc3cd970fe0e9c73eaae461a57f25588475739df271b6f"
+    },
+    {
+      "logicalPath": "character-design/six_character_action_design_v2.ko.json",
+      "snapshotPath": "chiikawa-pets/evidence/snapshots/061bb81335001461/character-design/six_character_action_design_v2.ko.json",
+      "sha256": "050fb6e4f0436ebf308cb10a1dc55c7549d05f3aea93127b6c06484a17bed961"
+    },
+    {
+      "logicalPath": "vocab-motion-research/episode_observations.json",
+      "snapshotPath": "chiikawa-pets/evidence/snapshots/061bb81335001461/vocab-motion-research/episode_observations.json",
+      "sha256": "31b9e5611464c09580ba2fd71b5669b6847dea9b11f1df920e3b5880422a9240"
+    },
+    {
+      "logicalPath": "vocab-motion-research/gap_review.json",
+      "snapshotPath": "chiikawa-pets/evidence/snapshots/061bb81335001461/vocab-motion-research/gap_review.json",
+      "sha256": "ad68fb34dcde7219e5a73ec111f398bbc92ca1c17853f92e2fe39b8aee046a01"
+    },
+    {
+      "logicalPath": "vocab-motion-research/missing_character_video_observations.json",
+      "snapshotPath": "chiikawa-pets/evidence/snapshots/061bb81335001461/vocab-motion-research/missing_character_video_observations.json",
+      "sha256": "403a6e327683c98a70c9a1e3eeed3ccb260652adbcc971c3646718b21c54f3d3"
+    }
+  ]
+}

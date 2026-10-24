@@ -1,0 +1,185 @@
+{
+  "title": "캐릭터 꺼내기/넣기 UI 계약 v1",
+  "status": "사용자 요청에 따른 즉시 구현용 UI 설계. 원작 모션 근거 불필요. 새 움직임 활성화와 별개.",
+  "character_ids": [
+    "chiikawa",
+    "hachiware",
+    "usagi",
+    "momonga",
+    "rakko",
+    "shisa"
+  ],
+  "controls": [
+    {
+      "control": "개별 표시",
+      "label": "캐릭터명 + 꺼내기",
+      "semantics": "native checkbox 권장. checked=표시 요청, unchecked=숨김. label과 현재상태를 보조기기에 제공. toggle은 사용자의 직접 조작으로만 바뀜."
+    },
+    {
+      "control": "모두 꺼내기",
+      "semantics": "6종 visible 요청을 한번에 true. 실제 유효아트가 있는 기본 정지형으로 표시. 미승인모션 자동실행 없음. 기존 selected와 학습진행 무변경."
+    },
+    {
+      "control": "모두 넣기",
+      "semantics": "6종 visible=false 및 각 actor/전역짝/예약/소품 cleanup. 옵션 UI 자체는 계속 접근 가능."
+    },
+    {
+      "control": "자동동작 일시정지",
+      "semantics": "보이는 캐릭터는 유지하고 자동 움직임/타이머를 멈춤. 숨김과 다른 전역 UI상태. 미승인/동작줄이기 때문에 이미 정지인 상태와 혼동하지 않게 설명."
+    }
+  ],
+  "state_model": {
+    "persisted": {
+      "schemaVersion": 1,
+      "visible": "6개의 명시 boolean map",
+      "autoMotionPaused": "boolean"
+    },
+    "runtime_only": [
+      "rendered actor 인스턴스",
+      "현재 pointerId/capture",
+      "개별/짝 animation token",
+      "소품/잔상 인스턴스",
+      "안전경로/viewport layout",
+      "가려진 탭/동작줄이기 reason"
+    ],
+    "derived": [
+      "canRender=visible AND valid basic art exists AND allowed container exists",
+      "canAutoMove=canRender AND approved motion/art AND !autoMotionPaused AND !reducedMotion AND !documentHidden AND safe path",
+      "hidden은 모션 정지보다 강하며 actor hit-area 자체가 없음."
+    ],
+    "selected_vs_visible": "현재 조작대상(selected)과 화면에 꺼낸 목록(visible)을 분리. 모두 꺼내기가 current selection을6개로 만들거나 잘못된 index를 만들지 않음."
+  },
+  "persistence": {
+    "key": "독립 버전 key 사용. 제안 pet-ui:visibility:v1; 구현자가 기존 key 충돌 여부 확인 후 선택. 이 제안은 현재 앱에 존재한다고 주장하지 않음.",
+    "data_boundary": "학습 localStorage 키/내용/완료/known/unknown/선택단어를 읽어 변환하거나 덮어쓰지 않음. UI 선호 저장 실패가 학습 저장 실패를 만들면 안 됨.",
+    "first_run": "유효한 기존 표시설정이 있으면 보존. 없다면 현재 명시선택한1종만 표시하고 나머지는 false라는 제안; opt-in beta는 기존 opt-in 조건 유지. 처음부터6종 자동소환 금지.",
+    "invalid_storage": "스키마/캐릭터ID/boolean 검증 실패 항목만 안전한 UI기본값. 학습데이터 삭제/전체 localStorage.clear 금지.",
+    "reload": "visible/paused를 복원하되 진행중 애니메이션·집기·소품·짝상태는 복원하지 않음. 정지형으로 시작.",
+    "rapid_input": "마지막 visibility 의도만 저장/반영. 비동기 show 완료가 뒤늦게 도착해 hide를 되돌리지 않도록 actor generation/token 확인.",
+    "storage_unavailable": "현재 세션 UI는 동작. 작은 비차단 설정안내로 저장불가만 알리고 학습기능은 계속."
+  },
+  "lifecycle": [
+    {
+      "event": "show(id)",
+      "required": [
+        "visible=true 저장",
+        "기존 인스턴스가 있으면 중복생성하지 않음",
+        "유효한 정지아트를 dock에 표시. 모션 근거/아트가 없으면 정지형만; 기본아트도 없으면 컨트롤에 준비중 상태를 정확히 표시. 잘린 legacy포즈나 유실hang/sleep을 source없는 새포즈로 채우지 않음",
+        "autoMotionPaused/reducedMotion 상태를 존중. show 자체가 새 등장 애니메이션 아님"
+      ]
+    },
+    {
+      "event": "hide(id)",
+      "required": [
+        "visible=false를 먼저 확정해 이후 예약callback이 무효임을 보장",
+        "그 actor의 animation/RAF/timer/큐/이벤트토큰 취소",
+        "해당 pointer capture와 drag상태 정리; hover/hit-target 제거",
+        "소품/잔상/포인터표식/말풍선/공중경로 모두 정리",
+        "짝 연출에 포함되어 있으면 전체 pair token 취소, 상대는 남아 있으면 자신의 검증된 정지형으로 UI 교체",
+        "actor DOM/렌더러 인스턴스 제거; selected가 숨겨진 actor면 표시된 다른1종 또는 none으로 유효하게 재설정",
+        "학습 데이터/카드전환/점수/완료 이벤트를 발생시키지 않음"
+      ]
+    },
+    {
+      "event": "hide while grabbed/airborne",
+      "required": [
+        "낙하/놓기/착지 모션 없이 즉시 제거",
+        "화면 밖 actor·고아 pointercapture·숨은 투명 hitbox·예약 복귀 없음",
+        "포인터 up이 늦게 와도 actor를 다시 소환하지 않음"
+      ]
+    },
+    {
+      "event": "pause",
+      "required": [
+        "visible값 유지",
+        "진행중 자동모션 정지 및 예약/잔상 정리. 원작에 없는 회복 모션 추가하지 않음",
+        "드래그 중 pause면 capture를 안전하게 해제하고 유효 dock 정지형으로 UI교체; 허공에 잡힌 상태로 방치하지 않음",
+        "paused=true UI 표시. hide로 오해할 빈 무대 전환 금지"
+      ]
+    },
+    {
+      "event": "resume",
+      "required": [
+        "visible을 바꾸지 않음",
+        "과거에 쌓인 모션/학습이벤트를 재생하지 않음",
+        "승인된 미래 이벤트만 scheduler가 새로 처리. reducedMotion이면 자동이동 여전히 금지"
+      ]
+    },
+    {
+      "event": "all on/off",
+      "required": [
+        "각 상태를 일관된 한 사용자조작으로 적용",
+        "각 show/hide cleanup은 여러번 호출해도 안전(idempotent)",
+        "UI체크상태와 rendered상태 불일치가 있으면 이유를 알림(아트없음/렌더불가), 성공했다고 허위표시하지 않음"
+      ]
+    }
+  ],
+  "layout_capacity": {
+    "desktop": "기존 학습내용 밖 전용 dock/rail. 표시된6종은 정지형으로 함께 존재할 수 있으나 자동이동/강조는1명만. pair 최대2는 향후 승인 단계.",
+    "mobile": "문서흐름 안의 가로스크롤 dock 권장. 학습 버튼을 덮는 absolute/fixed overlay 금지. 여섯 개가 한 화면에 들어가지 않으면 dock 내부로 스크롤하여 접근 가능.",
+    "narrow_window": "보이는 수를 줄여 preference를 몰래 false로 만들지 않음. dock를 접어도 표시요청/숨김과 구분해 표시. 공간이 없으면 동작만 비활성화.",
+    "world_capacity": "무대에서 움직이는 actor와 dock의 정지표시를 분리할 수 있으나 같은 캐릭터가 복제된 두 독립 hit-target으로 보이지 않게 한다.",
+    "bounds": "꼬리/막/귀/망토/소품 포함한 전체범위를 버튼/텍스트/포커스링 밖에 유지."
+  },
+  "accessibility": [
+    "개별 스위치는 이름·checked상태가 있으며 키보드 Space/Enter(선택한 native control 규칙)를 지원. 별도 글로벌 문자단축키를 만들어 학습입력을 가로채지 않음.",
+    "모두 꺼내기/모두 넣기는 일반 버튼. 모든개별스위치가 같은상태여도 눌러도 안전. 상태 요약은 표시된 캐릭터 수/정지 여부로 간결히 제공.",
+    "캐릭터 자체에서 숨김을 요청해 포커스받은 요소가 사라지면 해당 캐릭터 설정스위치 또는 캐릭터 설정열기 버튼으로 포커스를 옮김. 포커스를 body로 잃지 않음.",
+    "장식 캐릭터/잔상은 보조기기 중복읽기 대상에서 제외. 설정 컨트롤만 조작상태를 설명.",
+    "OS reduced-motion과 사용자 pause/visibility는 별도상태. OS설정 때문에 checked가 임의변경되지 않음.",
+    "터치 타겟은 충분히 넓게(제안44px급). 스크롤dock에서 탭과 가로스크롤이 충돌하지 않도록 native동작 우선."
+  ],
+  "acceptance_tests": [
+    {
+      "id": "VIS01",
+      "case": "6종 각각 표시→숨김→다시표시",
+      "pass": "자기 actor만 바뀌고 중복없음. 선택/학습 상태 불변."
+    },
+    {
+      "id": "VIS02",
+      "case": "모두꺼내기→모두넣기 반복",
+      "pass": "체크상태/렌더링 일치, 모두넣기 후 actor hitbox/RAF/timer/소품0(설정UI 제외)."
+    },
+    {
+      "id": "VIS03",
+      "case": "드래그 또는 공중이동 중 hide",
+      "pass": "capture/경로/소품 취소, pointerup/예약callback으로 부활하지 않음. 새착지동작 없음."
+    },
+    {
+      "id": "VIS04",
+      "case": "짝/소품 이벤트 도중 한명 hide",
+      "pass": "짝token취소, 상대 유지/검증정지, 고아소품 없음. 현재 pair미구현이면 cleanup interface 계약테스트로 남기고 실행검수PASS를 꾸미지 않음."
+    },
+    {
+      "id": "VIS05",
+      "case": "pause/resume와 hide/show 교차",
+      "pass": "visibility 선호 그대로, 과거모션 재생없음, reduced-motion 우선 유지."
+    },
+    {
+      "id": "VIS06",
+      "case": "새로고침·storage손상·storage차단",
+      "pass": "유효선호복원/안전UI기본값, study키 byte내용 동일, 전체storage clear 없음."
+    },
+    {
+      "id": "VIS07",
+      "case": "빠른 show/hide 및 비동기 자산지연",
+      "pass": "마지막의도 승리, 늦은show가 hide를 되돌리지 않음."
+    },
+    {
+      "id": "VIS08",
+      "case": "좁은모바일/긴단어/확대글꼴",
+      "pass": "dock스크롤로6종 접근, 카드/학습버튼 가리지 않음, preference자동삭제 없음."
+    },
+    {
+      "id": "VIS09",
+      "case": "키보드/보조기기/포커스된actor hide",
+      "pass": "스위치상태와 이름 정확, 포커스복귀 안전, 자동모션알림스팸 없음."
+    },
+    {
+      "id": "VIS10",
+      "case": "미승인 motion 또는 유효아트없는 후보 show",
+      "pass": "미승인동작 활성화0. 기본정지형 있으면 그것만, 없으면 준비중 명시. 오류로 학습중단 없음."
+    }
+  ],
+  "rollout": "UI 온오프는 현재 개인 캐릭터 단계에 포함하여 먼저 구현/QA. 관계·짝 설계/구현은 현재 개인단계 완료 후, 애니배경 연구/선택기 설계/구현은 그 다음. v1 창작48개를 완료/승인된 기능으로 표시하지 않음."
+}

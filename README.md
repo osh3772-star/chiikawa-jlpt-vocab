@@ -9,7 +9,7 @@ A browser-based JLPT vocabulary app with 7,180 entries and six interactive chara
 - Review only unknown words, with filters by JLPT level.
 - Progress and ratings saved in the current browser's local storage.
 - Six companions with individual poses, autonomous actions, dragging, falling and learning reactions.
-- Responsive desktop and mobile layouts; mobile character group selection.
+- Responsive desktop and mobile layouts; individually selected characters stay accessible in a horizontal mobile dock.
 
 ## Run locally
 
@@ -42,6 +42,8 @@ Keep `docs/.nojekyll` in place. The public site does not upload or synchronize s
 
 ## Autonomous action probabilities
 
+The table below is the legacy decision-weight baseline, not a promise that every action is playable: unavailable directional sequences and quarantined artwork use explicit idle/static fallbacks.
+
 Edit `chiikawa-pets/behavior-config.json`, then rebuild. Each character's table sums to 100 and is sampled once whenever the character chooses its next autonomous action. Percentages describe decisions, not time spent in each pose. Movement direction and durations are randomized separately. Dragging, physics and vocabulary-event reactions retain priority.
 
 | Character | Rest | Move | Character actions |
@@ -56,3 +58,18 @@ Edit `chiikawa-pets/behavior-config.json`, then rebuild. Each character's table 
 Run the distribution and validation checks with `node --test tests/behavior.test.mjs`.
 
 Raw APK files, local verification backups and screenshot outputs are excluded from Git.
+
+## Sequence engine (local implementation)
+
+The engine now supports explicitly approved directional frame sequences and
+sheet rectangles. Existing artwork remains a static fallback: it is not warped,
+shaken or mirrored to simulate animation. Missing walk assets rest instead.
+See [animation contract and verification](chiikawa-pets/README-animation.md).
+Run `node --test tests/*.test.mjs`, rebuild, then
+`python -m unittest discover -s tests -p 'test_*.py' -v` for local checks.
+
+The local vocabulary app also includes an explicit **치이카와 동작 베타** opt-in:
+separate left/right four-keypose walking, held reactions and landing in a safe
+header lane. It is off by default and clearly unapproved/coarse beta artwork,
+not a completed 12-frame cycle. Other characters and study storage are preserved.
+See [Korean code guide](chiikawa-pets/코드_안내.md).

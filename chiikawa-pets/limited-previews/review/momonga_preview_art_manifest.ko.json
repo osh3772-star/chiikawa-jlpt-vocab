@@ -1,0 +1,58 @@
+{
+  "manifest_id": "MOMONGA_EP27_DERIVED_BODY_PREVIEW_R3",
+  "review_id": "ART_MOMONGA_EP27_PREVIEW_20261024_R3",
+  "character_id": "momonga",
+  "mapping_id": "momonga.web_airborne_pass",
+  "body_action_ref": "momonga.video_airborne_spread",
+  "asset_path": "chiikawa-pets/limited-previews/assets/momonga-ep27-derived-body-r3.png",
+  "sha256": "2b6068c38fdab9f0bc6ca54366729df0a2b25ab93524a68a12616b32cefbf580",
+  "mode": "RGBA",
+  "dimensions": [
+    1627,
+    967
+  ],
+  "alpha_nonzero_bbox": [
+    114,
+    41,
+    1540,
+    967
+  ],
+  "body_pose_count": 1,
+  "allowed_direction": "관찰된 대각 펼침방향 고정; 미러/회전/다른방향없음",
+  "observed_body_ref": {
+    "ledger": "vocab-motion-research/missing_character_video_observations.json",
+    "record_id": "MOMONGA_EP27_AIRBORNE_20261024",
+    "window_index": 5,
+    "url": "https://www.tiktok.com/@jherby.y/video/7498263134847667474"
+  },
+  "source_still": "non-public still reference (not bundled)",
+  "provenance": "imagegen-derived reference cutout, not pixel-identical original; reviewed for limited body-pose preview only.",
+  "art_validation": "PASS",
+  "art_scope": "LIMITED_PREVIEW_BODY_ONLY",
+  "reviewer": "project-art-review",
+  "review_date": "2026-10-24",
+  "known_differences": [
+    "선굵기/음영이 원본과 동일하지 않음. 원작 픽셀컷아웃이라고 소개하지 말 것."
+  ],
+  "allowed_transforms": [
+    "초기 1회 등비크기설정",
+    "명시적 authored screen translation",
+    "UI표시/숨김"
+  ],
+  "forbidden_transforms": [
+    "부위변형/프레임루프",
+    "이동중몸회전·미러·스케일변화",
+    "날갯짓·비행막전개·접기",
+    "꼬리후행·이륙·착지"
+  ],
+  "root_preview_authorization": "APPROVED_FOR_PREVIEW_TESTING",
+  "safety_checks": {
+    "status": "NOT_REVIEWED",
+    "review_id": null
+  },
+  "accessibility_checks": {
+    "status": "NOT_REVIEWED",
+    "review_id": null
+  },
+  "activation_note": "아트검수PASS는 안전/접근성PASS가 아니다. runtime QA를 위한 제한테스트는 project maintainer 승인됨. production자동활성화와 다른동작은 승인하지 않음."
+}

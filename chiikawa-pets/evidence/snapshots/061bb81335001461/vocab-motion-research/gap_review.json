@@ -1,0 +1,398 @@
+{
+  "method": "Sampled visual observations, not continuous footage or exact frame timestamps. No motion inferred from camera crop/zoom. Private captures are not included.",
+  "records": [
+    {
+      "episode": 1,
+      "source": "https://www.tiktok.com/@chiikawa.eps/video/7664889241553440031",
+      "windows": [
+        {
+          "seek_state": {
+            "paused_time_seconds": 3.983768,
+            "method": "Native visible progress bar seek"
+          },
+          "pre_image_timestamps_seconds": [
+            4.155015,
+            4.432482,
+            4.735514,
+            4.973519,
+            5.214275,
+            5.584023,
+            5.844267,
+            6.073564
+          ],
+          "observations": [
+            "Usagi moves toward pudding with alternating little feet and body bounce.",
+            "Usagi is high above ground, then arms wide airborne over caramel.",
+            "Contact on top around the sample preceded by5.584023s reading; then turns profile to back as body rebounds in samples preceded by5.844267–6.073564s readings."
+          ],
+          "gap_coverage": "New short onset/contact/rebound window supplements missing transition in original ledger.",
+          "limitations": "Partial short window only. Pre-image readings are not exact frame times; no full continuous-view claim.",
+          "design_notes_inference": []
+        }
+      ]
+    },
+    {
+      "episode": 2,
+      "source": "https://www.tiktok.com/@chiikawa.eps/video/7665040641147047198",
+      "windows": [
+        {
+          "seek_state": {
+            "paused_time_seconds": 3.114128,
+            "method": "Native visible UI seek"
+          },
+          "pre_image_timestamps_seconds": [
+            3.243275,
+            3.52338,
+            3.804922,
+            4.04067,
+            4.304151,
+            4.545058,
+            4.762745,
+            5.06203
+          ],
+          "observations": [
+            "Chiikawa front-facing turns face/upper body right into profile around sample preceded by3.804922s reading, holds, then returns front around4.762745s reading.",
+            "Arms lower from curled at belly to sides; ears and head silhouette follow turn."
+          ],
+          "gap_coverage": "Grounds an actual turn sequence where original ledger had separate poses only.",
+          "design_notes_inference": []
+        },
+        {
+          "seek_state": {
+            "paused_time_seconds": 39.964649,
+            "method": "Native visible UI seek near40s"
+          },
+          "observations": [
+            "Single frame shows duo beside large sphinx; no new motion evidence."
+          ],
+          "design_notes_inference": []
+        }
+      ]
+    },
+    {
+      "episode": 3,
+      "source": "https://www.tiktok.com/@chiikawa.eps/video/7665095803748338975",
+      "windows": [
+        {
+          "seek_state": {
+            "paused_time_seconds": 39.918409,
+            "method": "Native visible UI seek"
+          },
+          "pre_image_timestamps_seconds": [
+            40.066436,
+            40.41501,
+            40.674482,
+            40.893782,
+            41.108432,
+            41.337729,
+            41.567026,
+            41.785894
+          ],
+          "observations": [
+            "Seek still: Usagi body pressing cracked pastry.",
+            "Playing sequence: Usagi ears sink below central hole; Chiikawa arms rise, eyes shut then shocked open eyes with tense brow and open mouth."
+          ],
+          "design_notes_inference": []
+        },
+        {
+          "pre_image_timestamps_seconds": [
+            37.844725,
+            37.844725,
+            37.921938,
+            38.233286,
+            38.552934,
+            38.895428,
+            39.174067,
+            39.473024
+          ],
+          "observations": [
+            "Usagi airborne with arms wide and smiling; foot descends toward brown surface.",
+            "Contact spreads radial cracks; Usagi body presses down."
+          ],
+          "excluded_evidence": "First duplicate-time/overlay paused frame excluded from motion inference.",
+          "design_notes_inference": []
+        }
+      ]
+    },
+    {
+      "episode": 4,
+      "source": "https://www.tiktok.com/@chiikawa.eps/video/7665132923439402254",
+      "windows": [
+        {
+          "pre_image_timestamps_seconds": [
+            5.013337,
+            5.082997,
+            5.332611,
+            5.582051,
+            5.831846,
+            6.043722,
+            6.261416,
+            6.551659
+          ],
+          "observations": [
+            "Chiikawa wears bib around neck, sweating with worried brow; fork at broccoli on white plate. Cut to side view with broccoli label."
+          ],
+          "design_notes_inference": []
+        },
+        {
+          "pre_image_timestamps_seconds": [
+            10.026674,
+            10.026674,
+            10.267581,
+            10.463235,
+            10.676833,
+            10.885812,
+            11.097694,
+            11.347309
+          ],
+          "observations": [
+            "Fork lifts toward mouth; forearm trembles with dotted marks, tears/sweat and brow creases; mouth held small."
+          ],
+          "limitations": "Duplicate initial timestamp is not evidence of progression.",
+          "design_notes_inference": []
+        },
+        {
+          "pre_image_timestamps_seconds": [
+            11.904724,
+            12.255926,
+            12.492213,
+            12.725874,
+            12.974461,
+            13.202597,
+            13.425631,
+            13.724588
+          ],
+          "observations": [
+            "Cut to outdoor background: green leaf at mouth with chewing, fork with broccoli remains before face, teary eyes and trembling arm.",
+            "Pan reveals Usagi at left wearing bib, smiling with clasped paws at chest."
+          ],
+          "design_notes_inference": []
+        }
+      ]
+    },
+    {
+      "episode": 5,
+      "source": "https://www.tiktok.com/@chiikawa.eps/video/7665154740417826078",
+      "windows": [
+        {
+          "pre_image_timestamps_seconds": [
+            5.011402,
+            5.011402,
+            5.081062,
+            5.461289,
+            5.739928,
+            5.968129,
+            6.239157,
+            6.548107
+          ],
+          "observations": [
+            "Chiikawa draws at box table, crayon in paw; paper contains blue curl, red face and yellow sun.",
+            "Hachiware holds red Charumera packet with both paws, lifting it from chest toward lower face."
+          ],
+          "excluded_evidence": "Initial paused-overlay repeats excluded from motion inference.",
+          "design_notes_inference": []
+        },
+        {
+          "pre_image_timestamps_seconds": [
+            13.997364,
+            14.136684,
+            14.426933,
+            14.753985,
+            15.126434,
+            15.367341,
+            15.614819,
+            15.85496
+          ],
+          "observations": [
+            "Side view: Hachiware presents packet toward Chiikawa, who is seated holding crayon.",
+            "Close view: Hachiware eyes closed, broad open-mouth smile, packet at chest."
+          ],
+          "design_notes_inference": []
+        }
+      ]
+    },
+    {
+      "episode": 6,
+      "source": "https://www.tiktok.com/@chiikawa.eps/video/7665208365328469278",
+      "windows": [
+        {
+          "pre_image_timestamps_seconds": [
+            5.013337,
+            5.114924,
+            5.474834,
+            5.712838,
+            5.962453,
+            6.194652,
+            6.423949,
+            6.754834
+          ],
+          "observations": [
+            "Usagi runs/hops along circular path on grass while Chiikawa watches in foreground. Orientation changes front to right profile to back to left profile to front.",
+            "Feet alternate with short body rises; ears sweep backward/straighten with orientation; dust puffs at rear."
+          ],
+          "design_notes_inference": []
+        },
+        {
+          "pre_image_timestamps_seconds": [
+            10.026674,
+            10.026674,
+            10.258874,
+            10.488171,
+            10.83647,
+            11.126719,
+            11.698511,
+            12.05842
+          ],
+          "observations": [
+            "Chiikawa and Hachiware side-by-side; Chiikawa closes eyes smiling and raises paw.",
+            "Cut to Usagi facing them, arms out, bouncing then still."
+          ],
+          "excluded_evidence": "Initial paused repeat excluded from motion inference.",
+          "design_notes_inference": []
+        },
+        {
+          "pre_image_timestamps_seconds": [
+            12.636363,
+            12.915003,
+            13.147202,
+            13.437452,
+            13.634822,
+            13.835094,
+            14.116636,
+            14.345933
+          ],
+          "observations": [
+            "Usagi holds front-facing pose while Chiikawa and Hachiware foreground heads rotate toward Usagi."
+          ],
+          "design_notes_inference": []
+        }
+      ]
+    },
+    {
+      "episode": 7,
+      "source": "https://www.tiktok.com/@chiikawa.eps/video/7665392516249685279",
+      "windows": [
+        {
+          "pre_image_timestamps_seconds": [
+            38.07625,
+            38.07625,
+            38.235887,
+            38.517429,
+            38.738019,
+            38.967316,
+            39.196613,
+            39.43752
+          ],
+          "observations": [
+            "Machine top in foreground: Chiikawa dips below edge, then raises orange-backed card from below to chest/mouth with both paws. Hachiware at side holds own card with sweat."
+          ],
+          "excluded_evidence": "Paused-overlay duplicates excluded from motion inference.",
+          "design_notes_inference": []
+        },
+        {
+          "pre_image_timestamps_seconds": [
+            33.922476,
+            33.922476,
+            34.003746,
+            34.281326,
+            34.592952,
+            34.922535,
+            35.222793,
+            35.622299
+          ],
+          "observations": [
+            "Rear Hachiware paw at machine round control lowers toward slot with slight body lean. Cut to front shows Hachiware already holding card."
+          ],
+          "excluded_evidence": "Paused-overlay duplicates excluded from motion inference.",
+          "design_notes_inference": []
+        },
+        {
+          "pre_image_timestamps_seconds": [
+            28.037966
+          ],
+          "observations": [
+            "Single close bottle-at-mouth frame; no new motion evidence."
+          ],
+          "design_notes_inference": []
+        }
+      ]
+    },
+    {
+      "episode": 25,
+      "source": "https://www.tiktok.com/@chiikawa.eps/video/7667658522963774751",
+      "windows": [
+        {
+          "pre_image_timestamps_seconds": [
+            36.254775,
+            36.522093,
+            36.753313,
+            36.964151,
+            37.20389,
+            37.42448,
+            37.694412,
+            37.935319,
+            38.163238,
+            38.385205
+          ],
+          "observations": [
+            "Chiikawa by alley door holds red round candy stick to mouth and shifts weight.",
+            "Cut to empty alley with trash can at right around final38.385205s pre-image reading."
+          ],
+          "design_notes_inference": []
+        },
+        {
+          "pre_image_timestamps_seconds": [
+            39.052127,
+            39.351631,
+            39.581687,
+            39.824191,
+            40.073805,
+            40.32342,
+            40.544009,
+            40.781009,
+            41.042536,
+            41.333488
+          ],
+          "observations": [
+            "Empty alley held, then Chiikawa peeks from left edge at final41.333488s pre-image reading."
+          ],
+          "design_notes_inference": []
+        },
+        {
+          "pre_image_timestamps_seconds": [
+            41.902376,
+            42.474168,
+            42.712172,
+            42.92329,
+            43.162059,
+            43.411674,
+            43.630102,
+            43.832535,
+            44.073442,
+            44.341346
+          ],
+          "observations": [
+            "Peeking sequence: Momonga appears right beside Chiikawa, sweating with large blue tail, then moves into left foreground.",
+            "Chiikawa tilts right with foot lifted; red candy stick on ground by sample preceded by43.162059s reading.",
+            "Chiikawa regains upright stance with both feet down by sample preceded by43.832535s reading."
+          ],
+          "design_notes_inference": []
+        },
+        {
+          "pre_image_timestamps_seconds": [
+            42.114697,
+            42.550584,
+            43.243412,
+            43.623994,
+            44.114516,
+            44.452831
+          ],
+          "observations": [
+            "Supplemental pass: Chiikawa seen from rear facing alley around42.114697s; Momonga in left foreground around42.550584s; later candy on ground and Chiikawa recovery."
+          ],
+          "design_notes_inference": []
+        }
+      ]
+    }
+  ]
+}

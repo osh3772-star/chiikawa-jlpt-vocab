@@ -1,0 +1,571 @@
+{
+  "schema_version": "1.1",
+  "design_version": "2.1-video-only",
+  "design_file": "character-design/six_character_action_design_v2.ko.json",
+  "purpose": "구현자용 근거게이트 계약. 코드가 아닌 데이터 명세. 모든 슬롯 비활성 기본값.",
+  "authoritative_precedence": [
+    "latest user: actual video-observed movement only",
+    "six_character_action_design_v2.ko.json",
+    "motion_activation_contract.ko.json",
+    "v1 remains archive, never activation input"
+  ],
+  "allowed_statuses": [
+    "OBSERVED_PARTIAL",
+    "REACQUIRE_TIME",
+    "STILL_REFERENCE_ONLY",
+    "HOLD_VIDEO_REQUIRED",
+    "VIDEO_SAMPLED_CONFIRMED",
+    "VIDEO_BODY_AUTHORED_LAYOUT_PROPOSED",
+    "VIDEO_SAMPLED_ACTION_FRAGMENT"
+  ],
+  "approval_definition": {
+    "motion_evidence": "원본URL/실제관찰구간/관찰순서 존재; 해당 후보의 미관찰 전환은 재생하지 않음. STILL/설정/줄거리는 불충족.",
+    "design": "캐릭터별 정확한 관찰조각·사용범위·안전/중단·사용자트리거가 검토되어 APPROVED_FRAGMENT로 명시돼야 함. OBSERVED_PARTIAL 자체는 승인 아님.",
+    "art": "실제로 존재하고 검수한 asset manifest가 방향·포즈·원작실루엣·부위·접점을 만족. 존재하지 않는 프레임ID/스프라이트경로 금지.",
+    "activation_rule": "enabled iff evidence_approval=APPROVED_VIDEO_FRAGMENT AND design_approval=APPROVED_FRAGMENT AND art_validation=PASS AND accessibility/safe-zone checks pass. 하나라도 없으면 enabled=false.",
+    "default": "현재 세 가지 승인과 유효아트가 결합된 항목 없음; 모든 enabled=false."
+  },
+  "entries": [
+    {
+      "character_id": "chiikawa",
+      "action_id": "chiikawa.video_turn",
+      "evidence_status": "OBSERVED_PARTIAL",
+      "observation_ref": {
+        "ledger": "vocab-motion-research/gap_review.json",
+        "episode": 2,
+        "window_index": 0,
+        "record_id": null,
+        "observation_indices": [
+          0,
+          1
+        ],
+        "support_window_indices": [],
+        "url": "https://www.tiktok.com/@chiikawa.eps/video/7665040641147047198",
+        "time_anchor_kind": "pre_image_player_reading"
+      },
+      "design_ref": "characters[chiikawa].candidate_actions[chiikawa.video_turn]",
+      "evidence_approval": "PENDING_FRAGMENT_REVIEW",
+      "design_approval": "CANDIDATE_ONLY",
+      "art_validation": "NOT_REVIEWED",
+      "safety_checks": {
+        "status": "NOT_REVIEWED",
+        "review_id": null
+      },
+      "accessibility_checks": {
+        "status": "NOT_REVIEWED",
+        "review_id": null
+      },
+      "layout_approval": "NOT_APPLICABLE_YET",
+      "asset_manifest": null,
+      "enabled": false,
+      "blocking_gaps": "세부 각도·눈동자 선행·포즈간 정확한 프레임수 미확인."
+    },
+    {
+      "character_id": "chiikawa",
+      "action_id": "chiikawa.video_greeting",
+      "evidence_status": "OBSERVED_PARTIAL",
+      "observation_ref": {
+        "ledger": "vocab-motion-research/gap_review.json",
+        "episode": 6,
+        "window_index": 1,
+        "record_id": null,
+        "observation_indices": [
+          0
+        ],
+        "support_window_indices": [],
+        "url": "https://www.tiktok.com/@chiikawa.eps/video/7665208365328469278",
+        "time_anchor_kind": "pre_image_player_reading"
+      },
+      "design_ref": "characters[chiikawa].candidate_actions[chiikawa.video_greeting]",
+      "evidence_approval": "PENDING_FRAGMENT_REVIEW",
+      "design_approval": "CANDIDATE_ONLY",
+      "art_validation": "NOT_REVIEWED",
+      "safety_checks": {
+        "status": "NOT_REVIEWED",
+        "review_id": null
+      },
+      "accessibility_checks": {
+        "status": "NOT_REVIEWED",
+        "review_id": null
+      },
+      "layout_approval": "NOT_APPLICABLE_YET",
+      "asset_manifest": null,
+      "enabled": false,
+      "blocking_gaps": "초기 paused 중복 제외. 컷 이후 팔 내림 미확인."
+    },
+    {
+      "character_id": "chiikawa",
+      "action_id": "chiikawa.video_balance",
+      "evidence_status": "OBSERVED_PARTIAL",
+      "observation_ref": {
+        "ledger": "vocab-motion-research/gap_review.json",
+        "episode": 25,
+        "window_index": 2,
+        "record_id": null,
+        "observation_indices": [
+          1,
+          2
+        ],
+        "support_window_indices": [],
+        "url": "https://www.tiktok.com/@chiikawa.eps/video/7667658522963774751",
+        "time_anchor_kind": "pre_image_player_reading"
+      },
+      "design_ref": "characters[chiikawa].candidate_actions[chiikawa.video_balance]",
+      "evidence_approval": "PENDING_FRAGMENT_REVIEW",
+      "design_approval": "CANDIDATE_ONLY",
+      "art_validation": "NOT_REVIEWED",
+      "safety_checks": {
+        "status": "NOT_REVIEWED",
+        "review_id": null
+      },
+      "accessibility_checks": {
+        "status": "NOT_REVIEWED",
+        "review_id": null
+      },
+      "layout_approval": "NOT_APPLICABLE_YET",
+      "asset_manifest": null,
+      "enabled": false,
+      "blocking_gaps": "정확한 충돌/접촉·미끄러짐 원인·도약 낙하는 미확인."
+    },
+    {
+      "character_id": "hachiware",
+      "action_id": "hachiware.video_packet_lift",
+      "evidence_status": "OBSERVED_PARTIAL",
+      "observation_ref": {
+        "ledger": "vocab-motion-research/gap_review.json",
+        "episode": 5,
+        "window_index": 0,
+        "record_id": null,
+        "observation_indices": [
+          1
+        ],
+        "support_window_indices": [],
+        "url": "https://www.tiktok.com/@chiikawa.eps/video/7665154740417826078",
+        "time_anchor_kind": "pre_image_player_reading"
+      },
+      "design_ref": "characters[hachiware].candidate_actions[hachiware.video_packet_lift]",
+      "evidence_approval": "PENDING_FRAGMENT_REVIEW",
+      "design_approval": "CANDIDATE_ONLY",
+      "art_validation": "NOT_REVIEWED",
+      "safety_checks": {
+        "status": "NOT_REVIEWED",
+        "review_id": null
+      },
+      "accessibility_checks": {
+        "status": "NOT_REVIEWED",
+        "review_id": null
+      },
+      "layout_approval": "NOT_APPLICABLE_YET",
+      "asset_manifest": null,
+      "enabled": false,
+      "blocking_gaps": "초기 paused 중복 제외. 내려놓기/물건 펼치기 연결 미확인."
+    },
+    {
+      "character_id": "hachiware",
+      "action_id": "hachiware.video_card_reaction",
+      "evidence_status": "REACQUIRE_TIME",
+      "observation_ref": {
+        "ledger": "vocab-motion-research/episode_observations.json",
+        "episode": 7,
+        "window_index": null,
+        "record_id": null,
+        "observation_indices": [
+          3
+        ],
+        "support_window_indices": [],
+        "url": "https://www.tiktok.com/@chiikawa.eps/video/7665392516249685279",
+        "time_anchor_kind": "unrecorded"
+      },
+      "design_ref": "characters[hachiware].candidate_actions[hachiware.video_card_reaction]",
+      "evidence_approval": "PENDING_FRAGMENT_REVIEW",
+      "design_approval": "CANDIDATE_ONLY",
+      "art_validation": "NOT_REVIEWED",
+      "safety_checks": {
+        "status": "NOT_REVIEWED",
+        "review_id": null
+      },
+      "accessibility_checks": {
+        "status": "NOT_REVIEWED",
+        "review_id": null
+      },
+      "layout_approval": "NOT_APPLICABLE_YET",
+      "asset_manifest": null,
+      "enabled": false,
+      "blocking_gaps": "출처는 있지만 이 시퀀스 구간 시각이 없음. EP7의 다른33~39초 보완 구간과 혼동 금지."
+    },
+    {
+      "character_id": "hachiware",
+      "action_id": "hachiware.video_outward_paw",
+      "evidence_status": "REACQUIRE_TIME",
+      "observation_ref": {
+        "ledger": "vocab-motion-research/episode_observations.json",
+        "episode": 8,
+        "window_index": null,
+        "record_id": null,
+        "observation_indices": [
+          1
+        ],
+        "support_window_indices": [],
+        "url": "https://www.tiktok.com/@chiikawa.eps/video/7665415467812556062",
+        "time_anchor_kind": "unrecorded"
+      },
+      "design_ref": "characters[hachiware].candidate_actions[hachiware.video_outward_paw]",
+      "evidence_approval": "PENDING_FRAGMENT_REVIEW",
+      "design_approval": "CANDIDATE_ONLY",
+      "art_validation": "NOT_REVIEWED",
+      "safety_checks": {
+        "status": "NOT_REVIEWED",
+        "review_id": null
+      },
+      "accessibility_checks": {
+        "status": "NOT_REVIEWED",
+        "review_id": null
+      },
+      "layout_approval": "NOT_APPLICABLE_YET",
+      "asset_manifest": null,
+      "enabled": false,
+      "blocking_gaps": "구간 시각·손 되돌림·입과 꼬리의 정확한 선후가 없음."
+    },
+    {
+      "character_id": "usagi",
+      "action_id": "usagi.video_circle",
+      "evidence_status": "OBSERVED_PARTIAL",
+      "observation_ref": {
+        "ledger": "vocab-motion-research/gap_review.json",
+        "episode": 6,
+        "window_index": 0,
+        "record_id": null,
+        "observation_indices": [
+          0,
+          1
+        ],
+        "support_window_indices": [],
+        "url": "https://www.tiktok.com/@chiikawa.eps/video/7665208365328469278",
+        "time_anchor_kind": "pre_image_player_reading"
+      },
+      "design_ref": "characters[usagi].candidate_actions[usagi.video_circle]",
+      "evidence_approval": "PENDING_FRAGMENT_REVIEW",
+      "design_approval": "CANDIDATE_ONLY",
+      "art_validation": "NOT_REVIEWED",
+      "safety_checks": {
+        "status": "NOT_REVIEWED",
+        "review_id": null
+      },
+      "accessibility_checks": {
+        "status": "NOT_REVIEWED",
+        "review_id": null
+      },
+      "layout_approval": "NOT_APPLICABLE_YET",
+      "asset_manifest": null,
+      "enabled": false,
+      "blocking_gaps": "시작/감속/루프 연결 미확인. 공중제비는 관찰 안 됨."
+    },
+    {
+      "character_id": "usagi",
+      "action_id": "usagi.video_air_contact",
+      "evidence_status": "OBSERVED_PARTIAL",
+      "observation_ref": {
+        "ledger": "vocab-motion-research/gap_review.json",
+        "episode": 1,
+        "window_index": 0,
+        "record_id": null,
+        "observation_indices": [
+          0,
+          1,
+          2
+        ],
+        "support_window_indices": [],
+        "url": "https://www.tiktok.com/@chiikawa.eps/video/7664889241553440031",
+        "time_anchor_kind": "pre_image_player_reading"
+      },
+      "design_ref": "characters[usagi].candidate_actions[usagi.video_air_contact]",
+      "evidence_approval": "PENDING_FRAGMENT_REVIEW",
+      "design_approval": "CANDIDATE_ONLY",
+      "art_validation": "NOT_REVIEWED",
+      "safety_checks": {
+        "status": "NOT_REVIEWED",
+        "review_id": null
+      },
+      "accessibility_checks": {
+        "status": "NOT_REVIEWED",
+        "review_id": null
+      },
+      "layout_approval": "NOT_APPLICABLE_YET",
+      "asset_manifest": null,
+      "enabled": false,
+      "blocking_gaps": "이륙 전체/최종회복 공백. 연속표본 안에서도 컷 여부/지지물 관계를 재확인해야 함."
+    },
+    {
+      "character_id": "usagi",
+      "action_id": "usagi.video_bounce_still",
+      "evidence_status": "OBSERVED_PARTIAL",
+      "observation_ref": {
+        "ledger": "vocab-motion-research/gap_review.json",
+        "episode": 6,
+        "window_index": 1,
+        "record_id": null,
+        "observation_indices": [
+          1
+        ],
+        "support_window_indices": [],
+        "url": "https://www.tiktok.com/@chiikawa.eps/video/7665208365328469278",
+        "time_anchor_kind": "pre_image_player_reading"
+      },
+      "design_ref": "characters[usagi].candidate_actions[usagi.video_bounce_still]",
+      "evidence_approval": "PENDING_FRAGMENT_REVIEW",
+      "design_approval": "CANDIDATE_ONLY",
+      "art_validation": "NOT_REVIEWED",
+      "safety_checks": {
+        "status": "NOT_REVIEWED",
+        "review_id": null
+      },
+      "accessibility_checks": {
+        "status": "NOT_REVIEWED",
+        "review_id": null
+      },
+      "layout_approval": "NOT_APPLICABLE_YET",
+      "asset_manifest": null,
+      "enabled": false,
+      "blocking_gaps": "표본 창에 다른 캐릭터 샷도 포함. 우사기만의 정확 시작/끝 구간 재확인 필요."
+    },
+    {
+      "character_id": "momonga",
+      "action_id": "momonga.video_appear_move",
+      "evidence_status": "OBSERVED_PARTIAL",
+      "observation_ref": {
+        "ledger": "vocab-motion-research/gap_review.json",
+        "episode": 25,
+        "window_index": 2,
+        "record_id": null,
+        "observation_indices": [
+          0
+        ],
+        "support_window_indices": [],
+        "url": "https://www.tiktok.com/@chiikawa.eps/video/7667658522963774751",
+        "time_anchor_kind": "pre_image_player_reading"
+      },
+      "design_ref": "characters[momonga].candidate_actions[momonga.video_appear_move]",
+      "evidence_approval": "PENDING_FRAGMENT_REVIEW",
+      "design_approval": "CANDIDATE_ONLY",
+      "art_validation": "NOT_REVIEWED",
+      "safety_checks": {
+        "status": "NOT_REVIEWED",
+        "review_id": null
+      },
+      "accessibility_checks": {
+        "status": "NOT_REVIEWED",
+        "review_id": null
+      },
+      "layout_approval": "NOT_APPLICABLE_YET",
+      "asset_manifest": null,
+      "enabled": false,
+      "blocking_gaps": "보행 방식·정확접촉·완전 진입/퇴장 연결 미확인."
+    },
+    {
+      "character_id": "momonga",
+      "action_id": "momonga.video_airborne_spread",
+      "evidence_status": "VIDEO_SAMPLED_CONFIRMED",
+      "observation_ref": {
+        "ledger": "vocab-motion-research/missing_character_video_observations.json",
+        "episode": 27,
+        "window_index": 5,
+        "record_id": "MOMONGA_EP27_AIRBORNE_20261024",
+        "observation_indices": [
+          0,
+          1,
+          2
+        ],
+        "support_window_indices": [],
+        "url": "https://www.tiktok.com/@jherby.y/video/7498263134847667474",
+        "time_anchor_kind": "pre_image_player_reading"
+      },
+      "design_ref": "characters[momonga].candidate_actions[momonga.video_airborne_spread]",
+      "evidence_approval": "APPROVED_VIDEO_FRAGMENT",
+      "design_approval": "APPROVED_REFERENCE_POSE_ONLY",
+      "art_validation": "PASS",
+      "safety_checks": {
+        "status": "NOT_REVIEWED",
+        "review_id": null
+      },
+      "accessibility_checks": {
+        "status": "NOT_REVIEWED",
+        "review_id": null
+      },
+      "layout_approval": "NOT_APPLICABLE_YET",
+      "asset_manifest": "character-design/momonga_preview_art_manifest.ko.json",
+      "enabled": false,
+      "blocking_gaps": "나무접촉 해제→공중 연결, 실제 세계좌표 이동/선회, 착지, 물리속도/동작길이. 편집크롭을 캐릭터 translation으로 사용할 수 없음.",
+      "art_scope": "LIMITED_PREVIEW_BODY_ONLY",
+      "approval_scope": "관찰공중펼침1포즈를 mapping의body참조로만 사용; 독립 원작비행 playback 승인아님"
+    },
+    {
+      "character_id": "rakko",
+      "action_id": "rakko.video_cup_eye_fragment",
+      "evidence_status": "VIDEO_SAMPLED_ACTION_FRAGMENT",
+      "observation_ref": {
+        "ledger": "vocab-motion-research/missing_character_video_observations.json",
+        "episode": 179,
+        "window_index": 4,
+        "record_id": "RAKKO_EP179_CUP_CREAM_20261024",
+        "observation_indices": [
+          0
+        ],
+        "support_window_indices": [
+          5
+        ],
+        "url": "https://www.tiktok.com/@mikachiii0.5/video/7384926690696301840",
+        "time_anchor_kind": "pre_image_player_reading"
+      },
+      "design_ref": "characters[rakko].candidate_actions[rakko.video_cup_eye_fragment]",
+      "evidence_approval": "PENDING_FRAGMENT_REVIEW",
+      "design_approval": "CANDIDATE_ONLY",
+      "art_validation": "NOT_REVIEWED",
+      "safety_checks": {
+        "status": "NOT_REVIEWED",
+        "review_id": null
+      },
+      "accessibility_checks": {
+        "status": "NOT_REVIEWED",
+        "review_id": null
+      },
+      "layout_approval": "NOT_APPLICABLE_YET",
+      "asset_manifest": null,
+      "enabled": false,
+      "blocking_gaps": "컵들기시작/삼킴/내리는연결/놓기 미확인. 한차례눈감음만 재현할 때 미관찰전후를 필수로 요구할 필요 없음."
+    },
+    {
+      "character_id": "shisa",
+      "action_id": "shisa.video_pour_fragment",
+      "evidence_status": "VIDEO_SAMPLED_ACTION_FRAGMENT",
+      "observation_ref": {
+        "ledger": "vocab-motion-research/missing_character_video_observations.json",
+        "episode": 264,
+        "window_index": 1,
+        "record_id": "SHISA_EP264_POUR_20261024",
+        "observation_indices": [
+          1,
+          2
+        ],
+        "support_window_indices": [
+          2,
+          3
+        ],
+        "url": "https://www.tiktok.com/@anzu_anzu04/video/7535691427284520210",
+        "time_anchor_kind": "pre_image_player_reading"
+      },
+      "design_ref": "characters[shisa].candidate_actions[shisa.video_pour_fragment]",
+      "evidence_approval": "PENDING_FRAGMENT_REVIEW",
+      "design_approval": "CANDIDATE_ONLY",
+      "art_validation": "NOT_REVIEWED",
+      "safety_checks": {
+        "status": "NOT_REVIEWED",
+        "review_id": null
+      },
+      "accessibility_checks": {
+        "status": "NOT_REVIEWED",
+        "review_id": null
+      },
+      "layout_approval": "NOT_APPLICABLE_YET",
+      "asset_manifest": null,
+      "enabled": false,
+      "blocking_gaps": "직립→기울임연결/붓기시작/원위치/병놓기 없음. 실제타이밍 미측정. 현재 관찰된 중간줄기만 재현하려면 이 전후를 새로 찾느라 무기한 막을 필요는 없음."
+    }
+  ],
+  "non_actions": [
+    {
+      "enabled": false,
+      "kind": "still-reference-only-not-motion"
+    }
+  ],
+  "holds": [
+    {
+      "enabled": false,
+      "reason": "Unverified scope remains disabled"
+    },
+    {
+      "enabled": false,
+      "reason": "Unverified scope remains disabled"
+    },
+    {
+      "enabled": false,
+      "reason": "Unverified scope remains disabled"
+    },
+    {
+      "enabled": false,
+      "reason": "Unverified scope remains disabled"
+    },
+    {
+      "enabled": false,
+      "reason": "Unverified scope remains disabled"
+    },
+    {
+      "enabled": false,
+      "reason": "Unverified scope remains disabled"
+    },
+    {
+      "enabled": false,
+      "reason": "Unverified scope remains disabled"
+    },
+    {
+      "enabled": false,
+      "reason": "Unverified scope remains disabled"
+    },
+    {
+      "enabled": false,
+      "reason": "Unverified scope remains disabled"
+    }
+  ],
+  "global_runtime_contract": [
+    "학습 입력/저장 먼저, known/unknown은 정오답 아님. 동작을 답판정/벌에 연결하지 않음.",
+    "승인되지 않은 예고/회복/반복/방향 미러/역재생/소품교체 금지. 관찰된 몸을 유지하는 화면경로는 별도 UX설계 승인으로 허용 가능. 근거없는 틈은 generic transform으로 채우지 않음.",
+    "off/reduced-motion/pointercancel/blur/resize 안전성을 registry 및 실행 경계에서 검사.",
+    "구간 누락/자산 부족이면 슬롯off. 기존 정면 베타를 새로운 등집기/비행의 유효아트로 간주하지 않음.",
+    "player readings는 실제 프레임타임이 아니며 코드의 keyframe time으로 그대로 변환하지 않음."
+  ],
+  "mapping_entries": [
+    {
+      "mapping_id": "momonga.web_airborne_pass",
+      "character_id": "momonga",
+      "kind": "AUTHORED_WEB_PLACEMENT",
+      "body_action_ref": "momonga.video_airborne_spread",
+      "body_observation_ref": {
+        "ledger": "vocab-motion-research/missing_character_video_observations.json",
+        "record_id": "MOMONGA_EP27_AIRBORNE_20261024",
+        "window_index": 5,
+        "url": "https://www.tiktok.com/@jherby.y/video/7498263134847667474"
+      },
+      "layout_provenance": "웹UX 작성안, 원작 경로/속도 측정 아님",
+      "design_ref": "layout_mappings[momonga.web_airborne_pass]",
+      "layout_approval": "APPROVED_AUTHORED_LAYOUT",
+      "design_approval": "APPROVED_FRAGMENT",
+      "art_validation": "PASS",
+      "safety_checks": {
+        "status": "NOT_REVIEWED",
+        "review_id": null
+      },
+      "accessibility_checks": {
+        "status": "NOT_REVIEWED",
+        "review_id": null
+      },
+      "asset_manifest": "character-design/momonga_preview_art_manifest.ko.json",
+      "enabled": false,
+      "body_constraints": [
+        "동일한 관찰방향/막/팔다리/얼굴/꼬리 자세 고정",
+        "화면위치만 변화; 몸회전/미러/펄럭임/부위후행/이륙/착지 금지"
+      ],
+      "activation_rule": "body evidence scope verified + limited mapping design approved + layout_approval APPROVED_AUTHORED_LAYOUT + actual matching art PASS + safety/accessibility PASS. 몸동작의 독립 playback까지 활성화될 필요는 없지만 동일 근거와 아트 범위가 충족되어야 함.",
+      "art_scope": "LIMITED_PREVIEW_BODY_ONLY",
+      "approval_scope": "LIMITED_PREVIEW_TESTING",
+      "review_id": "ART_MOMONGA_EP27_PREVIEW_20261024_R3",
+      "preview_testing_authorized": true,
+      "body_evidence_approval": "APPROVED_VIDEO_POSE_SCOPE",
+      "remaining_gate": "안전/접근성 runtime QA 미완료. project maintainer가 제한테스트를 승인했으므로 테스트build에서 검증가능; production 활성화는 QA결과후."
+    }
+  ],
+  "counts": {
+    "video_fragment_candidates": 13,
+    "authored_layout_proposals": 1,
+    "active_motion": 0,
+    "active_mappings": 0
+  }
+}

@@ -1,0 +1,109 @@
+{
+  "title": "모몽가 관찰 BODY + 작성 경로 제한 미리보기 계약",
+  "version": "preview-2-reviewed-art",
+  "scope": "개인캐릭터 단계의 제한 미리보기만. 원작 완전비행/최종아트/실제 이륙착지 구현 완료가 아님. 온오프 UI 구현/QA를 먼저 진행.",
+  "mapping_id": "momonga.web_airborne_pass",
+  "body_action_ref": "momonga.video_airborne_spread",
+  "observed_body_ref": {
+    "ledger": "vocab-motion-research/missing_character_video_observations.json",
+    "record_id": "MOMONGA_EP27_AIRBORNE_20261024",
+    "window_index": 5,
+    "url": "https://www.tiktok.com/@jherby.y/video/7498263134847667474"
+  },
+  "art_review": {
+    "reviewer": "project-art-review",
+    "review_method": "사용자 원본과 수정 생성물을 실제 픽셀로 직접 대조. 메타데이터 별도 확인.",
+    "source_reference": "non-public still reference (not bundled)",
+    "candidate_path": "chiikawa-pets/limited-previews/assets/momonga-ep27-derived-body-r3.png",
+    "sha256": "2b6068c38fdab9f0bc6ca54366729df0a2b25ab93524a68a12616b32cefbf580",
+    "mode": "RGBA",
+    "dimensions": [
+      1627,
+      967
+    ],
+    "alpha_nonzero_bbox": [
+      114,
+      41,
+      1540,
+      967
+    ],
+    "provenance": "imagegen-derived reference cutout, not pixel-identical original; reviewed for limited body-pose preview only.",
+    "result": "PASS_LIMITED_PREVIEW",
+    "review_id": "ART_MOMONGA_EP27_PREVIEW_20261024_R3",
+    "accepted": [
+      "넓게 펼친 흰 막과 사지의 기본 위치",
+      "대각 몸방향과 열린 입/큰눈",
+      "이전 고리/가느다란 줄무늬꼬리 결함 제거; 넓은 옅은 푸른 털덩어리와 외곽짧은털선 확인"
+    ],
+    "known_differences": [
+      "선굵기/음영이 원본과 동일하지 않음. 원작 픽셀컷아웃이라고 소개하지 말 것."
+    ],
+    "not_approved": [
+      "최종 원본충실 아트",
+      "새 방향/접힌막/비행루프 프레임",
+      "원작 이륙·착지·꼬리후행·날갯짓"
+    ]
+  },
+  "review_gate": {
+    "root_preview_decision": "APPROVED_FOR_PREVIEW_TESTING",
+    "root_authorization": "Approved for limited preview testing only; not full original-animation playback.",
+    "design": "제한 BODY고정+작성경로 설계는 project maintainer가 preview테스트 범위로 승인. 새 움직임/production전체비행은 승인하지 않음. ",
+    "production_art": "NOT_CLAIMED_ORIGINAL_IDENTICAL",
+    "preview_testing_authorized": true,
+    "safety_checks": {
+      "status": "NOT_REVIEWED",
+      "review_id": null
+    },
+    "accessibility_checks": {
+      "status": "NOT_REVIEWED",
+      "review_id": null
+    }
+  },
+  "implementation_contract": {
+    "entry": "명시적인 미리보기 버튼/캐릭터 호출1회. 매단어 자동실행 없음. Momonga visible=false면 호출하지 않음.",
+    "body": "후보이미지 한 장을 그대로 사용. 첫 배치의 등비크기 설정만 허용; 이동 중 rotate/scale/skew/mirror/부위변형 없음.",
+    "initial_placement": "이미 공중인 자세를 비어 있는 안전영역 A에 표시. 지상에서 뜨는 예고 없음.",
+    "path": "A→M→B는 원작이 아니라 웹좌표 작성안. M은 선택적 경유점. 전체 이미지box가 카드/텍스트/버튼/포커스링/시스템제스처와 겹치지 않는 영역에서만.",
+    "simplest_stage": "현재 레이아웃 여백으로 안전경로가 안 나오면 카드 위/옆의 전용 비어 있는 preview rail을 문서흐름으로 확보하는 안. 별도 무대를 놓았다는 것을 UI로 명확히 하고 실제 카드 위를 횡단하지 않음.",
+    "proposed_timing": "초기 비교값: 이동 약1.8초, 1회만. UX 작성값이며 원작속도/시간 측정값 아님. 안전/가독성 QA에서 조정 가능.",
+    "end": "B에서 동일한 펼침자세로 잠깐 정지하거나 바로 UI숨김. 접기/착지/원래자세로 morph 없음.",
+    "capacity": "강조 actor1명. dock의 같은 Momonga와 동시에 독립 복제actor가 보이지 않게 하나의표현을 전환/이동.",
+    "hide_cancel": "hide/all-off/새실행/blur/resize로 안전통로무효시 경로취소+소품/overlay 제거. 착지나 물리드롭 실행없음.",
+    "pause": "autoMotionPaused면 경로실행하지 않고 동일정지 미리보기만. 재개해도 밀린경로자동실행 없음.",
+    "reduced_motion": "translation 없음. 같은관찰자세를 안전dock에 정지표시하거나 생략.",
+    "failure": "유효경로/이미지 로드 실패면 미리보기만 비활성 설명. 학습기능/visibility체크값 변경없음."
+  },
+  "acceptance_tests": [
+    {
+      "id": "MMP01",
+      "test": "이미지해시/비율/방향",
+      "pass": "검토한후보를 쓰고 경로 내내 내부형태·방향·비율이 고정됨."
+    },
+    {
+      "id": "MMP02",
+      "test": "전체경로 안전영역",
+      "pass": "이동중 모든중간점의 이미지box와 학습안전영역 교차0. 경로없으면 실행0."
+    },
+    {
+      "id": "MMP03",
+      "test": "중복/숨김/새로고침",
+      "pass": "한 인스턴스만, hide중단 후 부활/고아overlay없음. 새로고침에 자동비행 재생없음."
+    },
+    {
+      "id": "MMP04",
+      "test": "pause/reduced-motion",
+      "pass": "정지미리보기만. 설정을 바꿔 visibility 선호가 바뀌지 않음."
+    },
+    {
+      "id": "MMP05",
+      "test": "뜻보기/안다/모른다·긴단어·모바일",
+      "pass": "버튼/카드읽기와 클릭 방해0. 학습스토리지 동일."
+    },
+    {
+      "id": "MMP06",
+      "test": "주장범위",
+      "pass": "실제 몸자세+작성웹경로의 제한미리보기로 기록. 원작궤적/최종아트/완전비행구현 주장없음."
+    }
+  ],
+  "next_scope": "이 preview가 QA되어도 v1의 다른 창작행동은 자동승인되지 않음. 관계/짝은 개인동작+UI QA 후 별도연구·설계·구현; 배경선택기는 그 이후."
+}

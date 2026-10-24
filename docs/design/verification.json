@@ -1,0 +1,24 @@
+{
+  "baselineCommit": "8801a392d64b3aa1c0b766c0e438752a6da0ebf8",
+  "publicMetadataSanitized": true,
+  "originalActionsEnabled": 0,
+  "videoCandidates": 13,
+  "nodeTests": 49,
+  "pythonTests": 29,
+  "cleanBaselineReplay": {
+    "build": {
+      "exitCode": 0
+    },
+    "preview-build": {
+      "exitCode": 0
+    },
+    "node": {
+      "exitCode": 0
+    },
+    "python": {
+      "exitCode": 0
+    }
+  },
+  "builtAppSha256": "2982b9d156aced77d405173a6f072f8095f37a61ecbf103133341c9bbfeaeb30",
+  "scope": "No published index or vocabulary data modification; no new background implementation."
+}
