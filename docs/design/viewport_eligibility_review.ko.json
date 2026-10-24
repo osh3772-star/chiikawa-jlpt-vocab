@@ -1,0 +1,54 @@
+{
+  "version": "v6-viewport-eligibility-followup",
+  "baseCheckpointHtmlSha256": "10d7c7a30921799e98a95864052b7201f7de8dc7f644b91cd6af488bec5bf142",
+  "engineSha256": "791bc5feb275b197d52901b5c4f8c817b18f9d5ca95de0f22f070457618208d4",
+  "htmlSha256": "f73510a8bac22aed87c1c0e6b65151729d38b47d3d9e26cc0f9657f65ce86d87",
+  "automatedTests": {
+    "node": 223,
+    "python": 50,
+    "result": "PASS"
+  },
+  "newFocusedRegressionTests": 6,
+  "behaviorWeightsChanged": false,
+  "waitDurationsChanged": false,
+  "selectionPreferencesChanged": false,
+  "originalFullMotionActionsActivated": 0,
+  "eligibilityDefinition": "Positive body rect intersection with viewport and dock; partially painted actors remain eligible, fully clipped actors do not",
+  "mockEngineMeasurement": {
+    "seed": 437,
+    "viewportCssWidth": 500,
+    "seconds": 120,
+    "offscreenNonIdleStartsBefore": {
+      "shisa": 11,
+      "momonga": 8,
+      "rakko": 14
+    },
+    "offscreenNonIdleStartsAfter": {
+      "shisa": 0,
+      "momonga": 0,
+      "rakko": 0
+    },
+    "desktopSolo6x1hAndGroup3x1h": "unchanged from baseline",
+    "selectorTrials": 1200000,
+    "sourceMatchesEmbeddedHtml": true
+  },
+  "actualBrowser": {
+    "approxViewportCssWidth": 485,
+    "result": "PASS",
+    "checks": [
+      "Six selected preferences preserved, exactly one actor per character",
+      "Horizontal dock scroll switches front/back visibility",
+      "Paused scrolling wakes accurate geometry",
+      "All six hidden when their dock is outside the visible page, preferences retained",
+      "Return-to-selected-slot visibility restored",
+      "Narrow drag/Escape leaves no stuck state",
+      "Original window size restored"
+    ]
+  },
+  "notClaimed": [
+    "Real browser action-frequency measurement",
+    "Real browser RAF count",
+    "RAM or battery savings",
+    "New cooldown/repetition policy"
+  ]
+}

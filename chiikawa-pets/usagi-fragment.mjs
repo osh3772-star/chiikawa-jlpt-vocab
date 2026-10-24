@@ -76,7 +76,7 @@ export function createUsagiFragmentController(options) {
       if(!onBegin()){cancel('unavailable');return false;}acquired=true;active=true;
       render(laterStill?2:0);image.hidden=false;
       if(laterStill||context.paused||context.reduced){mode='static';status.textContent=laterStill?
-        '별도 컷 C 정지 · 중간 착지/팔 내림은 관찰되지 않음':'A 정지 자세만 · 동작 재생 없음';return true;}
+        '별도 컷 C 정지 · 이 미리보기에는 중간 착지/팔 내림을 포함하지 않음':'A 정지 자세만 · 동작 재생 없음';return true;}
       mode='sequence';status.textContent='A→B 관찰 조각 · 제작 UI 리듬 · 원작 속도/완전한 점프 아님';
       const tick=now=>{
         if(token!==generation||mode!=='sequence')return;handle=null;

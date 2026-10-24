@@ -1,0 +1,34 @@
+{
+  "version": "v6-observed-fragments",
+  "baseline": "v5-hotfix source checkpoint",
+  "originalFullMotionActionsActivated": 0,
+  "scope": [
+    "Separate Usagi sampled D→E→C lowering fragment; no A/B automatic chaining or B→D contact interpolation",
+    "Shisa Open→Closed fixed UI receiver adaptation; no diagonal pose or animated stream",
+    "Rakko open→closed upperbody expression; cup/cream/scarf remain fixed, no mirror or cup lowering"
+  ],
+  "timing": "650ms authored UI rhythm, not source playback timing",
+  "automatedTests": {
+    "node": 217,
+    "python": 50,
+    "result": "PASS"
+  },
+  "browserPassed": [
+    "Rakko open/closed directly captured; eyes change legibly, head/cup/cream/scarf/window stable",
+    "Shisa closed integrated receiver and mandatory original Kurimanju context caption remain visible",
+    "Usagi separate lowering trigger, paused D and terminal C full ears-to-feet crop and stable placement",
+    "Paused D hide cancels immediately, disables controls, and show restores base actor",
+    "Rakko study Next Enter cancels and restores base",
+    "Rapid Usagi→Rakko→Escape does not resurrect prior preview",
+    "Disclosure close restores all six selected base actors; existing study state retained",
+    "No app-origin console error observed; extension errors excluded"
+  ],
+  "notDirectlyVerified": [
+    "Short live Usagi E frame not separately captured; earlier individual art registration and automated playback order are separate evidence",
+    "OS reduced-motion setting on real device",
+    "Actual mobile/narrow v6 viewport",
+    "Natural continuous motion or exact ground contacts"
+  ],
+  "sourceArt": "Reviewed derived PNG bytes preserved, hash/size/registration checked; no raster edits during implementation",
+  "deployment": "docs/index.html unchanged; hosted vocabulary app content is not updated by this source checkpoint. Hosting may redeploy the unchanged docs automatically."
+}

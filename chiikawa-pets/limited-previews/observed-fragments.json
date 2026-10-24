@@ -1,0 +1,130 @@
+{
+  "usagi-lowering": {
+    "fragmentId": "usagi-lowering",
+    "testingAuthorized": true,
+    "enabledByDefault": false,
+    "productionEnabled": false,
+    "motionActivation": false,
+    "timingOrigin": "AUTHORED_UI_POSE_RHYTHM",
+    "holdMs": 650,
+    "loop": false,
+    "interpolation": false,
+    "windowSize": [
+      200,
+      160
+    ],
+    "sourceUrl": "https://www.tiktok.com/@chiikawa562/video/7448691479851175214",
+    "limitations": "D→E→C sampled arm lowering only. B→D descent/contact remains unverified; no automatic chaining from A→B or landing claim.",
+    "frames": [
+      {
+        "poseId": "D",
+        "assetPath": "chiikawa-pets/limited-previews/assets/usagi-ep6/usagi-ep6-D-v1.png",
+        "assetSha256": "f6e36cac0027b4e0c296a62293924666f7f87235c5f766207c91901748bfee10",
+        "assetSize": [
+          1254,
+          1254
+        ],
+        "sourceRect": [
+          296,
+          148,
+          962,
+          1106
+        ],
+        "scale": 0.122089796781269,
+        "left": 59.344097671837424,
+        "top": 26.55696202531645
+      },
+      {
+        "poseId": "E",
+        "assetPath": "chiikawa-pets/limited-previews/assets/usagi-ep6/usagi-ep6-E-v1.png",
+        "assetSha256": "dfdded3ed873f23026ae5aba0c6e373fd788518c00c4317e07ccf1313729ed35",
+        "assetSize": [
+          1246,
+          1262
+        ],
+        "sourceRect": [
+          299,
+          173,
+          944,
+          1116
+        ],
+        "scale": 0.12886424956709666,
+        "left": 58.441279514611324,
+        "top": 22.0
+      },
+      {
+        "poseId": "C",
+        "assetPath": "chiikawa-pets/limited-previews/assets/usagi-ep6/usagi-ep6-C-v1.png",
+        "assetSha256": "34bdc56336774d67d68717c3fc89efd8555f9f2bd0164061589120ac7445ae63",
+        "assetSize": [
+          1254,
+          1254
+        ],
+        "sourceRect": [
+          341,
+          213,
+          910,
+          1052
+        ],
+        "scale": 0.14302741358760432,
+        "left": 59.30870083432657,
+        "top": 21.999999999999986
+      }
+    ]
+  },
+  "rakko-expression": {
+    "fragmentId": "rakko-expression",
+    "testingAuthorized": true,
+    "enabledByDefault": false,
+    "productionEnabled": false,
+    "motionActivation": false,
+    "timingOrigin": "AUTHORED_UI_POSE_RHYTHM",
+    "holdMs": 650,
+    "loop": false,
+    "interpolation": false,
+    "windowSize": [
+      150,
+      110
+    ],
+    "sourceUrl": "https://www.tiktok.com/@mikachiii0.5/video/7384926690696301840",
+    "limitations": "Fixed upperbody/cup/cream/scarf; one open→closed facial expression only. No mirroring, lowerbody invention, drinking or cup lowering.",
+    "frames": [
+      {
+        "poseId": "open",
+        "assetPath": "chiikawa-pets/limited-previews/assets/rakko-ep179/rakko-ep179-open-v5.png",
+        "assetSha256": "06a824852e400fb3b88d2680369374402d6d2cd76f92b3d4c6d5ecfe7629b261",
+        "assetSize": [
+          1466,
+          1073
+        ],
+        "sourceRect": [
+          0,
+          0,
+          1466,
+          1073
+        ],
+        "scale": 0.10810810810810811,
+        "left": -11.513513513513512,
+        "top": -1.513513513513514
+      },
+      {
+        "poseId": "closed",
+        "assetPath": "chiikawa-pets/limited-previews/assets/rakko-ep179/rakko-ep179-closed-v1.png",
+        "assetSha256": "93c61038b204646c08213a8bb36dc7b141543dc3a6c6518cb17f83d989ea8ab5",
+        "assetSize": [
+          1466,
+          1073
+        ],
+        "sourceRect": [
+          0,
+          0,
+          1466,
+          1073
+        ],
+        "scale": 0.10810810810810811,
+        "left": -11.513513513513512,
+        "top": -1.513513513513514
+      }
+    ]
+  }
+}

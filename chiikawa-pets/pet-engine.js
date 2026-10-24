@@ -61,6 +61,13 @@ export function availablePetWeights(weights, profile, options = {}) {
   }
   return result;
 }
+/** Positive painted-area intersection; selection preference is deliberately separate. */
+export function petRectOnScreen(rect, viewport, clip = null) {
+  if (!rect || !viewport || ![rect.left, rect.top, rect.right, rect.bottom, viewport.w, viewport.h].every(Number.isFinite)) return false;
+  const left = Math.max(0, clip?.left ?? 0), top = Math.max(0, clip?.top ?? 0);
+  const right = Math.min(viewport.w, clip?.right ?? viewport.w), bottom = Math.min(viewport.h, clip?.bottom ?? viewport.h);
+  return [left, top, right, bottom].every(Number.isFinite) && right > left && bottom > top && rect.right > rect.left && rect.bottom > rect.top && rect.right > left && rect.left < right && rect.bottom > top && rect.top < bottom;
+}
 const clamp = (v, a, b) => Math.min(Math.max(v, a), Math.max(a, b));
 const rand = (a, b) => a + Math.random() * (b - a);
 const INSTANCE = Symbol.for('jlpt.chiikawa-pets');
@@ -102,12 +109,19 @@ export function mountChiikawaPets(options = {}) {
   const xBounds = p => { const r = stageRect(p); return r ? [r.left + 8, r.right - p.width - 8] : [0, viewport().w - p.width]; };
   const constrainX = (p, x) => { const [left, right] = xBounds(p); return clamp(x, left, right); };
   const ground = p => { const r = stageRect(p); return Math.max(0, (r ? r.bottom : viewport().h) - p.height - floorOffset); };
+  function onScreen(p) {
+    if (p.el.hidden || document.hidden) return false;
+    const r = stageRect(p), x = p.x + (r && Number.isFinite(p.stageLeft) ? r.left - p.stageLeft : 0);
+    const y = r && !PHYSICAL.has(p.mode) ? Math.max(0, r.bottom - p.height - floorOffset) : p.y;
+    const dock = mobileStage(p) && mobileStageViewport ? mobileStageViewport.getBoundingClientRect() : null;
+    return petRectOnScreen({ left: x, top: y, right: x + p.width, bottom: y + p.height }, viewport(), dock);
+  }
   // Paused/reduced actors still finish explicit reactions and direct-input physics.
   // Unpaused idle retains the existing autonomous decision clock.
   function needsFrame() {
     return !destroyed && !document.hidden && pets.some(p => !p.el.hidden) &&
-      (!paused() || dirty || pending || pair || pets.some(p => !p.el.hidden &&
-        (p.action || p.touch || p.airborne || p.pointerId !== null)));
+      (dirty || pending || pair || pets.some(p => !p.el.hidden &&
+        (p.action || p.touch || p.airborne || p.pointerId !== null || (!paused() && onScreen(p)))));
   }
   function wake() {
     if (started && !ticking && !raf && needsFrame()) { lastTime = 0; raf = requestAnimationFrame(tick); }
@@ -195,7 +209,7 @@ export function mountChiikawaPets(options = {}) {
     if (r && !PHYSICAL.has(p.mode)) p.y = ground(p);
     p.el.style.touchAction = mobileStage(p) ? 'pan-x pan-y' : '';
     const dock = mobileStage(p) && mobileStageViewport ? mobileStageViewport.getBoundingClientRect() : null;
-    p.el.style.visibility = r && (r.bottom <= 0 || r.top >= viewport().h || r.right <= 0 || r.left >= viewport().w) ? 'hidden' : '';
+    p.el.style.visibility = onScreen(p) ? '' : 'hidden';
     p.el.style.clipPath = dock ? `inset(${Math.max(0, dock.top - p.y)}px ${Math.max(0, p.x + p.width - dock.right)}px ${Math.max(0, p.y + p.height - dock.bottom)}px ${Math.max(0, dock.left - p.x)}px)` : '';
     p.el.style.transform = `translate3d(${p.x.toFixed(1)}px, ${p.y.toFixed(1)}px, 0)`;
     // No scaleX(-1), squash, rotation, or CSS walk substitution, including Rakko.
@@ -305,8 +319,11 @@ export function mountChiikawaPets(options = {}) {
     if (!pending) return;
     if (now - pending.at > 1000) { pending = null; return; }
     if (now < pending.ready) return;
-    const choices = pets.filter(p => !p.el.hidden && !PHYSICAL.has(p.mode) && (pending.target === 'all' || pending.target === p.id));
-    if (!choices.length) return;
+    const choices = pets.filter(p => onScreen(p) && !PHYSICAL.has(p.mode) && (pending.target === 'all' || pending.target === p.id));
+    if (!choices.length) {
+      if (!pets.some(p => onScreen(p) && (pending.target === 'all' || pending.target === p.id))) pending = null;
+      return;
+    }
     cancelPair();
     for (const p of pets) if (!PHYSICAL.has(p.mode) && p.mode !== 'idle') idle(p);
     const event = pending; pending = null;
@@ -319,7 +336,7 @@ export function mountChiikawaPets(options = {}) {
     }
   }
   function react(type, target = 'all', metadata = {}) {
-    if (destroyed || document.hidden || externalPresentation || !pets.some(p => !p.el.hidden && (target === 'all' || p.id === target)) || !['start', 'correct', 'wrong', 'complete'].includes(type)) return;
+    if (destroyed || document.hidden || externalPresentation || !pets.some(p => onScreen(p) && (target === 'all' || p.id === target)) || !['start', 'correct', 'wrong', 'complete'].includes(type)) return;
     const now = performance.now();
     const id = metadata.eventId ?? `local-${++eventSerial}`;
     if (seen.has(id)) return;
@@ -331,8 +348,8 @@ export function mountChiikawaPets(options = {}) {
     wake();
   }
   function decide(p) {
-    if (externalPresentation) { p.wait = 1; return; }
-    if (pets.some(q => q !== p && !q.el.hidden && q.mode !== 'idle') || pair || pending) { p.wait = 1; return; }
+    if (externalPresentation || !onScreen(p)) { p.wait = 1; return; }
+    if (pets.some(q => q !== p && !q.el.hidden && (onScreen(q) || PHYSICAL.has(q.mode)) && q.mode !== 'idle') || pair || pending) { p.wait = 1; return; }
     const weights = availablePetWeights(profile(p).behavior ?? { idle: 100 }, profile(p), { allowDraft: isBeta(p) });
     const action = pickPetBehavior(weights);
     if (action === 'idle') { p.wait = rand(1.5, 4.5); return; }
@@ -349,6 +366,7 @@ export function mountChiikawaPets(options = {}) {
     const dt = lastTime ? clamp((now - lastTime) / 1000, 0, .04) : 0; lastTime = now;
     if (dirty) { obstacles = [...document.querySelectorAll(avoidSelector)].map(el => el.getBoundingClientRect()).filter(r => r.width > 0 && r.height > 0); dirty = false; }
     if (!document.hidden) {
+      if (pair?.actors.some(p => !onScreen(p))) cancelPair();
       processEvent(now);
       if (pair) { pair.elapsed += dt;
         if (!pair.responded && pair.elapsed >= .3) { pair.responded = true; reaction(pair.actors[1], 'complete', .9); }
@@ -356,6 +374,7 @@ export function mountChiikawaPets(options = {}) {
       }
       for (const p of pets) {
         if (p.el.hidden) continue;
+        if (!onScreen(p) && !PHYSICAL.has(p.mode) && !p.touch && p.pointerId === null) { if (p.action) idle(p); render(p); continue; }
         if (p.touch && now - p.touch.at >= 220) beginGrab(p, p.touch);
         if (p.airborne) { p.vy += 1900 * dt; p.y = Math.max(0, p.y + p.vy * dt); p.x = constrainX(p, p.x + p.vx * dt); if (p.y >= ground(p)) land(p); }
         advance(p, dt);
@@ -400,7 +419,7 @@ export function mountChiikawaPets(options = {}) {
     getExternalPresentation() { return externalPresentation; },
     focusCharacter(id) { if (externalPresentation === id) { cancelExternalPresentation('focus'); layout(); } const p = pets.find(p => p.id === id && !p.el.hidden); if (!p) return false; mobileStage(p)?.scrollIntoView?.({ block: 'nearest', inline: 'nearest' }); render(p); p.el.focus?.({ preventScroll: true }); return true; },
     getVisibleCharacters() { return selected.map(p => p.id).filter(id => requestedVisible.has(id)); },
-    getState() { return pets.map(p => ({ id: p.id, mode: p.mode, frame: p.frame, x: p.x, y: p.y, width: p.width, height: p.height, dir: p.dir, airborne: p.airborne, glide: false, jump: false, visible: !p.el.hidden, onScreen: !p.el.hidden && p.el.style.visibility !== 'hidden', reactionTime: p.action ? Math.max(0, p.action.duration - p.action.elapsed) : 0, assetMode: p.el.dataset.assetMode, pairRole: p.pairRole ?? null, captured: p.pointerId !== null })); },
+    getState() { return pets.map(p => ({ id: p.id, mode: p.mode, frame: p.frame, x: p.x, y: p.y, width: p.width, height: p.height, dir: p.dir, airborne: p.airborne, glide: false, jump: false, visible: !p.el.hidden, onScreen: onScreen(p), reactionTime: p.action ? Math.max(0, p.action.duration - p.action.elapsed) : 0, assetMode: p.el.dataset.assetMode, pairRole: p.pairRole ?? null, captured: p.pointerId !== null })); },
     destroy() { if (destroyed) return; cancelExternalPresentation('destroy'); resetAll(); destroyed = true; cancelAnimationFrame(raf); for (const [el, type, fn, opts] of listeners) el.removeEventListener(type, fn, opts); observer?.disconnect(); for (const img of preloads) { img.onload = img.onerror = null; } root.remove(); if (window[INSTANCE] === api) delete window[INSTANCE]; },
   };
   window[INSTANCE] = api; return api;

@@ -56,7 +56,7 @@ class GateTests(unittest.TestCase):
         outside = self.root / 'outside.json'
         outside.write_text('{}')
         self.config.unlink()
-        self.config.symlink_to(HERE / 'shisa-static.json')
+        self.config.symlink_to(HERE.parent / CONFIG_PATH)
         self.assertIsNone(load_shisa_source(self.root, self.uri))
         self.assertEqual(self.calls, [])
 

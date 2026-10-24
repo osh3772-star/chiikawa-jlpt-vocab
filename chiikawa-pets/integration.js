@@ -12,6 +12,10 @@
   const fragmentSources=__FRAGMENT_SOURCES__;
   const ShisaModule=__SHISA_MODULE__;
   const shisaSource=__SHISA_SOURCE__;
+  const ShisaPairModule=__SHISA_PAIR_MODULE__;
+  const shisaClosedSource=__SHISA_CLOSED_SOURCE__;
+  const ObservedModule=__OBSERVED_MODULE__;
+  const observedFragments=__OBSERVED_FRAGMENTS__;
   const motionEvidence = __MOTION_EVIDENCE__;
   const spriteSources = JSON.parse(document.getElementById('pet-sprites').textContent);
   const characterProfiles = JSON.parse(document.getElementById('pet-profiles').textContent);
@@ -158,20 +162,27 @@
     getContext:()=>({visible:previewAvailable('usagi'),paused:pets?.isPaused()??true,reduced:motionQuery.matches}),onBegin:()=>pets?.beginExternalPresentation('usagi')??false,onEnd:()=>pets?.endExternalPresentation('usagi'),prepareStage:safePrepare(usagiUI.rail),readObstacles:obstaclesFor(usagiUI.rail)});
   previewCoordinator.register('hachiware',hachiwarePreview);previewCoordinator.register('usagi',usagiPreview);
   hachiUI.start.addEventListener('click',()=>previewCoordinator.start('hachiware'));hachiUI.close.addEventListener('click',()=>hachiwarePreview.cancel('closed'));
-  usagiUI.start.addEventListener('click',()=>previewCoordinator.start('usagi'));usagiUI.close.addEventListener('click',()=>usagiPreview.cancel('closed'));
+  usagiUI.start.addEventListener('click',()=>previewCoordinator.start('usagi'));usagiUI.close.addEventListener('click',()=>{usagiPreview.cancel('closed');usagiLowering.cancel('closed');});
+  const usagiLowering=ObservedModule.createObservedPoseFragment({...usagiUI,asset:observedFragments['usagi-lowering'],getContext:()=>({visible:previewAvailable('usagi'),paused:pets?.isPaused()??true,reduced:motionQuery.matches}),onBegin:()=>pets?.beginExternalPresentation('usagi')??false,onEnd:()=>pets?.endExternalPresentation('usagi'),prepareStage:safePrepare(usagiUI.rail),readObstacles:obstaclesFor(usagiUI.rail)});
+  previewCoordinator.register('usagi-lowering',usagiLowering);
+  const usagiLowerButton=document.createElement('button');usagiLowerButton.type='button';usagiLowerButton.id='usagi-lowering-start';usagiLowerButton.textContent='별도 D→E→C 팔 내림 조각';usagiUI.tools.insertBefore(usagiLowerButton,usagiUI.status);usagiLowerButton.addEventListener('click',()=>previewCoordinator.start('usagi-lowering'));
+  const loweringNote=document.createElement('p');loweringNote.textContent='새 관찰의 팔 내림 D→E→C는 별도 한 번만 표시합니다. A→B와 자동 연결하지 않으며 B→D 하강/접지 및 완전한 점프는 재현하지 않습니다.';usagiUI.tools.appendChild(loweringNote);
   const usagiLater=document.createElement('button');usagiLater.type='button';usagiLater.id='usagi-later-still';usagiLater.textContent='별도 컷 C 정지 · 착지 구간 미관찰';
   usagiUI.tools.insertBefore(usagiLater,usagiUI.status);
   usagiLater.addEventListener('click',()=>{if(!previewAvailable('usagi')||usagiPreview.getState().mode!=='off')return;previewCoordinator.cancelAll('separate-still');usagiPreview.showLaterStill();});
-  const shisaUI=fragmentPanel({id:'shisa-preview',title:'시사 · 정적 UI 재배치',note:'관찰 자세 1장과 별도로 제작한 고정 UI 컵입니다. 원작에서는 쿠리만쥬가 잔을 듭니다. 붓기 애니메이션·관계 장면 재현이 아닙니다.',label:'시사 정적 구성 보기',windowClass:'cv-fragment-unused'});
+  const shisaUI=fragmentPanel({id:'shisa-preview',title:'시사 · 두 정지 자세와 UI 재배치',note:'관찰된 입 열림→닫힘 2정지 자세와 별도로 제작한 고정 UI 컵입니다. 제작 UI 리듬이며 정확한 원작 시간이 아닙니다. 원작에서는 쿠리만쥬가 잔을 듭니다. 붓기 애니메이션·관계 장면 재현이 아닙니다.',label:'시사 열림→닫힘 구성 보기',windowClass:'cv-fragment-unused'});
   shisaUI.clip.remove();shisaUI.rail.classList.add('cv-shisa-host');
-  const shisaPreview=ShisaModule.createShisaStaticController({host:shisaUI.rail,assetUrl:shisaSource,enabled:!!shisaSource,
-    getContext:()=>({visible:previewAvailable('shisa'),viewport:{width:window.innerWidth,height:window.innerHeight}}),
+  const shisaPreview=ShisaPairModule.createShisaTwoStaticController({host:shisaUI.rail,openUrl:shisaSource,closedUrl:shisaClosedSource,enabled:!!shisaSource&&!!shisaClosedSource,
+    getContext:()=>({visible:previewAvailable('shisa'),paused:pets?.isPaused()??true,reduced:motionQuery.matches,viewport:{width:window.innerWidth,height:window.innerHeight}}),
     onBegin:()=>pets?.beginExternalPresentation('shisa')??false,onEnd:()=>pets?.endExternalPresentation('shisa'),readObstacles:obstaclesFor(shisaUI.rail),
-    onState:({state,reason})=>{shisaUI.status.textContent=state==='loading'?'검토된 정적 구성 준비 중':state==='visible'?'정적 UI 재배치 · 동작 재생 없음':reason==='unavailable-or-no-safe-path'?'안전한 빈 무대가 없어 생략했습니다':'시사 미리보기 숨김';}});
+    onState:({state,reason})=>{shisaUI.status.textContent=state==='loading'?'검토된 정적 구성 준비 중':state==='visible'?'두 정지 자세 · 제작 UI 리듬 · 반복 없음':reason==='unavailable-or-no-safe-path'?'안전한 빈 무대가 없어 생략했습니다':'시사 미리보기 숨김';}});
   previewCoordinator.register('shisa',shisaPreview);
   shisaUI.start.addEventListener('click',()=>{if(!previewAvailable('shisa'))return;previewCoordinator.cancelAll('switch');shisaUI.rail.hidden=false;const r=shisaUI.rail.getBoundingClientRect();if(r.top<0||r.bottom>window.innerHeight)shisaUI.rail.scrollIntoView({block:'nearest',behavior:'auto'});previewCoordinator.start('shisa');});
   shisaUI.close.addEventListener('click',()=>{shisaPreview.cancel('closed');shisaUI.rail.hidden=true;});
-  previewPanel.append(betaTools,betaStage,previewTools,previewRail,cameoTools,cameoRail,hachiUI.tools,hachiUI.rail,usagiUI.tools,usagiUI.rail,shisaUI.tools,shisaUI.rail);
+  const rakkoUI=fragmentPanel({id:'rakko-preview',title:'EP179 참고 · 랏코 두 표정',note:'컵·크림·목도리 위치를 유지한 눈 열림→닫힘 상체 2정지 표정입니다. 제작 UI 리듬으로 한 번만 표시하며 마시기·컵 내리기·하체·원작 정확한 속도를 재현하지 않습니다.',label:'랏코 두 표정 보기',windowClass:'cv-fragment-upperbody'});
+  const rakkoPreview=ObservedModule.createObservedPoseFragment({...rakkoUI,asset:observedFragments['rakko-expression'],getContext:()=>({visible:previewAvailable('rakko'),paused:pets?.isPaused()??true,reduced:motionQuery.matches}),onBegin:()=>pets?.beginExternalPresentation('rakko')??false,onEnd:()=>pets?.endExternalPresentation('rakko'),prepareStage:safePrepare(rakkoUI.rail),readObstacles:obstaclesFor(rakkoUI.rail)});
+  previewCoordinator.register('rakko-expression',rakkoPreview);rakkoUI.start.addEventListener('click',()=>previewCoordinator.start('rakko-expression'));rakkoUI.close.addEventListener('click',()=>rakkoPreview.cancel('closed'));
+  previewPanel.append(betaTools,betaStage,previewTools,previewRail,cameoTools,cameoRail,hachiUI.tools,hachiUI.rail,usagiUI.tools,usagiUI.rail,shisaUI.tools,shisaUI.rail,rakkoUI.tools,rakkoUI.rail);
   previewPanel.addEventListener('toggle',()=>{if(!previewPanel.open){previewCoordinator.cancelAll('panel-closed');if(previewPanel.contains(document.activeElement)&&document.activeElement.id!=='motion-preview-summary')document.getElementById('motion-preview-summary').focus();}pets?.destroy();mount();});
   document.addEventListener('keydown',event=>{if(isCharacterManagementArrow(event))event.stopPropagation();},{capture:true});
 
@@ -182,7 +193,9 @@
     const count=selectedPetIds(preferences).length;mobileDock.hidden=count===0;
     previewStart.disabled=!momongaPreviewAsset||!previewAvailable('momonga');
     cameoStart.disabled=!staticCameoAsset||!previewAvailable('chiikawa');
-    shisaUI.start.disabled=!shisaSource||!previewAvailable('shisa');
+    shisaUI.start.disabled=!shisaSource||!shisaClosedSource||!previewAvailable('shisa');
+    usagiLowerButton.disabled=!observedFragments['usagi-lowering']||!previewAvailable('usagi');
+    rakkoUI.start.disabled=!observedFragments['rakko-expression']||!previewAvailable('rakko');
     hachiUI.start.disabled=!fragmentSources.hachiware||!previewAvailable('hachiware');
     usagiUI.start.disabled=!fragmentSources.usagi||!previewAvailable('usagi');usagiLater.disabled=usagiUI.start.disabled;
     visibilityStatus.textContent=`${count}명 꺼냄 · 자동 동작 설정: ${pets?.isPaused()?'일시정지':'재개'}`;

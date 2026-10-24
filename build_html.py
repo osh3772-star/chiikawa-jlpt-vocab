@@ -108,16 +108,24 @@ from fragment_assets import load_fragment_sources
 fragment_sources = load_fragment_sources(root, data_uri)
 def inline_module(filename, exports):
     code = (root / 'chiikawa-pets' / filename).read_text(encoding='utf-8').replace('export async function ', 'async function ').replace('export function ', 'function ').replace('export const ', 'const ')
+    code = code.replace("import {createShisaStaticController,createShisaView,decodeShisaImage,SHISA_GEOMETRY} from './shisa-static-controller.mjs';", "const {createShisaStaticController,createShisaView,decodeShisaImage,SHISA_GEOMETRY}=ShisaModule;")
     return '(() => {\n' + code + '\nreturn {' + ','.join(exports) + '};\n})()'
 hachiware_module = inline_module('hachiware-two-pose.mjs', ['hachiwareTwoPoseAsset', 'createHachiwareTwoPoseController'])
 usagi_module = inline_module('usagi-fragment.mjs', ['usagiFragmentAsset', 'createUsagiFragmentController'])
 
 from shisa_static_gate import load_shisa_source
 shisa_source = load_shisa_source(root, data_uri)
-shisa_module = inline_module('shisa-static-controller.mjs', ['createShisaStaticController'])
+shisa_module = inline_module('shisa-static-controller.mjs', ['createShisaStaticController','createShisaView','decodeShisaImage','SHISA_GEOMETRY'])
+from shisa_two_static_gate import load_shisa_two_sources
+shisa_two_sources = load_shisa_two_sources(root, data_uri)
+shisa_pair_module = inline_module('shisa-two-static-controller.mjs', ['createShisaTwoStaticController'])
+from observed_fragments import load_observed_fragments
+observed_fragments = load_observed_fragments(root, data_uri)
+observed_module = inline_module('observed-pose-fragment.mjs', ['createObservedPoseFragment'])
 
 engine = (root / 'chiikawa-pets/pet-engine.js').read_text(encoding='utf-8').replace('export function ', 'function ')
 integration = (root / 'chiikawa-pets/integration.js').read_text(encoding='utf-8').replace('__PET_ENGINE__', engine)
+integration = integration.replace('__SHISA_PAIR_MODULE__', shisa_pair_module).replace('__SHISA_CLOSED_SOURCE__', json.dumps(shisa_two_sources['closed'] if shisa_two_sources else None)).replace('__OBSERVED_MODULE__', observed_module).replace('__OBSERVED_FRAGMENTS__', json.dumps(observed_fragments,ensure_ascii=False,separators=(',', ':')))
 integration = integration.replace('__SHISA_MODULE__', shisa_module).replace('__SHISA_SOURCE__', json.dumps(shisa_source))
 integration = integration.replace('__HACHIWARE_MODULE__', hachiware_module).replace('__USAGI_MODULE__', usagi_module).replace('__FRAGMENT_SOURCES__', json.dumps(fragment_sources, ensure_ascii=False, separators=(',', ':')).replace('<', '\\u003c'))
 integration = integration.replace('__STATIC_CAMEO_HELPERS__', cameo_helpers).replace('__STATIC_CAMEO_CONFIG__', json.dumps(cameo_asset, ensure_ascii=False, separators=(',', ':')).replace('<', '\\u003c'))
