@@ -3489,10 +3489,12 @@ function createAuthoredStepController({fixture,context,owner,acquire,release,dec
  let generation=0,mode='off',lease=null,resource=null,abort=null,raf=null,timer=null,pose=-1,disposed=false,reason=null,admission=null;
  const valid=()=>validReviewedStepArt(fixture);
  const eligible=c=>c?.enabled===true&&c.visible===true&&c.idle===true&&c.safe===true&&c.physical===false&&c.busy===false&&c.studyBusy===false&&c.documentHidden===false;
- function cleanup(why){generation++;reason=why;abort?.abort();abort=null;if(raf!==null)cancelFrame(raf);if(timer!==null)clearTimer(timer);raf=timer=null;const oldResource=resource,oldLease=lease;resource=lease=null;mode='off';pose=-1;admission=null;try{clear();}finally{try{oldResource?.cleanup?.();}finally{if(oldLease!==null)release(oldLease);}}}
+ function cleanup(why){try{document.documentElement.dataset.qaH5Cleanup=String(why).slice(0,64);}catch(_){}generation++;reason=why;abort?.abort();abort=null;if(raf!==null)cancelFrame(raf);if(timer!==null)clearTimer(timer);raf=timer=null;const oldResource=resource,oldLease=lease;resource=lease=null;mode='off';pose=-1;admission=null;try{clear();}finally{try{oldResource?.cleanup?.();}finally{if(oldLease!==null)release(oldLease);}}}
  function canStart(){return !disposed&&mode==='off'&&valid()&&eligible(context())&&owner()===null;}
  async function start(){
-  if(!canStart())return false;
+  try{const d=document.documentElement.dataset;d.qaH5Attempt=String((Number(d.qaH5Attempt)||0)+1);d.qaH5Decode='not-requested';d.qaH5Cleanup='none';d.qaH5Admission='checking';}catch(_){}
+  if(!canStart()){try{document.documentElement.dataset.qaH5Admission='refused';}catch(_){}return false;}
+  try{document.documentElement.dataset.qaH5Admission='accepted';}catch(_){}
   const contractSources=fixture.frames.map(f=>f.source);const initial=context(),revision=initial.revision,mount=initial.mount;admission={revision,mount};const token=++generation;mode='loading';reason=null;abort=new AbortController();
   const stillEligible=()=>{const c=context();return token===generation&&!disposed&&valid()&&fixture.frames.every((f,i)=>f.source===contractSources[i])&&eligible(c)&&c.revision===revision&&c.mount===mount;};
   try{
@@ -3554,7 +3556,9 @@ async function decodeReviewedStep(frames,{signal,ImageCtor=Image,setTimer=setTim
  const cleanup=()=>images.forEach(im=>im.removeAttribute('src'));
  try{
   const stopped=new Promise((_,reject)=>{abort=()=>reject(Error('aborted'));signal?.addEventListener('abort',abort,{once:true});timer=setTimer(()=>reject(Error('decode-timeout')),8000);});
-  const batch=Promise.all(frames.map(f=>{const im=new ImageCtor();images.push(im);im.src=f.source;return Promise.resolve().then(()=>{if(signal?.aborted)throw Error('aborted');return im.decode();}).then(()=>{if(im.naturalWidth!==1254||im.naturalHeight!==1254)throw Error('invalid-size');});}));
+  const qaAttempt=(()=>{try{return document.documentElement.dataset.qaH5Attempt;}catch(_){return null;}})();
+  const qaMark=(f,state)=>{try{const d=document.documentElement.dataset;if(f.source==='assets/fde3946e1ad5a74f1830657510b5c3efad3ca9892c3653cdd8addaa3a6d8311c.png'&&d.qaH5Attempt===qaAttempt)d.qaH5Decode=state;}catch(_){}};
+  const batch=Promise.all(frames.map(f=>{const im=new ImageCtor();images.push(im);im.src=f.source;qaMark(f,'src-assigned');return Promise.resolve().then(()=>{if(signal?.aborted)throw Error('aborted');qaMark(f,'decode-called');return im.decode();}).then(()=>{qaMark(f,'decode-resolved');if(im.naturalWidth!==1254||im.naturalHeight!==1254)throw Error('invalid-size');qaMark(f,'decoded-1254');},error=>{qaMark(f,signal?.aborted?'aborted':'decode-rejected');throw error;});}));
   await Promise.race([batch,stopped]);if(signal?.aborted)throw Error('aborted');return{cleanup};
  }catch(e){cleanup();throw e;}finally{if(timer!==undefined)clearTimer(timer);signal?.removeEventListener('abort',abort);}
 }
