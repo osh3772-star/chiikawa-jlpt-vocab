@@ -99,8 +99,8 @@
 @media(max-width:639px) {
   .cv-mobile-dock-enabled .mobile-pet-picker { display:none; }
   .cv-mobile-pet-dock { display:flex; overflow-x:auto; overflow-y:hidden; gap:12px; padding:8px 18px; margin:8px 12px; border:1px dashed #cdd5be; border-radius:14px; background:#f6f9ef; touch-action:pan-x pan-y; scroll-snap-type:x proximity; }
-  .cv-mobile-pet-slot { flex:0 0 140px; height:164px; position:relative; scroll-snap-align:start; background:linear-gradient(transparent 92%,#e3ecd5 92%); }
-  .cv-mobile-pet-slot > button { position:absolute; top:0; left:8px; right:8px; padding:3px 6px; min-height:28px; font-size:11px; }
+  .cv-mobile-pet-slot { flex:0 0 140px; height:184px; position:relative; scroll-snap-align:start; background:linear-gradient(transparent 92%,#e3ecd5 92%); }
+  .cv-mobile-pet-slot > button { position:absolute; top:0; left:8px; right:8px; padding:3px 6px; min-height:44px; font-size:11px; }
 }
 .cv-momonga-preview-tools { max-width:760px; margin:10px auto 0; padding:10px 14px; border:1px solid #c9dae5; border-radius:14px; background:#f5faff; text-align:left; color:#4c6374; font:500 12px/1.6 system-ui,sans-serif; }
 .cv-momonga-preview-tools p { margin:5px 0 8px; font-size:11px; }
@@ -132,3 +132,31 @@
 
 .cv-shisa-host{height:202px;min-height:202px;padding:0;border:0;display:flex;align-items:center;justify-content:center;}
 .cv-shisa-host[hidden]{display:none;}
+
+/* Local opt-in direct interaction: document-flow stage, no study overlay. */
+.cv-direct-tools p,.cv-direct-status{font-size:12px;color:#526659;margin:6px 12px;}
+.cv-direct-stage{position:relative;display:flex;align-items:flex-end;justify-content:center;box-sizing:border-box;width:min(320px,calc(100% - 24px));height:320px;margin:12px auto;padding-bottom:8px;border:0;outline:1px dashed #b7cbbd;border-radius:14px;background:#fcfffc;}
+.cv-direct-stage[hidden],.cv-direct-stage img[hidden],.cv-direct-status[hidden]{display:none!important;}
+.cv-direct-stage>button{position:absolute;left:16px;right:16px;top:8px;height:46px;min-height:46px;padding:3px;font-size:12px;}
+.cv-direct-clip{position:relative;overflow:hidden;width:160px;height:160px;pointer-events:none;flex:0 0 auto;}
+.cv-direct-clip img{position:absolute;max-width:none;pointer-events:none;}
+.cv-direct-status{height:3em;line-height:1.4;overflow:auto;}
+
+.cv-direct-position{position:absolute;left:50%;transform:translateX(-50%);pointer-events:none;}
+.cv-direct-caption{position:absolute;top:64px;left:16px;right:16px;font-size:12px;line-height:1.4;text-align:center;color:#6b5245;margin:0;}
+.cv-direct-clip.cv-direct-upper.cv-direct-presenting{box-sizing:content-box;border-bottom:4px solid #cbb49c;outline:1px solid #e5dccf;}
+.cv-direct-scene{position:absolute;left:16px;right:16px;height:192px;pointer-events:none;}
+.cv-direct-scene.cv-direct-presenting{outline:1px solid #cbb49c;}
+.cv-direct-position[hidden],.cv-direct-scene[hidden]{display:none!important;}
+
+/* Scale controls remain unscaled and keyboard accessible. Focus ring stays inside paint/hit box. */
+.cv-scale-tools { margin-top:10px; border-top:1px solid #d3dec8; padding-top:8px; }
+.cv-scale-tools summary { min-height:44px; cursor:pointer; display:flex; align-items:center; }
+.cv-scale-tools input[type=range] { width:min(100%,320px); min-height:44px; }
+.cv-scale-choices { display:grid; grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); gap:6px; }
+.cv-scale-choices label { display:flex; flex-wrap:wrap; align-items:center; gap:5px; }
+.cv-scale-tools select, .cv-scale-tools button { min-height:44px; font-size:12px; }
+.cv-scale-actions { display:flex; flex-wrap:wrap; gap:6px; margin-top:8px; }
+.cv-pet:focus-visible { outline-offset:-3px; }
+/* Usagi's reviewed B ear tips reach the top of its existing hitbox: do not cover them with the visual name pill. ARIA/focus remain on the actor. */
+.cv-pet[data-character="usagi"][data-mode="inline-response"] .cv-pet__name { visibility:hidden; opacity:0; }

@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "type": "AUTHORED_UI_GLIDE",
+  "characterId": "momonga",
+  "localTestingAuthorized": true,
+  "enabledByDefault": false,
+  "autonomous": false,
+  "originalFullMotionActivation": false,
+  "width": 96,
+  "assetSha256": "2b6068c38fdab9f0bc6ca54366729df0a2b25ab93524a68a12616b32cefbf580",
+  "assetSize": [1627, 967],
+  "durationMs": 1800,
+  "timingOrigin": "AUTHORED_WEB_UX",
+  "minimumDelta": {"left": 24, "up": 48, "distance": 64},
+  "margin": 6,
+  "minimumViewportWidth": 640,
+  "loop": false,
+  "rotation": false,
+  "mirror": false,
+  "scaleDuringTravel": false,
+  "sourceScope": "LIMITED_PREVIEW_BODY_ONLY",
+  "restore": "EXPLICIT_UI_CUT_NOT_LANDING"
+}

@@ -1,0 +1,32 @@
+{
+  "scope": "SOURCE_DERIVED_UPPER_BODY_PAIR_STATIC",
+  "reviewApproved": true,
+  "testingAuthorized": true,
+  "enabledByDefault": false,
+  "autoStart": false,
+  "motionActivation": false,
+  "actors": [
+    "chiikawa",
+    "hachiware"
+  ],
+  "source": null,
+  "sha256": "7b2770c6efa74d769ad369fc77a4805026071638be9e5eeaccd5951d5316b4f5",
+  "reviewId": "pair-upperbody-proof-20261025-bounded",
+  "nativeSize": [
+    1536,
+    1024
+  ],
+  "displaySize": [
+    240,
+    160
+  ],
+  "logicalComponents": [
+    "chiikawa-upper-body",
+    "hachiware-upper-body",
+    "inner-paws",
+    "blank-card"
+  ],
+  "lowerEdge": "INTENTIONAL_UPPER_BODY_CROP",
+  "status": "INTEGRATION_CANDIDATE_NOT_PRODUCTION_FROZEN",
+  "assetPath": "chiikawa-pets/limited-previews/pair-card-static.png"
+}

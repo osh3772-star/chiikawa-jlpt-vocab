@@ -13,5 +13,5 @@ export function selectedPetIds(preferences) {
 
 /** Character-management focus must never trigger vocabulary arrow grading/navigation. */
 export function isCharacterManagementArrow(event) {
-  return ['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(event.key) && Boolean(event.target?.closest?.('.pet-tools, .cv-visibility-tools, .cv-mobile-pet-dock, .cv-evidence-status, .cv-preview-panel'));
+  return ['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(event.key) && Boolean(event.target?.closest?.('.pet-tools, .cv-visibility-tools, .cv-mobile-pet-dock, .cv-evidence-status, .cv-direct-stage, .cv-direct-tools, .cv-direct-status, .cv-preview-panel'));
 }

@@ -190,3 +190,79 @@ body:has(.cv-pet-layer) { padding-bottom: 220px; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
 }
+/* v26: selected wallpaper changes paint only, not layout, study or actor geometry. */
+.cv-field-background .scenery { background-size:cover; background-position:center; background-repeat:no-repeat; }
+.cv-field-background .scenery::before, .cv-field-background .scenery > span { display:none; }
+.cv-field-background .site-header,
+.cv-field-background .study-toolbar,
+.cv-field-background #study-title,
+.cv-field-background .keyboard-hint,
+.cv-field-background #position,
+.cv-field-background #counts,
+.cv-field-background #message,
+.cv-field-background .cv-pair-card-panel { background-color:var(--cream); }
+.cv-background-tools { display:flex; justify-content:center; align-items:center; flex-wrap:wrap; gap:8px; margin-top:8px; }
+.cv-background-tools select { font-size:.8rem; }
+.cv-background-status { margin:0; height:3em; line-height:1.5; overflow:hidden; contain:paint; font-size:.75rem; color:var(--muted); }
+@media(max-width:639px){.cv-field-background .scenery { background-position:left center; }}
+/* Pair panel is a static body sibling; keep it above the selected opaque scenery. */
+.cv-field-background .cv-pair-card-panel { position:relative; z-index:1; }
+/* Separate static extra, never a free-roaming six-engine actor or fake button. */
+.cv-extra-static-panel { position:relative; z-index:1; max-width:760px; margin:16px auto; padding:12px; background:var(--cream); border:1px solid var(--line); border-radius:12px; }
+.cv-extra-static-panel p { font-size:.8rem; }
+.cv-extra-static-panel > summary { cursor:pointer; }
+.cv-extra-static-status { height:3em; line-height:1.5; margin:8px 0; overflow:hidden; contain:paint; }
+.cv-extra-static-rail { position:relative; width:136px; max-width:100%; height:142.383px; margin:8px auto; pointer-events:none; }
+.cv-extra-static-rail img { position:absolute; left:8px; top:8px; width:120px; height:auto; max-width:none; object-fit:contain; pointer-events:none; user-select:none; }
+
+/* User's baked four-member group: full canvas, no individual crops or animation. */
+.cv-pajama-static-rail { width:256px; height:139px; }
+.cv-pajama-static-rail img { width:240px; height:122.666667px; }
+
+/* Isolated B gate: default OFF, desktop-only fallback remains normal document flow. */
+@media(min-width:1000px) and (min-height:640px){
+ body.cv-reserved-lane-candidate{padding:0!important;height:100dvh;overflow:hidden;}
+ .cv-reserved-lane-candidate>.cv-content-viewport{position:relative;box-sizing:border-box;height:calc(100dvh - 220px);overflow:auto;border-radius:0;padding:40px 32px 32px;}
+}
+
+/* Full 512 canvas at one common 160px scale; no per-frame fit/crop. */
+.cv-kani-static-rail{box-sizing:border-box;width:176px;min-width:176px;min-height:176px;height:176px;padding:8px;display:flex;align-items:center;justify-content:center;overflow:hidden;pointer-events:none;}
+.cv-kani-static-rail[hidden],.cv-kani-static-rail img[hidden]{display:none!important;}
+.cv-kani-static-rail img{position:static;left:auto;top:auto;width:160px;height:160px;max-width:none;object-fit:contain;pointer-events:none;user-select:none;}
+.cv-kani-actions{display:flex;flex-wrap:wrap;gap:6px;margin:8px;}
+.cv-kani-actions button{min-height:44px;}
+
+/* Session-only character view. Learning content/data are retained, not removed. */
+.cv-character-view-toggle{position:fixed;top:12px;right:12px;z-index:120;max-width:calc(100vw - 24px);min-height:44px;}
+.cv-character-only-stage[hidden]{display:none!important;}
+body.cv-character-only{padding:0!important;min-height:100dvh;height:100dvh;overflow:auto!important;}
+body.cv-character-only .cv-character-only-stage{box-sizing:border-box;min-height:100dvh;padding:76px 16px 230px;display:flex;flex-wrap:wrap;align-content:flex-start;align-items:center;justify-content:center;gap:16px;}
+body.cv-character-only .cv-character-only-stage>.cv-mobile-pet-dock{flex-basis:100%;}
+body.cv-character-only .cv-character-only-stage>.cv-extra-static-panel{margin:0!important;padding:0!important;border:0!important;box-shadow:none!important;background:transparent!important;max-width:100%;}
+body.cv-character-only .cv-character-only-stage>.cv-extra-static-panel>:not(.cv-extra-static-rail){display:none!important;}
+body.cv-character-only .cv-character-only-stage .cv-direct-stage{background:transparent;outline:0;margin:0;}
+body.cv-character-only .cv-direct-stage>button,body.cv-character-only .cv-direct-caption{display:none!important;}
+body.cv-character-only .cv-mobile-pet-slot>button{visibility:hidden;}
+@media(max-width:639px){body.cv-character-only .cv-character-only-stage{padding:76px 0 24px;}}
+
+.cv-momonga-flight-tools{position:fixed;left:12px;top:72px;z-index:120;width:min(440px,calc(100vw - 24px));height:132px;box-sizing:border-box;overflow:auto;padding:10px;display:flex;flex-wrap:wrap;align-content:flex-start;gap:6px 10px;background:#fffaf0;border:1px solid #dacdb9;border-radius:12px;font:12px/1.4 system-ui,sans-serif;}
+.cv-momonga-flight-tools[hidden]{display:none!important;}
+.cv-momonga-flight-tools button{min-height:40px;}
+.cv-momonga-flight-tools [role=status],.cv-momonga-flight-tools small{flex-basis:100%;}
+
+/* Fixed tools are included in every trajectory obstacle snapshot. */
+.cv-pair-greeting-tools{position:fixed;left:12px;top:216px;z-index:120;max-width:min(460px,calc(100vw - 24px));padding:8px 12px;border:1px solid #b6bcc6;border-radius:12px;background:#fffdf7;color:#20242c;box-sizing:border-box}
+.cv-pair-greeting-tools[hidden]{display:none!important}
+.cv-pair-greeting-tools small,.cv-pair-greeting-tools [role=status]{display:block;font-size:12px;line-height:1.4}
+.cv-pair-greeting-tools [role=status]{height:2.8em;overflow:hidden}
+.cv-pair-greeting-surface{position:absolute;inset:0;pointer-events:none;overflow:visible}
+.cv-pair-greeting-surface img{position:absolute;left:0;top:0;max-width:none!important;object-fit:contain;padding:0;margin:0;border:0;filter:none;box-shadow:none;pointer-events:auto}
+
+/* Kani input is contained in its own opaque-origin viewport. */
+.cv-kani-input-stage{position:relative!important;display:block!important;width:min(100%,440px)!important;height:300px!important;margin:8px auto;overflow:hidden;z-index:1;border:1px solid #cbbfa8;border-radius:12px;background:#fff8ef;box-sizing:border-box}.cv-kani-input-stage[hidden]{display:none!important}.cv-kani-input-stage iframe{display:block;width:100%;height:100%;border:0;background:transparent}.cv-kani-input-switch{display:block;margin-top:8px}
+
+/* Responsive controls only; actor slot geometry and desktop fixed toolbar stay intact. */
+@media(max-width:639px){
+ body.cv-character-only .cv-mobile-motion-toolbar{flex-basis:100%;display:flex;flex-direction:column;gap:8px;margin:0 12px;min-width:0;}
+ body.cv-character-only .cv-mobile-motion-toolbar>.cv-momonga-flight-tools,body.cv-character-only .cv-mobile-motion-toolbar>.cv-pair-greeting-tools{position:static;width:100%;max-width:100%;height:auto;box-sizing:border-box;margin:0;}
+}

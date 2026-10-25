@@ -126,5 +126,260 @@
         "top": -1.513513513513514
       }
     ]
+  },
+  "chiikawa-carry-step": {
+    "fragmentId": "chiikawa-carry-step",
+    "testingAuthorized": true,
+    "enabledByDefault": false,
+    "productionEnabled": false,
+    "motionActivation": false,
+    "timingOrigin": "AUTHORED_UI_POSE_RHYTHM",
+    "holdMs": 650,
+    "loop": false,
+    "interpolation": false,
+    "windowSize": [
+      160,
+      160
+    ],
+    "sourceUrl": "https://www.tiktok.com/@mrchiikawa/video/7562899268726508807",
+    "limitations": "Sampled carry foot silhouettes A→C→B once; fixed shared body anchor. No complete contact loop, travel, free arm swing, interpolation or original timing.",
+    "frames": [
+      {
+        "poseId": "a",
+        "assetPath": "chiikawa-pets/limited-previews/assets/stepping/pose-a-v1.png",
+        "assetSha256": "5a2e16587d282629459df98e73817aa7fafb612caed9ede28bb9735bfc5d7380",
+        "assetSize": [
+          1254,
+          1254
+        ],
+        "sourceRect": [
+          0,
+          0,
+          1254,
+          1254
+        ],
+        "scale": 0.13333333333333333,
+        "left": -3.6,
+        "top": -9.066666666666666
+      },
+      {
+        "poseId": "c",
+        "assetPath": "chiikawa-pets/limited-previews/assets/stepping/pose-c-v1.png",
+        "assetSha256": "9d6eba954832c4967e74e42f9d364c827a45e2f64b60152775f7041aeb62115c",
+        "assetSize": [
+          1254,
+          1254
+        ],
+        "sourceRect": [
+          0,
+          0,
+          1254,
+          1254
+        ],
+        "scale": 0.13333333333333333,
+        "left": -3.6,
+        "top": -9.066666666666666
+      },
+      {
+        "poseId": "b",
+        "assetPath": "chiikawa-pets/limited-previews/assets/stepping/pose-b-v1.png",
+        "assetSha256": "4b8f21b9de96b26d8ae43b3887e75ef9e08306c3013895264f24185583260251",
+        "assetSize": [
+          1254,
+          1254
+        ],
+        "sourceRect": [
+          0,
+          0,
+          1254,
+          1254
+        ],
+        "scale": 0.13333333333333333,
+        "left": -3.6,
+        "top": -9.066666666666666
+      }
+    ]
+  },
+  "usagi-foot-step": {
+    "fragmentId": "usagi-foot-step",
+    "testingAuthorized": true,
+    "enabledByDefault": false,
+    "productionEnabled": false,
+    "motionActivation": false,
+    "timingOrigin": "AUTHORED_UI_POSE_RHYTHM",
+    "holdMs": 650,
+    "loop": false,
+    "interpolation": false,
+    "windowSize": [
+      120,
+      132
+    ],
+    "sourceUrl": "https://www.tiktok.com/@chiikawa562/video/7448691479851175214",
+    "limitations": "Four sampled screen-relative foot silhouettes once; face width72 and eye(60,60) fixed. No authored low-pose bounce, contact loop, root travel, rotation, interpolation or original timing.",
+    "frames": [
+      {
+        "poseId": "right-raised",
+        "assetPath": "chiikawa-pets/limited-previews/assets/stepping/usagi-run-right-raised-v1.png",
+        "assetSha256": "fb46926a4a318d0b2170ee0967785a5fb10d308a1583510a1769c363334b9002",
+        "assetSize": [
+          1254,
+          1254
+        ],
+        "sourceRect": [
+          0,
+          0,
+          1254,
+          1254
+        ],
+        "scale": 0.11145510835913312,
+        "left": -11.888544891640862,
+        "top": -6.873065015479881
+      },
+      {
+        "poseId": "low-leftlean",
+        "assetPath": "chiikawa-pets/limited-previews/assets/stepping/usagi-run-low-leftlean-v1.png",
+        "assetSha256": "383e3c91590c012f442615b94a81f236ded46c2d9de621888aa9f8c5e0857b46",
+        "assetSize": [
+          1221,
+          1289
+        ],
+        "sourceRect": [
+          0,
+          0,
+          1221,
+          1289
+        ],
+        "scale": 0.0997229916897507,
+        "left": -4.421052631578945,
+        "top": -4.421052631578945
+      },
+      {
+        "poseId": "left-raised",
+        "assetPath": "chiikawa-pets/limited-previews/assets/stepping/usagi-run-left-raised-v1.png",
+        "assetSha256": "942c62efde9cb5e038cc7d2201f3835d5dfd963b42f27bb581fba1dc2cb567ff",
+        "assetSize": [
+          1149,
+          1368
+        ],
+        "sourceRect": [
+          0,
+          0,
+          1149,
+          1368
+        ],
+        "scale": 0.09863013698630137,
+        "left": 1.2164383561643817,
+        "top": -5.293150684931504
+      },
+      {
+        "poseId": "low-rightlean",
+        "assetPath": "chiikawa-pets/limited-previews/assets/stepping/usagi-run-low-rightlean-v1.png",
+        "assetSha256": "afbd5642197a4f30f6880d7d86886f8e4c16a665995292e1c35f06588b19efdc",
+        "assetSize": [
+          1203,
+          1307
+        ],
+        "sourceRect": [
+          0,
+          0,
+          1203,
+          1307
+        ],
+        "scale": 0.10434782608695652,
+        "left": -10.017391304347825,
+        "top": -7.513043478260869
+      }
+    ]
+  },
+  "momonga-rear-turn": {
+    "fragmentId": "momonga-rear-turn",
+    "testingAuthorized": true,
+    "enabledByDefault": false,
+    "productionEnabled": false,
+    "motionActivation": false,
+    "timingOrigin": "AUTHORED_UI_POSE_RHYTHM",
+    "holdMs": 650,
+    "loop": false,
+    "interpolation": false,
+    "windowSize": [
+      120,
+      120
+    ],
+    "sourceUrl": "https://www.tiktok.com/@mrchiikawa/video/7562899268726508807",
+    "limitations": "43→45→47→50 rear/profile samples once. Closed membrane; fixed authored ear-root registration, not recovered source hop height or trajectory. No takeoff/landing/contact/loop/rotation/tail-follow-through synthesis.",
+    "frames": [
+      {
+        "poseId": "43",
+        "assetPath": "chiikawa-pets/limited-previews/assets/momonga-rear-turn/sample43-r1-original.png",
+        "assetSha256": "5f527bcd5eede05d32206cfa810049809ae3c861e883440eced83124bc749480",
+        "assetSize": [
+          1254,
+          1254
+        ],
+        "sourceRect": [
+          0,
+          0,
+          1254,
+          1254
+        ],
+        "scale": 0.0965625,
+        "left": 0.42070312499999996,
+        "top": -1.0546875
+      },
+      {
+        "poseId": "45",
+        "assetPath": "chiikawa-pets/limited-previews/assets/momonga-rear-turn/sample45-r1-original.png",
+        "assetSha256": "cc2ce4773e2e75f57b08d44329003e578aa46df292ae91d11843d0c45f8100fd",
+        "assetSize": [
+          1254,
+          1254
+        ],
+        "sourceRect": [
+          0,
+          0,
+          1254,
+          1254
+        ],
+        "scale": 0.0901171875,
+        "left": 14.040234375,
+        "top": 2.7140625
+      },
+      {
+        "poseId": "47",
+        "assetPath": "chiikawa-pets/limited-previews/assets/momonga-rear-turn/sample47-r1-original.png",
+        "assetSha256": "b5f70cc9e1efe9491ad31eaa5cab61d4f46c0280b2d57f4a7bd02096d160f8ae",
+        "assetSize": [
+          1254,
+          1254
+        ],
+        "sourceRect": [
+          0,
+          0,
+          1254,
+          1254
+        ],
+        "scale": 0.0871875,
+        "left": -5.0414062500000005,
+        "top": 2.8968749999999996
+      },
+      {
+        "poseId": "50",
+        "assetPath": "chiikawa-pets/limited-previews/assets/momonga-rear-turn/sample50-r1-original.png",
+        "assetSha256": "67211940491e453df6a467d329d36e3f2c74f53426987206e47d04516e67a8d8",
+        "assetSize": [
+          1254,
+          1254
+        ],
+        "sourceRect": [
+          0,
+          0,
+          1254,
+          1254
+        ],
+        "scale": 0.093515625,
+        "left": -9.2953125,
+        "top": -1.034765625
+      }
+    ]
   }
 }

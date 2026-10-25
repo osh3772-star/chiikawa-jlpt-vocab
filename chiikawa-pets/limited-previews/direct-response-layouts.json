@@ -1,0 +1,205 @@
+{
+  "schemaVersion": 1,
+  "scope": "LIMITED_EXPLICIT_DIRECT_UI_TESTING",
+  "stageSize": [
+    320,
+    320
+  ],
+  "nativeButtonHeight": 46,
+  "profiles": {
+    "chiikawa": {
+      "kind": "observed",
+      "sourceFragmentId": "chiikawa-carry-cycle",
+      "fragmentId": "chiikawa-carry-cycle",
+      "windowSize": [
+        160,
+        160
+      ],
+      "clipTop": 152,
+      "framed": false,
+      "normalization": "CHI_BASE_COMMON",
+      "label": "12슬롯 / 11원화 · D=C 작성 중립자세 · 1주기만 / 원작 시간·접지·무한반복 아님",
+      "poseOrder": [
+        "A",
+        "AC1",
+        "AC2",
+        "C",
+        "CB1",
+        "CB2",
+        "B",
+        "BD1",
+        "BD2",
+        "D",
+        "DA1",
+        "DA2"
+      ],
+      "testingAuthorized": true,
+      "enabledByDefault": false,
+      "productionAutonomyEnabled": false,
+      "originalFullMotionActivation": false,
+      "holdMs": 83.33333333333333,
+      "totalDisplayMs": 1000,
+      "pausedDisplayMs": 1000,
+      "exitOrigin": "AUTHORED_UI_RESTORE"
+    },
+    "hachiware": {
+      "kind": "hachiware-fullbody",
+      "sourceFragmentId": "hachiware-fullbody-response",
+      "fragmentId": "hachiware-fullbody-response",
+      "windowSize": [
+        160,
+        147.9
+      ],
+      "clipTop": 172.097,
+      "framed": false,
+      "label": "16노출 / 14원화 · 작성 1초 반응 · 32/40근사 재사용 · 작은 회복근사 / 원작 시간·접지 아님",
+      "poseOrder": [
+        "30",
+        "B30_31",
+        "31",
+        "B31_32a",
+        "B31_32b",
+        "32",
+        "B32_33",
+        "33",
+        "B33_35",
+        "35",
+        "B35_36",
+        "36",
+        "B36_38",
+        "38",
+        "B38_40a",
+        "40"
+      ],
+      "testingAuthorized": true,
+      "enabledByDefault": false,
+      "productionAutonomyEnabled": false,
+      "originalFullMotionActivation": false,
+      "poseDurationsMs": [
+        40,
+        50,
+        50,
+        50,
+        50,
+        50,
+        50,
+        70,
+        50,
+        60,
+        50,
+        70,
+        60,
+        60,
+        60,
+        180
+      ],
+      "totalDisplayMs": 1000,
+      "pausedDisplayMs": 1000,
+      "exitOrigin": "AUTHORED_UI_RESTORE"
+    },
+    "usagi": {
+      "kind": "usagi-ab",
+      "fragmentId": "direct-usagi-air-fragment",
+      "windowSize": [
+        167.3,
+        191.2
+      ],
+      "clipTop": 128,
+      "framed": false,
+      "factor": 1.195,
+      "commonViewport": [
+        7.215189873417728,
+        0,
+        140,
+        160
+      ],
+      "label": "팔 벌린 A→B 관찰 조각 · 착지 없이 UI 교체",
+      "poseOrder": [
+        "A",
+        "B"
+      ],
+      "testingAuthorized": true,
+      "enabledByDefault": false,
+      "productionAutonomyEnabled": false,
+      "originalFullMotionActivation": false,
+      "holdMs": 650,
+      "totalDisplayMs": 1300,
+      "pausedDisplayMs": 650,
+      "exitOrigin": "AUTHORED_UI_RESTORE"
+    },
+    "momonga": {
+      "kind": "observed",
+      "sourceFragmentId": "momonga-rear-turn",
+      "fragmentId": "momonga-rear-turn",
+      "windowSize": [
+        120,
+        120
+      ],
+      "clipTop": 184,
+      "framed": false,
+      "label": "닫힌 비막 뒤/옆 네 표본 · 실제 홉 높이/착지 아님",
+      "poseOrder": [
+        "43",
+        "45",
+        "47",
+        "50"
+      ],
+      "testingAuthorized": true,
+      "enabledByDefault": false,
+      "productionAutonomyEnabled": false,
+      "originalFullMotionActivation": false,
+      "holdMs": 650,
+      "totalDisplayMs": 2600,
+      "pausedDisplayMs": 650,
+      "exitOrigin": "AUTHORED_UI_RESTORE"
+    },
+    "rakko": {
+      "kind": "observed",
+      "sourceFragmentId": "rakko-expression",
+      "fragmentId": "rakko-expression",
+      "windowSize": [
+        150,
+        110
+      ],
+      "clipTop": 191,
+      "framed": true,
+      "label": "컵 유지한 두 표정 상체 창 · 마시기/컵 내리기 아님",
+      "poseOrder": [
+        "open",
+        "closed"
+      ],
+      "testingAuthorized": true,
+      "enabledByDefault": false,
+      "productionAutonomyEnabled": false,
+      "originalFullMotionActivation": false,
+      "holdMs": 650,
+      "totalDisplayMs": 1300,
+      "pausedDisplayMs": 650,
+      "exitOrigin": "AUTHORED_UI_RESTORE"
+    },
+    "shisa": {
+      "kind": "shisa-scene",
+      "windowSize": [
+        192,
+        192
+      ],
+      "clipTop": 128,
+      "framed": true,
+      "anchorMode": "STAGE_CENTER_SCENE",
+      "label": "별도 장면 창 · 고정 UI 컵 / 원작에서는 쿠리만쥬가 잔을 듦",
+      "poseOrder": [
+        "diagonal",
+        "open",
+        "closed"
+      ],
+      "testingAuthorized": true,
+      "enabledByDefault": false,
+      "productionAutonomyEnabled": false,
+      "originalFullMotionActivation": false,
+      "holdMs": 650,
+      "totalDisplayMs": 1950,
+      "pausedDisplayMs": 650,
+      "exitOrigin": "AUTHORED_UI_RESTORE"
+    }
+  }
+}

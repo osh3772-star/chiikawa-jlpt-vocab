@@ -16,6 +16,8 @@
     <p class="header-description">작은 한 걸음도 차곡차곡. 오늘도 내 속도로 공부해요.</p>
     <p id="storage-note">급수별 위치와 학습 기록은 이 브라우저에 자동 저장됩니다.</p>
     <div class="pet-tools"><span>친구들을 잡아 끌어 보세요. 놓으면 사뿐히 내려와요.</span><button id="pet-toggle" type="button" aria-pressed="false">움직임 멈추기</button><div class="mobile-pet-picker"><label for="mobile-pets">모바일 친구</label><select id="mobile-pets"><option value="new">시사 · 모몽가 · 랏코</option><option value="original">치이카와 · 하치와레 · 우사기</option><option value="all">전체 6종</option></select></div></div>
+    <div class="cv-background-tools"><label for="background-choice">배경</label><select id="background-choice"><option value="original">기존 배경</option><option value="field-ep6">EP6 풀밭 모티프 · 참고 창작</option><option value="stone-ep2">EP2 석조 벽 모티프 · 장소 미확정</option></select></div>
+    <p id="background-status" class="cv-background-status" role="status" aria-live="polite">기존 배경 · 기본값</p>
   </header>
   <main>
     <section id="home" aria-label="메인 화면">
@@ -75,9 +77,23 @@
         <button id="known" type="button">↑ 알고 있음</button>
         <button id="unknown" type="button">↓ 모르겠음</button>
         <button id="next" type="button">다음 →</button>
+        <button id="undo-answer" type="button" disabled>방금 답변 취소</button>
       </nav>
       <p id="message" role="status" aria-live="polite"></p>
     </section>
+    <details id="study-backup" class="paper-panel" style="margin-top:1rem">
+      <summary>학습 기록 백업 · 복원</summary>
+      <p>급수별 위치와 알고 있음·모르겠음 기록만 옮깁니다. 캐릭터 설정은 포함하지 않습니다.</p>
+      <button id="backup-export" type="button">현재 학습 기록 파일 저장</button>
+      <p><label for="backup-file">복원할 학습 기록 JSON (최대 1MB)</label> <input id="backup-file" type="file" accept="application/json,.json"></p>
+      <p id="backup-status" role="status" aria-live="polite"></p>
+      <div id="backup-preview" hidden>
+        <p id="backup-summary"></p>
+        <p>적용하면 현재 학습 기록 전체를 교체하고 메인 화면으로 돌아갑니다. 먼저 현재 기록을 백업해 두세요.</p>
+        <button id="backup-apply" type="button" disabled>확인한 기록으로 교체</button>
+      </div>
+      <button id="backup-cancel" type="button">복원 선택 취소</button>
+    </details>
   </main>
   <script id="vocabulary" type="application/json">__DATA__</script>
   <script id="pet-sprites" type="application/json">__PET_SPRITES__</script>
@@ -86,13 +102,18 @@
   <script>
   (() => {
     'use strict';
+    __STUDY_STATE_HELPERS__
+    const studyGuard=createStudyState(snapshot=>document.dispatchEvent(new CustomEvent('vocab:busy',{detail:snapshot})));
+    Object.defineProperty(window,'__cvStudyRead',{value:studyGuard.read,configurable:true});
+    document.addEventListener('compositionstart',()=>studyGuard.setComposing(true),true);
+    document.addEventListener('compositionend',()=>studyGuard.setComposing(false),true);
     const data = JSON.parse(document.getElementById('vocabulary').textContent);
     const storageKey = 'jlpt-local-vocabulary-v1';
     const levels = Object.keys(data);
     const el = Object.fromEntries(['home', 'study', 'level-buttons', 'review-level', 'review-summary',
       'start-review', 'review-empty', 'review-table', 'review-rows', 'go-home', 'level', 'study-title',
       'position', 'progress', 'counts', 'card', 'word', 'reading', 'meaning', 'example', 'translation',
-      'answer', 'prev', 'next', 'known', 'unknown', 'message', 'storage-note']
+      'answer', 'prev', 'next', 'known', 'unknown', 'undo-answer', 'message', 'storage-note']
       .map(id => [id, document.getElementById(id)]));
     const allWords = levels.flatMap(level => data[level].map(word => ({ ...word, level })));
     const byId = Object.fromEntries(allWords.map(word => [word.id, word]));
@@ -111,9 +132,17 @@
       }
     }
     let mode = 'all', reviewIds = [], reviewIndex = 0, reviewTotal = 0;
+    let lastAnswer = null;
+    function clearAnswerUndo() { lastAnswer = null; el['undo-answer'].disabled = true; }
     function save() {
-      try { localStorage.setItem(storageKey, JSON.stringify({ level, positions, answers })); }
-      catch (_) { el['storage-note'].textContent = '브라우저 저장이 차단되어 있습니다. 현재 창에서만 기록이 유지됩니다.'; }
+      try {
+        localStorage.setItem(storageKey, JSON.stringify({ level, positions, answers }));
+        el['storage-note'].textContent = '급수별 위치와 학습 기록은 이 브라우저에 자동 저장됩니다.';
+        return true;
+      } catch (_) {
+        el['storage-note'].textContent = '브라우저 저장이 차단되어 있습니다. 현재 창에서만 기록이 유지됩니다.';
+        return false;
+      }
     }
     function unknownWords() {
       const filter = el['review-level'].value;
@@ -127,7 +156,7 @@
       }
       return { known, unknown };
     }
-    function renderHome() {
+    function renderHomeImpl() {
       el['level-buttons'].replaceChildren();
       for (const key of levels) {
         const { known, unknown } = stats(data[key]);
@@ -159,20 +188,26 @@
       });
       el['review-rows'].append(fragment);
     }
-    function showHome() {
+    function showHomeImpl() {
+      clearAnswerUndo();
+      studyGuard.setPhase('home');
       el.home.hidden = false; el.study.hidden = true;
       renderHome();
       document.dispatchEvent(new CustomEvent('vocab:view'));
     }
-    function startLevel(key) {
+    function startLevelImpl(key) {
+      clearAnswerUndo();
+      studyGuard.setPhase('study');
       level = key; mode = 'all';
       el.home.hidden = true; el.study.hidden = false;
       save(); render();
       document.dispatchEvent(new CustomEvent('vocab:start'));
     }
-    function startReview(index = 0) {
+    function startReviewImpl(index = 0) {
+      clearAnswerUndo();
       reviewIds = unknownWords().map(word => word.id);
       if (!reviewIds.length) return;
+      studyGuard.setPhase('review');
       reviewIndex = index; reviewTotal = reviewIds.length; mode = 'review';
       el.home.hidden = true; el.study.hidden = false;
       render();
@@ -180,7 +215,7 @@
     }
     function currentList() { return mode === 'all' ? data[level] : reviewIds.map(id => byId[id]); }
     function currentIndex() { return mode === 'all' ? positions[level] : reviewIndex; }
-    function render(message = '') {
+    function renderImpl(message = '') {
       const list = currentList(), index = currentIndex(), word = list[index];
       const { known, unknown } = stats(mode === 'all' ? list : allWords);
       el.level.value = level;
@@ -196,6 +231,7 @@
       el.prev.disabled = index === 0 || list.length === 0;
       el.next.disabled = !word || index >= list.length - 1;
       el.known.disabled = el.unknown.disabled = !word;
+      el['undo-answer'].disabled = !lastAnswer;
       el.known.setAttribute('aria-pressed', String(!!word && answers[word.id] === 'known'));
       el.unknown.setAttribute('aria-pressed', String(!!word && answers[word.id] === 'unknown'));
       if (word) {
@@ -209,16 +245,20 @@
       }
       el.message.textContent = message || (!word ? '메인 화면에서 남은 모르겠음 단어를 다시 확인할 수 있습니다.' : '');
     }
-    function move(delta) {
+    function moveImpl(delta) {
+      clearAnswerUndo();
       const list = currentList(), current = currentIndex();
       if (!list.length) return;
       const next = Math.min(list.length - 1, Math.max(0, current + delta));
       if (mode === 'review') reviewIndex = next; else positions[level] = next;
       save(); render(next === current ? (delta < 0 ? '첫 번째 단어입니다.' : '마지막 단어입니다.') : '');
     }
-    function mark(answer) {
+    function markImpl(answer) {
       const list = currentList(), index = currentIndex(), word = list[index];
       if (!word) return;
+      // One session-local record only; never an unbounded history or persisted backup.
+      lastAnswer = { id: word.id, previous: answers[word.id], level, mode,
+        position: positions[level], reviewIds: reviewIds.slice(), reviewIndex, reviewTotal };
       const wasComplete = mode === 'all' && list.every(item => answers[item.id]);
       answers[word.id] = answer;
       let suffix = '';
@@ -227,26 +267,158 @@
         else reviewIndex++;
       } else if (index < list.length - 1) positions[level]++;
       else suffix = list.every(item => answers[item.id]) ? ' 이 급수의 모든 단어를 평가했습니다.' : ' 마지막 단어입니다.';
-      save(); render(`${word.kanji}: ${answer === 'known' ? '알고 있음' : '모르겠음'}으로 저장했습니다.${suffix}`);
+      const persisted = save();
+      render(`${word.kanji}: ${answer === 'known' ? '알고 있음' : '모르겠음'}으로 ${persisted ? '저장했습니다.' : '현재 창에만 기록했습니다.'}${suffix}`);
       document.dispatchEvent(new CustomEvent(answer === 'known' ? 'vocab:correct' : 'vocab:wrong'));
       const completed = mode === 'review' ? reviewIndex >= reviewIds.length : !wasComplete && list.every(item => answers[item.id]);
       if (completed) document.dispatchEvent(new CustomEvent('vocab:complete'));
     }
+    function undoAnswerImpl() {
+      const previous = lastAnswer;
+      if (!previous || el.study.hidden || previous.level !== level || previous.mode !== mode) {
+        clearAnswerUndo(); return;
+      }
+      clearAnswerUndo();
+      if (previous.previous === undefined) delete answers[previous.id];
+      else answers[previous.id] = previous.previous;
+      positions[level] = previous.position;
+      reviewIds = previous.reviewIds.slice(); reviewIndex = previous.reviewIndex; reviewTotal = previous.reviewTotal;
+      const persisted = save();
+      render(`${byId[previous.id].kanji}: 방금 답변을 취소했습니다. ${persisted ? '이전 기록과 위치를 저장했습니다.' : '저장이 차단되어 현재 창에서만 복원했습니다.'}`);
+    }
+    // Optional local learning-record transfer. File reads never hold the synchronous study guard.
+    const backupUI = Object.fromEntries(['export','file','status','preview','summary','apply','cancel'].map(key => [key, document.getElementById('backup-' + key)]));
+    const backupFormat = 'chiikawa-study-record';
+    const backupDataset = 'sha256:2112bf91d9ec0eac1f5212c30e89171a639ac4b156a0a92403b75c4b18df3c5e';
+    let pendingBackup = null, backupReadToken = 0;
+    function backupMessage(text) { backupUI.status.textContent = text; }
+    function clearBackup() {
+      backupReadToken++;
+      pendingBackup = null;
+      backupUI.file.value = '';
+      backupUI.preview.hidden = true;
+      backupUI.apply.disabled = true;
+      backupUI.summary.textContent = '';
+    }
+    function currentBackupState() { return { level, positions: { ...positions }, answers: { ...answers } }; }
+    function backupCounts(state) {
+      const values = Object.values(state.answers);
+      return `알고 있음 ${values.filter(v=>v==='known').length}개 / 모르겠음 ${values.filter(v=>v==='unknown').length}개 / 최근 급수 ${state.level} / 위치 ${levels.map(key=>key+': '+(state.positions[key]+1)).join(', ')}`;
+    }
+    function strictObject(value, keys) {
+      if (!value || typeof value !== 'object' || Array.isArray(value) || Object.getPrototypeOf(value) !== Object.prototype) throw new Error('기록 객체 형식이 올바르지 않습니다.');
+      const actual = Object.keys(value);
+      if (keys && (actual.length !== keys.length || actual.some(key=>!keys.includes(key)))) throw new Error('기록 항목 구성이 올바르지 않습니다.');
+    }
+    function validateBackup(text) {
+      const payload = JSON.parse(text, (key, value) => {
+        if (key === '__proto__' || key === 'constructor' || key === 'prototype') throw new Error('허용하지 않는 기록 항목입니다.');
+        return value;
+      });
+      strictObject(payload, ['format','version','dataset','state']);
+      if (payload.format !== backupFormat || payload.version !== 1 || payload.dataset !== backupDataset) throw new Error('이 단어장 버전에서 사용할 수 없는 백업입니다.');
+      const state = payload.state;
+      strictObject(state, ['level','positions','answers']);
+      if (!levels.includes(state.level)) throw new Error('급수가 올바르지 않습니다.');
+      strictObject(state.positions, levels);
+      for (const key of levels) {
+        const position = state.positions[key];
+        if (!Number.isInteger(position) || position < 0 || position >= data[key].length) throw new Error('학습 위치가 범위를 벗어났습니다.');
+      }
+      strictObject(state.answers);
+      for (const [id, value] of Object.entries(state.answers)) {
+        if (!Object.prototype.hasOwnProperty.call(byId, id) || (value !== 'known' && value !== 'unknown')) throw new Error('단어 ID 또는 평가 기록이 올바르지 않습니다.');
+      }
+      return state;
+    }
+    backupUI.export.addEventListener('click', () => {
+      let url = null;
+      try {
+        if (typeof Blob !== 'function' || typeof URL === 'undefined' || typeof URL.createObjectURL !== 'function' || typeof URL.revokeObjectURL !== 'function') throw new Error('이 브라우저는 파일 저장을 지원하지 않습니다. Chrome에서 열어 주세요.');
+        const anchor = document.createElement('a');
+        if (!('download' in anchor)) throw new Error('이 브라우저는 파일 다운로드를 지원하지 않습니다. Chrome에서 열어 주세요.');
+        const payload = { format: backupFormat, version: 1, dataset: backupDataset, state: currentBackupState() };
+        url = URL.createObjectURL(new Blob([JSON.stringify(payload, null, 2)], {type:'application/json;charset=utf-8'}));
+        anchor.href = url; anchor.download = 'chiikawa-study-record.json';
+        document.body.append(anchor); anchor.click(); anchor.remove();
+        const releasedURL = url;
+        setTimeout(()=>URL.revokeObjectURL(releasedURL), 30000);
+        url = null;
+        backupMessage('현재 창의 학습 기록 다운로드를 요청했습니다. 저장된 파일을 확인해 주세요.');
+      } catch (error) {
+        if (url) URL.revokeObjectURL(url);
+        backupMessage(error.message || '학습 기록 파일을 저장하지 못했습니다.');
+      }
+    });
+    backupUI.file.addEventListener('change', async () => {
+      const file = backupUI.file.files && backupUI.file.files[0];
+      clearBackup();
+      const token = backupReadToken;
+      if (!file) { backupMessage('복원할 파일을 선택해 주세요.'); return; }
+      try {
+        if (!Number.isInteger(file.size) || file.size <= 0 || file.size > 1024 * 1024) throw new Error('파일은 비어 있지 않은 1MB 이하 JSON이어야 합니다.');
+        if (typeof file.text !== 'function') throw new Error('이 브라우저는 파일 읽기를 지원하지 않습니다. Chrome에서 열어 주세요.');
+        backupMessage('파일을 확인하는 중입니다. 아직 기록은 바뀌지 않았습니다.');
+        const text = await file.text();
+        if (token !== backupReadToken) return;
+        if (typeof text !== 'string' || text.length > 1024 * 1024) throw new Error('파일 크기 또는 형식이 올바르지 않습니다.');
+        pendingBackup = validateBackup(text);
+        backupUI.summary.textContent = `현재: ${backupCounts(currentBackupState())}\n복원 예정: ${backupCounts(pendingBackup)}`;
+        backupUI.preview.hidden = false;
+        backupUI.apply.disabled = false;
+        backupMessage('검증 완료. 아직 적용하지 않았습니다. 내용을 확인한 뒤 교체 버튼을 눌러 주세요.');
+      } catch (error) {
+        if (token !== backupReadToken) return;
+        clearBackup();
+        backupMessage('복원할 수 없습니다: ' + (error.message || '잘못된 JSON 파일입니다.'));
+      }
+    });
+    backupUI.cancel.addEventListener('click', () => { clearBackup(); backupMessage('복원을 취소했습니다. 학습 기록은 바뀌지 않았습니다.'); });
+    backupUI.apply.addEventListener('click', () => {
+      if (!pendingBackup) return;
+      studyGuard.run(() => {
+        const next = pendingBackup;
+        // A single Web Storage write is atomic: on failure, neither live state nor stored value changes.
+        try { localStorage.setItem(storageKey, JSON.stringify(next)); }
+        catch (_) { backupMessage('브라우저 저장에 실패하여 복원하지 않았습니다. 기존 기록을 유지합니다. 저장 권한을 확인해 주세요.'); return; }
+        clearAnswerUndo();
+        level = next.level;
+        for (const key of levels) positions[key] = next.positions[key];
+        for (const key of Object.keys(answers)) delete answers[key];
+        Object.assign(answers, next.answers);
+        mode = 'all'; reviewIds = []; reviewIndex = 0; reviewTotal = 0;
+        clearBackup();
+        el['review-level'].value = 'all';
+        try { showHome(); }
+        catch (_) { backupMessage('학습 기록은 저장했지만 화면을 갱신하지 못했습니다. 파일을 다시 열어 저장된 기록을 확인해 주세요.'); return; }
+        el['storage-note'].textContent = '급수별 위치와 학습 기록은 이 브라우저에 자동 저장됩니다.';
+        backupMessage('학습 기록을 복원했습니다. 급수를 선택해 이어서 학습하세요.');
+      });
+    });
+
     el['go-home'].addEventListener('click', showHome);
-    el['review-level'].addEventListener('change', renderHome);
+    el['review-level'].addEventListener('change', () => studyGuard.run(() => { clearAnswerUndo(); renderHome(); }));
     el['start-review'].addEventListener('click', () => startReview());
     el.level.addEventListener('change', () => { startLevel(el.level.value); el.level.blur(); });
     el.prev.addEventListener('click', () => move(-1));
     el.next.addEventListener('click', () => move(1));
     el.known.addEventListener('click', () => mark('known'));
     el.unknown.addEventListener('click', () => mark('unknown'));
+    el['undo-answer'].addEventListener('click', () => studyGuard.run(undoAnswerImpl));
     document.addEventListener('keydown', event => {
       if (el.study.hidden || event.altKey || event.ctrlKey || event.metaKey || event.isComposing) return;
-      if (event.target.closest?.('select, input, textarea, [contenteditable="true"], .cv-pet')) return;
+      if (event.target.closest?.('select, input, textarea, [contenteditable="true"], .cv-pet, #study-backup')) return;
       const action = { ArrowLeft: () => move(-1), ArrowRight: () => move(1),
         ArrowUp: () => mark('known'), ArrowDown: () => mark('unknown') }[event.key];
       if (action) { event.preventDefault(); if (!event.repeat) action(); }
     });
+    function showHome(...args){return studyGuard.run(()=>showHomeImpl(...args));}
+    function startLevel(...args){return studyGuard.run(()=>startLevelImpl(...args));}
+    function startReview(...args){return studyGuard.run(()=>startReviewImpl(...args));}
+    function renderHome(...args){return studyGuard.run(()=>renderHomeImpl(...args));}
+    function render(...args){return studyGuard.run(()=>renderImpl(...args));}
+    function move(...args){return studyGuard.run(()=>moveImpl(...args));}
+    function mark(...args){return studyGuard.run(()=>markImpl(...args));}
     showHome();
   })();
   </script>

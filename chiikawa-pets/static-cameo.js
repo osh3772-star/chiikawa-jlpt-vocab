@@ -1,7 +1,7 @@
 export function shouldCancelPreviewForStudyInput(event, studyVisible) {
   if(['click','change'].includes(event.type))return Boolean(event.target?.closest?.('main'));
   if(event.type!=='keydown'||!studyVisible||event.altKey||event.ctrlKey||event.metaKey||event.isComposing)return false;
-  if(event.target?.closest?.('select, input, textarea, [contenteditable="true"], .cv-pet, .cv-preview-panel, .pet-tools, .cv-visibility-tools, .cv-mobile-pet-dock, .cv-evidence-status'))return false;
+  if(event.target?.closest?.('select, input, textarea, [contenteditable="true"], .cv-pet, .cv-direct-stage, .cv-direct-tools, .cv-direct-status, .cv-preview-panel, .pet-tools, .cv-visibility-tools, .cv-mobile-pet-dock, .cv-evidence-status'))return false;
   return ['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(event.key)&&!event.repeat;
 }
 /** Exclusive preview lifecycle. Registration never grants art/motion approval. */
@@ -9,8 +9,9 @@ export function createPreviewCoordinator() {
   const controllers=new Map();
   return {
     register(id,controller){if(controllers.has(id))throw new Error('Duplicate preview ID');controllers.set(id,controller);},
-    start(id){const controller=controllers.get(id);if(!controller)return Promise.resolve(false);for(const [key,other] of controllers)if(key!==id)other.cancel('superseded');return controller.start();},
+    start(id){const controller=controllers.get(id);if(!controller)return Promise.resolve(false);if(controller.canStart&&controller.canStart()!==true)return Promise.resolve(false);for(const [key,other] of controllers)if(key!==id)other.cancel('superseded');return controller.start();},
     cancelAll(reason){for(const controller of controllers.values())controller.cancel(reason);},
+    hasOtherOpen(id){return [...controllers].some(([key,c])=>key!==id&&c.getState().mode!=='off');},
     anyActive(){return [...controllers.values()].some(c=>c.getState().active);},
     hasOpen(){return [...controllers.values()].some(c=>c.getState().mode!=='off');}
   };

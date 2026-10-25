@@ -1,0 +1,254 @@
+{
+  "fragmentId": "chiikawa-carry-cycle",
+  "testingAuthorized": true,
+  "enabledByDefault": false,
+  "productionEnabled": false,
+  "motionActivation": false,
+  "timingOrigin": "AUTHORED_24FPS_ON_TWOS",
+  "holdMs": 83.33333333333333,
+  "totalDisplayMs": 1000,
+  "authoredInbetweens": true,
+  "loop": false,
+  "interpolation": false,
+  "windowSize": [
+    160,
+    160
+  ],
+  "sourceUrl": "https://www.tiktok.com/@mrchiikawa/video/7562899268726508807",
+  "sourceRecord": "PAIR_EP21_LARGE_CARRY_FOOT_REPEAT_C",
+  "limitations": "ONE authored closure cycle only:12 slots/11 unique PNGs; D aliases C as authored neutral, not exact source13. Eight authored inbetweens. No infinite/autonomous loop, root travel, exact contact or original timing. No additional terminal A.",
+  "frames": [
+    {
+      "poseId": "A",
+      "assetPath": "chiikawa-pets/limited-previews/assets/stepping/pose-a-v1.png",
+      "assetSha256": "5a2e16587d282629459df98e73817aa7fafb612caed9ede28bb9735bfc5d7380",
+      "assetSize": [
+        1254,
+        1254
+      ],
+      "sourceRect": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "scale": 0.13333333333333333,
+      "left": -3.6,
+      "top": -9.066666666666666,
+      "drawingOrigin": "OBSERVED_POSE_DERIVED"
+    },
+    {
+      "poseId": "AC1",
+      "assetPath": "chiikawa-pets/limited-previews/assets/smooth-carry/AC1-v2.png",
+      "assetSha256": "47689170eba921262ce3799841c5d4cd220a9902ae38171729b077cb970a1d90",
+      "assetSize": [
+        1254,
+        1254
+      ],
+      "sourceRect": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "scale": 0.13333333333333333,
+      "left": -3.6,
+      "top": -9.066666666666666,
+      "drawingOrigin": "AUTHORED_INBETWEEN_NOT_OBSERVED"
+    },
+    {
+      "poseId": "AC2",
+      "assetPath": "chiikawa-pets/limited-previews/assets/smooth-carry/AC2-v1.png",
+      "assetSha256": "442308ea0f62740be9a57534fabb0a411b991bbc5515155a2bb5595954e806ca",
+      "assetSize": [
+        1254,
+        1254
+      ],
+      "sourceRect": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "scale": 0.13333333333333333,
+      "left": -3.6,
+      "top": -9.066666666666666,
+      "drawingOrigin": "AUTHORED_INBETWEEN_NOT_OBSERVED"
+    },
+    {
+      "poseId": "C",
+      "assetPath": "chiikawa-pets/limited-previews/assets/stepping/pose-c-v1.png",
+      "assetSha256": "9d6eba954832c4967e74e42f9d364c827a45e2f64b60152775f7041aeb62115c",
+      "assetSize": [
+        1254,
+        1254
+      ],
+      "sourceRect": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "scale": 0.13333333333333333,
+      "left": -3.6,
+      "top": -9.066666666666666,
+      "drawingOrigin": "OBSERVED_POSE_DERIVED"
+    },
+    {
+      "poseId": "CB1",
+      "assetPath": "chiikawa-pets/limited-previews/assets/smooth-carry/CB1-v1.png",
+      "assetSha256": "d5ad03089ebd785f6032b3a446c6f912faaafa92b7321ad3223ff118ba5fc7c3",
+      "assetSize": [
+        1254,
+        1254
+      ],
+      "sourceRect": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "scale": 0.13333333333333333,
+      "left": -3.6,
+      "top": -9.066666666666666,
+      "drawingOrigin": "AUTHORED_INBETWEEN_NOT_OBSERVED"
+    },
+    {
+      "poseId": "CB2",
+      "assetPath": "chiikawa-pets/limited-previews/assets/smooth-carry/CB2-v1.png",
+      "assetSha256": "d7e042d89d09dfe0e30cc54871d7c9469329a9fd0621d06907061ccb2f2c7985",
+      "assetSize": [
+        1254,
+        1254
+      ],
+      "sourceRect": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "scale": 0.13333333333333333,
+      "left": -3.6,
+      "top": -9.066666666666666,
+      "drawingOrigin": "AUTHORED_INBETWEEN_NOT_OBSERVED"
+    },
+    {
+      "poseId": "B",
+      "assetPath": "chiikawa-pets/limited-previews/assets/stepping/pose-b-v1.png",
+      "assetSha256": "4b8f21b9de96b26d8ae43b3887e75ef9e08306c3013895264f24185583260251",
+      "assetSize": [
+        1254,
+        1254
+      ],
+      "sourceRect": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "scale": 0.13333333333333333,
+      "left": -3.6,
+      "top": -9.066666666666666,
+      "drawingOrigin": "OBSERVED_POSE_DERIVED"
+    },
+    {
+      "poseId": "BD1",
+      "assetPath": "chiikawa-pets/limited-previews/assets/smooth-return/BD1-v1.png",
+      "assetSha256": "bfbe5eea16b2726d2588ea8b19fef824c35a26f2555cd13ffb042f464da7573e",
+      "assetSize": [
+        1254,
+        1254
+      ],
+      "sourceRect": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "scale": 0.13333333333333333,
+      "left": -3.6,
+      "top": -9.066666666666666,
+      "drawingOrigin": "AUTHORED_INBETWEEN_NOT_OBSERVED"
+    },
+    {
+      "poseId": "BD2",
+      "assetPath": "chiikawa-pets/limited-previews/assets/smooth-return/BD2-v2.png",
+      "assetSha256": "44767b0bd75fbd16d7d0457f3a117fe03db7edb01be0a3bc04a516153fc6962c",
+      "assetSize": [
+        1254,
+        1254
+      ],
+      "sourceRect": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "scale": 0.13333333333333333,
+      "left": -3.6,
+      "top": -9.066666666666666,
+      "drawingOrigin": "AUTHORED_INBETWEEN_NOT_OBSERVED"
+    },
+    {
+      "poseId": "D",
+      "assetPath": "chiikawa-pets/limited-previews/assets/stepping/pose-c-v1.png",
+      "assetSha256": "9d6eba954832c4967e74e42f9d364c827a45e2f64b60152775f7041aeb62115c",
+      "assetSize": [
+        1254,
+        1254
+      ],
+      "sourceRect": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "scale": 0.13333333333333333,
+      "left": -3.6,
+      "top": -9.066666666666666,
+      "drawingOrigin": "AUTHORED_NEUTRAL_ALIAS_NOT_OBSERVED",
+      "aliasOf": "C"
+    },
+    {
+      "poseId": "DA1",
+      "assetPath": "chiikawa-pets/limited-previews/assets/smooth-return/DA1-v2.png",
+      "assetSha256": "e541194a7b6d87bc40d2765e5d1eb105f202defad6477a726c03d81be7993a4c",
+      "assetSize": [
+        1254,
+        1254
+      ],
+      "sourceRect": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "scale": 0.13333333333333333,
+      "left": -3.6,
+      "top": -9.066666666666666,
+      "drawingOrigin": "AUTHORED_INBETWEEN_NOT_OBSERVED"
+    },
+    {
+      "poseId": "DA2",
+      "assetPath": "chiikawa-pets/limited-previews/assets/smooth-return/DA2-v1.png",
+      "assetSha256": "7a660cb0ca42b009f28151d337a743d8892e2e314b17b4810d08c63b303b7317",
+      "assetSize": [
+        1254,
+        1254
+      ],
+      "sourceRect": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "scale": 0.13333333333333333,
+      "left": -3.6,
+      "top": -9.066666666666666,
+      "drawingOrigin": "AUTHORED_INBETWEEN_NOT_OBSERVED"
+    }
+  ],
+  "cycleCount": 1,
+  "slotCount": 12,
+  "uniqueDrawingCount": 11
+}

@@ -1,0 +1,344 @@
+{
+  "fragmentId": "hachiware-fullbody-response",
+  "testingAuthorized": true,
+  "enabledByDefault": false,
+  "productionEnabled": false,
+  "motionActivation": false,
+  "timingOrigin": "AUTHORED_VARIABLE_EXPOSURES",
+  "totalDisplayMs": 1000,
+  "slotCount": 16,
+  "uniqueDrawingCount": 14,
+  "loop": false,
+  "interpolation": false,
+  "windowSize": [
+    160,
+    147.9
+  ],
+  "sourceUrl": "https://www.tiktok.com/@mrchiikawa/video/7563251812514614546",
+  "recoveryFidelity": "HOLD_EXACT_CONTOUR_SMALLER_AUTHORED_APPROXIMATION",
+  "limitations": "Eight authored intermediate drawings.32/40 explicitly reuse30;38 has smaller authored recovery, not exact source contour. No exact original timing/contact/landing; final idle is an authored UI cut. Stage-only, no same-actor Hachi activation.",
+  "frames": [
+    {
+      "poseId": "30",
+      "assetPath": "chiikawa-pets/limited-previews/assets/hachi-fullbody/key30-upright.png",
+      "assetSha256": "6767c831693b4f8c0fe39ccecd9b4ef148f976016b76f553428f969e1053f09f",
+      "assetSize": [
+        1254,
+        1254
+      ],
+      "sourceRect": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "scale": 0.1081651376146789,
+      "left": 9.497487614678892,
+      "top": 3.0759862385321073,
+      "durationMs": 40,
+      "drawingOrigin": "OBSERVED_POSE_DERIVED"
+    },
+    {
+      "poseId": "B30_31",
+      "assetPath": "chiikawa-pets/limited-previews/assets/hachi-fullbody/B30_31-v2.png",
+      "assetSha256": "c85f07fc3f4141759e34066008469c207c91dfc598720c5917f6a03a12e2a3a7",
+      "assetSize": [
+        1254,
+        1254
+      ],
+      "sourceRect": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "scale": 0.10668146503884574,
+      "left": 9.154344674205538,
+      "top": 7.514877872979139,
+      "durationMs": 50,
+      "drawingOrigin": "AUTHORED_INBETWEEN_NOT_OBSERVED"
+    },
+    {
+      "poseId": "31",
+      "assetPath": "chiikawa-pets/limited-previews/assets/hachi-fullbody/key31-lower-eyesclosed.png",
+      "assetSha256": "8d2595d7586941aefa74ce8770307d3a6b657fa084fb0f88b2bf835e47a2bae3",
+      "assetSize": [
+        1254,
+        1254
+      ],
+      "sourceRect": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "scale": 0.11601895734597156,
+      "left": 4.118123222748852,
+      "top": 9.715668246445512,
+      "durationMs": 50,
+      "drawingOrigin": "OBSERVED_POSE_DERIVED"
+    },
+    {
+      "poseId": "B31_32a",
+      "assetPath": "chiikawa-pets/limited-previews/assets/hachi-fullbody/B31_32a.png",
+      "assetSha256": "1d84f1bd7d1b653647ca3e485bd66e3877f949971650f8947773055a3ef010a4",
+      "assetSize": [
+        1254,
+        1254
+      ],
+      "sourceRect": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "scale": 0.11459715639810426,
+      "left": 4.396889828313204,
+      "top": 5.9224159196860455,
+      "durationMs": 50,
+      "drawingOrigin": "AUTHORED_INBETWEEN_NOT_OBSERVED"
+    },
+    {
+      "poseId": "B31_32b",
+      "assetPath": "chiikawa-pets/limited-previews/assets/hachi-fullbody/B31_32b.png",
+      "assetSha256": "97e5162b30368f3302313638e8a599bc5d47dbc012d3c25fe77cad814869bb8d",
+      "assetSize": [
+        1254,
+        1254
+      ],
+      "sourceRect": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "scale": 0.10966704936854191,
+      "left": 7.326036427445934,
+      "top": 6.682511151269239,
+      "durationMs": 50,
+      "drawingOrigin": "AUTHORED_INBETWEEN_NOT_OBSERVED"
+    },
+    {
+      "poseId": "32",
+      "assetPath": "chiikawa-pets/limited-previews/assets/hachi-fullbody/key30-upright.png",
+      "assetSha256": "6767c831693b4f8c0fe39ccecd9b4ef148f976016b76f553428f969e1053f09f",
+      "assetSize": [
+        1254,
+        1254
+      ],
+      "sourceRect": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "scale": 0.1081651376146789,
+      "left": 9.242607614678903,
+      "top": 0.05565823853213488,
+      "durationMs": 50,
+      "drawingOrigin": "AUTHORED_APPROXIMATE_ALIAS",
+      "aliasOf": "30"
+    },
+    {
+      "poseId": "B32_33",
+      "assetPath": "chiikawa-pets/limited-previews/assets/hachi-fullbody/B32_33-v2.png",
+      "assetSha256": "7d2ffc815892eb5885027d92dd0649d50b135c20050771d112b27bed8c2104b7",
+      "assetSize": [
+        1254,
+        1254
+      ],
+      "sourceRect": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "scale": 0.10335861321776817,
+      "left": 12.240950868016183,
+      "top": -2.236747881339841,
+      "durationMs": 50,
+      "drawingOrigin": "AUTHORED_INBETWEEN_NOT_OBSERVED"
+    },
+    {
+      "poseId": "33",
+      "assetPath": "chiikawa-pets/limited-previews/assets/hachi-fullbody/key33-compact-outward.png",
+      "assetSha256": "725fa4ab5fd16a0f2c5a3410ad7e08644a6cb9a32953aca1ff1c39a4c2c34e41",
+      "assetSize": [
+        1254,
+        1254
+      ],
+      "sourceRect": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "scale": 0.11051546391752579,
+      "left": 9.57143917525774,
+      "top": -6.6013855670102775,
+      "durationMs": 70,
+      "drawingOrigin": "OBSERVED_POSE_DERIVED"
+    },
+    {
+      "poseId": "B33_35",
+      "assetPath": "chiikawa-pets/limited-previews/assets/hachi-fullbody/B33_35.png",
+      "assetSha256": "106b20e50fb0e5fc2c591a87ac7398a4663bed0f37698a91d0ea3f144ecc8dd5",
+      "assetSize": [
+        1254,
+        1254
+      ],
+      "sourceRect": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "scale": 0.1099205448354143,
+      "left": 9.976829171396151,
+      "top": -6.212039854710554,
+      "durationMs": 50,
+      "drawingOrigin": "AUTHORED_INBETWEEN_NOT_OBSERVED"
+    },
+    {
+      "poseId": "35",
+      "assetPath": "chiikawa-pets/limited-previews/assets/hachi-fullbody/key35-horizontal-paws.png",
+      "assetSha256": "1c7878c83ea23cedfda1f6840582411678f973491f2b2c614a27450a8fd44650",
+      "assetSize": [
+        1254,
+        1254
+      ],
+      "sourceRect": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "scale": 0.11095890410958904,
+      "left": 9.271865068493161,
+      "top": -7.570014273972607,
+      "durationMs": 60,
+      "drawingOrigin": "OBSERVED_POSE_DERIVED"
+    },
+    {
+      "poseId": "B35_36",
+      "assetPath": "chiikawa-pets/limited-previews/assets/hachi-fullbody/B35_36.png",
+      "assetSha256": "854364b2d0f732d570c71bdb2d7410dedfbc8a2f5ad4167951d396dba58746b2",
+      "assetSize": [
+        1254,
+        1254
+      ],
+      "sourceRect": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "scale": 0.10062111801242235,
+      "left": 14.626270186335411,
+      "top": -1.0066203229813595,
+      "durationMs": 50,
+      "drawingOrigin": "AUTHORED_INBETWEEN_NOT_OBSERVED"
+    },
+    {
+      "poseId": "36",
+      "assetPath": "chiikawa-pets/limited-previews/assets/hachi-fullbody/key36-compact-inward-v2.png",
+      "assetSha256": "94f32f1d6c039d836ef0d221df1b99cd50469167fe3b859edb2aacd21bbcafd8",
+      "assetSize": [
+        1254,
+        1254
+      ],
+      "sourceRect": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "scale": 0.1071664829106946,
+      "left": 10.409164277839047,
+      "top": -6.9231792723263545,
+      "durationMs": 70,
+      "drawingOrigin": "OBSERVED_POSE_DERIVED"
+    },
+    {
+      "poseId": "B36_38",
+      "assetPath": "chiikawa-pets/limited-previews/assets/hachi-fullbody/B36_38.png",
+      "assetSha256": "ed4edf82872025ca5d7bc383f070457f908e1cd907929bfb7719db6f0697ae6a",
+      "assetSize": [
+        1254,
+        1254
+      ],
+      "sourceRect": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "scale": 0.09693693693693695,
+      "left": 16.277308936936937,
+      "top": -0.28739499099099247,
+      "durationMs": 60,
+      "drawingOrigin": "AUTHORED_INBETWEEN_NOT_OBSERVED"
+    },
+    {
+      "poseId": "38",
+      "assetPath": "chiikawa-pets/limited-previews/assets/hachi-fullbody/key38-lower-closedmouth-v2.png",
+      "assetSha256": "f3a25f67f61b91a8f27ded8cbb31a34fefb5f12c22a4f4833ccc0905d34c4938",
+      "assetSize": [
+        1254,
+        1254
+      ],
+      "sourceRect": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "scale": 0.10567360350492881,
+      "left": 11.194737905178682,
+      "top": -9.065286646726657,
+      "durationMs": 60,
+      "drawingOrigin": "AUTHORED_SMALLER_RECOVERY_APPROXIMATION"
+    },
+    {
+      "poseId": "B38_40a",
+      "assetPath": "chiikawa-pets/limited-previews/assets/hachi-fullbody/B38_40a.png",
+      "assetSha256": "fe79788aa159cfa9a096d6aaf953571996d2cd447d0f87c3a92208926b8e2c9b",
+      "assetSize": [
+        1254,
+        1254
+      ],
+      "sourceRect": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "scale": 0.10437636761487966,
+      "left": 10.75809191247265,
+      "top": -2.068351921225383,
+      "durationMs": 60,
+      "drawingOrigin": "AUTHORED_INBETWEEN_NOT_OBSERVED"
+    },
+    {
+      "poseId": "40",
+      "assetPath": "chiikawa-pets/limited-previews/assets/hachi-fullbody/key30-upright.png",
+      "assetSha256": "6767c831693b4f8c0fe39ccecd9b4ef148f976016b76f553428f969e1053f09f",
+      "assetSize": [
+        1254,
+        1254
+      ],
+      "sourceRect": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "scale": 0.1081651376146789,
+      "left": 9.497487614678892,
+      "top": 3.0759862385321073,
+      "durationMs": 180,
+      "drawingOrigin": "AUTHORED_APPROXIMATE_ALIAS",
+      "aliasOf": "30"
+    }
+  ]
+}
