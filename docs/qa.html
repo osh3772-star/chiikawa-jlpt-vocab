@@ -581,6 +581,17 @@ body.cv-character-only .cv-character-only-stage>.cv-kani-static-panel>[role="sta
 body.cv-character-only .cv-kani-input-stage:not([hidden]),
 body.cv-character-only .cv-kani-input-stage:not([hidden])>iframe{pointer-events:auto;}
 </style>
+<style>
+/* The persistent view-toggle is also a measured obstacle. Moving the pointer
+   from this button to a motion button must not animate its collision box. */
+.cv-character-view-toggle,
+.cv-character-view-toggle:hover:not(:disabled),
+.cv-character-view-toggle:active:not(:disabled) {
+  transform: none;
+  box-shadow: 0 3px 0 #d8cbb967;
+  transition: background-color .18s ease;
+}
+</style>
 </head>
 <body>
   <div class="scenery" aria-hidden="true"><span class="sun"></span><span class="cloud cloud-one"></span><span class="cloud cloud-two"></span><span class="hill hill-one"></span><span class="hill hill-two"></span></div>
