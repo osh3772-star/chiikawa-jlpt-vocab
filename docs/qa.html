@@ -1580,7 +1580,7 @@ function mountChiikawaPets(options = {}) {
     let study;try{study=readStudyState?.();}catch(_){}
     const studySafe=study?.phase==='home'&&study.busy===false&&study.composing===false&&study.audioPending===false&&Number.isSafeInteger(study.revision);
     const safe=pairArtApproved===true&&studySafe&&!destroyed&&!document.hidden&&!paused()&&(v.w>=640||responsiveSafe)&&!otherOwner&&!pair&&!pending&&members.every(p=>p&&requestedVisible.has(p.id)&&!p.assetUnavailable&&p.img.naturalWidth>0&&!p.scalePlacementUnavailable&&(!stageRect(p)||responsiveSafe)&&!isBeta(p)&&p.mode==='idle'&&!p.action&&hachiPaintSafe({outer:paintRect(p)},{left:0,top:0,right:v.w,bottom:v.h},null,obstacles))&&!pets.some(p=>p.pointerId!==null||p.touch||p.airborne||PHYSICAL.has(p.mode));
-    return {safe,scope,responsiveEligible:responsiveSafe,epoch:transientEpoch,key:JSON.stringify([scope,responsive?.map(r=>r?.key),transientEpoch,study?.revision,[...requestedVisible],pets.map(p=>[p.id,p.x,p.y,p.width,p.height,p.mode,p.pointerId,!!p.touch,p.airborne]),manualPaused,reduced]),actors:ids};
+    return {safe,scope,responsiveEligible:responsiveSafe,epoch:transientEpoch,key:JSON.stringify([scope,responsive?.map(r=>r?.key),transientEpoch,study?.revision,[...requestedVisible],pets.map(p=>[p.id,p.x,p.y,p.width,p.height,ids.includes(p.id)||PHYSICAL.has(p.mode)?p.mode:null,p.pointerId,!!p.touch,p.airborne]),manualPaused,reduced]),actors:ids};
   }
   function releasePairPresentation(token){
     if(!pairPresentation||pairPresentation.token!==token||!presentationRegistry.owns(token))return false;
