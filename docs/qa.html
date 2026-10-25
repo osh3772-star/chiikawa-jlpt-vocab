@@ -349,18 +349,22 @@ body.cv-character-only .cv-mobile-pet-slot>button{display:none;}
   padding:0!important;min-height:0!important;height:100dvh;overflow:hidden!important;
  }
  body.cv-reserved-lane-candidate:not(.cv-character-only)>.cv-content-viewport{
-  position:relative;border-radius:0;box-sizing:border-box;height:calc(100dvh - 220px - env(safe-area-inset-bottom,0px));
+  position:relative;border-radius:0;box-sizing:border-box;height:calc(100dvh - 236px - env(safe-area-inset-bottom,0px));
   overflow:auto;padding:60px 14px 24px;overscroll-behavior-y:contain;
  }
  body.cv-reserved-lane-candidate:not(.cv-character-only)>.cv-mobile-pet-dock{
   position:fixed;left:0;right:0;bottom:0;z-index:80;box-sizing:border-box;
-  height:calc(220px + env(safe-area-inset-bottom,0px));margin:0;
+  height:calc(236px + env(safe-area-inset-bottom,0px));margin:0;
   padding:8px 18px calc(8px + env(safe-area-inset-bottom,0px));
   border-radius:14px 14px 0 0;
  }
  body.cv-reserved-lane-candidate:not(.cv-character-only):has(>.cv-mobile-pet-dock[hidden])>.cv-content-viewport{
   height:100dvh;
  }
+}
+/* VISIBLE_DOCK_GAP: 44px button + 8px gap + 140px actor + 8px floor = 200px. */
+@media(max-width:639px){
+ body.cv-reserved-lane-candidate:not(.cv-character-only)>.cv-mobile-pet-dock>.cv-mobile-pet-slot{height:200px;}
 }
 /* Extremely short/landscape windows cannot reserve a 220px lane safely.
    Fall back to scrollable document flow instead of a negative-height owner. */
