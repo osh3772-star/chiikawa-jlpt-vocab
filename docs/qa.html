@@ -557,6 +557,11 @@ body.cv-character-only .cv-character-only-stage>.cv-kani-static-panel>[role="sta
   transition: background-color .18s ease;
 }
 </style>
+<style>
+/* Interactive iframe must not inherit decorative rail pointer-events:none. */
+body.cv-character-only .cv-kani-input-stage:not([hidden]),
+body.cv-character-only .cv-kani-input-stage:not([hidden])>iframe{pointer-events:auto;}
+</style>
 </head>
 <body>
   <div class="scenery" aria-hidden="true"><span class="sun"></span><span class="cloud cloud-one"></span><span class="cloud cloud-two"></span><span class="hill hill-one"></span><span class="hill hill-two"></span></div>
