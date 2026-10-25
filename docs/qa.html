@@ -2464,7 +2464,7 @@ function createMomongaWebGlide({asset,getEngine,coordinator,clipObstacle=(el,r)=
  }
  function remove(){surface?.remove();surface=null;image=null;}
  function release(token,reason){const current=lease===token&&leaseRequestSerial===requestSerial&&!disposed,painted=leasePainted;status.dataset.motionReason=reason??'release-without-reason';try{getEngine()?.releaseTransientPresentation?.(token);}finally{if(lease===token){lease=null;leaseRequestSerial=null;leasePainted=false;}if(current){status.textContent=painted&&['complete-ui-cut','absolute-deadline-ui-cut'].includes(reason)?'여백 활공 종료 · 원래 배우로 UI 복귀 (착지 아님)':painted?'안전 조건이 달라져 활공을 중단 · 원래 배우로 UI 복귀':'표시 전에 안전 조건이 달라져 활공을 생략';try{onFinish(status.textContent);}catch(_){}}}}
- const clock={now:()=>win.performance.now(),request:fn=>win.requestAnimationFrame(fn),cancel:n=>win.cancelAnimationFrame(n),setTimeout:(fn,n)=>win.setTimeout(fn,n),clearTimeout:n=>win.clearTimeout(n)};
+ const clock={now:()=>win.performance.now(),request:fn=>win.requestAnimationFrame(()=>fn(win.performance.now())),cancel:n=>win.cancelAnimationFrame(n),setTimeout:(fn,n)=>win.setTimeout(fn,n),clearTimeout:n=>win.clearTimeout(n)};
  const core=createGlide({readState:state,readGeometry:geometry,clock,
   tryAcquire:expected=>{if(coordinator.hasOtherOpen(id))return null;const current=state();const token=getEngine()?.tryAcquireTransientPresentation?.({...expected,scope:responsiveScope(),responsiveKey:current?.responsiveKey},reason=>cancel(reason));if(!token)return null;lease=token;leaseRequestSerial=requestSerial;leasePainted=false;return token;},
   owns:token=>getEngine()?.ownsTransientPresentation?.(token)===true,
