@@ -280,7 +280,7 @@ body.cv-character-only .cv-mobile-pet-slot>button{visibility:hidden;}
   padding:0!important;min-height:0!important;height:100dvh;overflow:hidden!important;
  }
  body.cv-reserved-lane-candidate:not(.cv-character-only)>.cv-content-viewport{
-  box-sizing:border-box;height:calc(100dvh - 220px - env(safe-area-inset-bottom,0px));
+  position:relative;border-radius:0;box-sizing:border-box;height:calc(100dvh - 220px - env(safe-area-inset-bottom,0px));
   overflow:auto;padding:60px 14px 24px;overscroll-behavior-y:contain;
  }
  body.cv-reserved-lane-candidate:not(.cv-character-only)>.cv-mobile-pet-dock{
@@ -477,6 +477,17 @@ body.cv-character-only .cv-character-only-stage>.cv-kani-static-panel{width:min(
 body.cv-character-only .cv-character-only-stage>.cv-kani-static-panel>.cv-kani-input-switch,
 body.cv-character-only .cv-character-only-stage>.cv-kani-static-panel>[role="status"]{display:block!important;}
 </style>
+<style>
+/* Keep motion-admission obstacle geometry invariant across pointer press/release.
+   Do not remove the controls from collision checks or weaken motion guards. */
+:is(.cv-momonga-flight-tools, .cv-pair-greeting-tools, .cv-glide-tools) button,
+:is(.cv-momonga-flight-tools, .cv-pair-greeting-tools, .cv-glide-tools) button:hover:not(:disabled),
+:is(.cv-momonga-flight-tools, .cv-pair-greeting-tools, .cv-glide-tools) button:active:not(:disabled) {
+  transform: none;
+  box-shadow: 0 3px 0 #d8cbb967;
+  transition: background-color .18s ease;
+}
+</style>
 </head>
 <body>
   <div class="scenery" aria-hidden="true"><span class="sun"></span><span class="cloud cloud-one"></span><span class="cloud cloud-two"></span><span class="hill hill-one"></span><span class="hill hill-two"></span></div>
@@ -661,7 +672,7 @@ function createKaniRailController({assets,read,decode,paint,clear,status=()=>{},
 return {createKaniRailController};
 })();
   const ownedContentPanels=[]; // Explicit handles only; never collect all body children.
-  const ownedEnv=()=>({owner:!characterOnlyMode&&B_LAYOUT_ENABLED&&window.innerWidth>=1000&&window.innerHeight>=640?contentViewport:null,getStyle:el=>getComputedStyle(el)});
+  const ownedEnv=()=>({owner:!characterOnlyMode&&B_LAYOUT_ENABLED&&((window.innerWidth>=1000&&window.innerHeight>=640)||(window.innerWidth<640&&window.innerHeight>=380))?contentViewport:null,getStyle:el=>getComputedStyle(el)});
   function ownedObstacleRect(el,raw){const r=OwnedGeometry.clipOwnedPaint(el,raw,ownedEnv());return r.kind==='clipped'?{left:0,top:0,right:0,bottom:0,width:0,height:0,ownedClipped:true}:r.kind==='visible'?r.rect:raw;}
   const ownedNotClipped=r=>!r?.ownedClipped;
   const ownedFullStage=el=>!ownedEnv().owner||OwnedGeometry.fullStageEligible(el,el.getBoundingClientRect(),{left:0,top:0,right:innerWidth,bottom:innerHeight},ownedEnv());
@@ -3716,7 +3727,7 @@ function createPairGreeting({read,acquire,owns,release,decode,paint,remove,statu
     clock:{now:()=>performance.now(),request:fn=>requestAnimationFrame(fn),cancel:id=>cancelAnimationFrame(id),setTimeout:(fn,ms)=>setTimeout(fn,ms),clearTimeout:id=>clearTimeout(id)}});
   previewCoordinator.register('pair-greeting',greeting);
   const greetingAutoContext=()=>characterOnlyMode&&greetingWindowFocused&&greetingPageActive&&!document.hidden&&!motionQuery.matches&&!pets?.isPaused();
-  function refreshGreeting(){greetingTools.hidden=!characterOnlyMode;const ready=greeting.canStart();greetingButton.disabled=!(ready||(autoMotions.hasOwned()&&greetingAutoContext()));greetingStatus.textContent=ready?'두 캐릭터가 다가가 인사하고 돌아옵니다':'두 캐릭터의 전체 모습과 안전한 빈 공간이 화면에 함께 필요합니다';}
+  function refreshGreeting(){greetingTools.hidden=!characterOnlyMode;const ready=greeting.canStart();greetingButton.disabled=!(ready||(autoMotions.hasOwned()&&greetingAutoContext()));greetingStatus.textContent=ready?'두 캐릭터가 다가가 인사하고 돌아옵니다':['study','review'].includes(readPairStudy()?.phase)?'학습 중에는 인사하지 않아요 · 단어장 홈에서 캐릭터만 보기를 켜 주세요':'두 캐릭터의 전체 모습과 안전한 빈 공간이 화면에 함께 필요합니다';}
   greetingButton.addEventListener('click',()=>{autoMotions.cancel(undefined,'manual');if(greeting.canStart())greeting.start();});
   for(const type of ['resize','scroll','blur','pagehide'])window.addEventListener(type,event=>{if(type==='blur'&&event.target!==window)return;if(type==='blur')greetingWindowFocused=false;if(type==='pagehide')greetingPageActive=false;greeting.cancel(type);refreshGreeting();},{capture:true,passive:true});
   window.addEventListener('focus',()=>{greetingWindowFocused=true;refreshGreeting();});window.addEventListener('pageshow',()=>{greetingPageActive=true;refreshGreeting();});
