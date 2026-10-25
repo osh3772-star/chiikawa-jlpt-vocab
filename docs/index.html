@@ -306,6 +306,25 @@ body.cv-character-only .cv-mobile-pet-slot>button{visibility:hidden;}
  }
 }
 
+
+/* CHARACTER_TOOLS_FLOW: existing controls occupy a real row, never cover Kani input. */
+body.cv-character-only .cv-mobile-motion-toolbar{
+ flex-basis:100%;display:flex;flex-wrap:wrap;align-items:flex-start;gap:8px;
+ margin:0 12px;min-width:0;
+}
+body.cv-character-only .cv-mobile-motion-toolbar>.cv-momonga-flight-tools,
+body.cv-character-only .cv-mobile-motion-toolbar>.cv-pair-greeting-tools{
+ position:static;flex:1 1 320px;width:100%;max-width:460px;height:auto;
+ box-sizing:border-box;margin:0;
+}
+@media(max-width:639px){
+ body.cv-character-only .cv-mobile-motion-toolbar{flex-direction:column;}
+ body.cv-character-only .cv-mobile-motion-toolbar>.cv-momonga-flight-tools,
+ body.cv-character-only .cv-mobile-motion-toolbar>.cv-pair-greeting-tools{
+  flex:0 0 auto;max-width:100%;
+ }
+}
+
 </style>
   <style>/* Scoped 2D interactive pet layer: no global element selectors, no CSS framework needed. */
 .cv-pet-layer {
@@ -3774,7 +3793,7 @@ function createIdleGreeting({isEnabled,isEligible,startOwned,setTimer,clearTimer
   const mobileControlHomes=[flightTools,greetingTools].map(node=>{const anchor=document.createComment('motion-controls-home');node.parentNode.insertBefore(anchor,node);return {node,anchor};});
   let controlsMoved=false;
   function syncMobileMotionToolbar(){
-    const needed=characterOnlyMode&&innerWidth<640,focus=document.activeElement;
+    const needed=characterOnlyMode,focus=document.activeElement;
     if(needed&&!controlsMoved){characterViewStage.insertBefore(mobileMotionToolbar,characterViewStage.firstChild);for(const {node} of mobileControlHomes)mobileMotionToolbar.appendChild(node);controlsMoved=true;}
     else if(!needed&&controlsMoved){for(const {node,anchor} of mobileControlHomes)if(anchor.parentNode)anchor.parentNode.insertBefore(node,anchor.nextSibling);mobileMotionToolbar.remove();controlsMoved=false;}
     if(focus&&document.activeElement!==focus&&focus.isConnected)focus.focus?.({preventScroll:true});

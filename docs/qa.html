@@ -375,6 +375,25 @@ body.cv-character-only .cv-mobile-pet-slot>button{visibility:hidden;}
  }
 }
 
+
+/* CHARACTER_TOOLS_FLOW: existing controls occupy a real row, never cover Kani input. */
+body.cv-character-only .cv-mobile-motion-toolbar{
+ flex-basis:100%;display:flex;flex-wrap:wrap;align-items:flex-start;gap:8px;
+ margin:0 12px;min-width:0;
+}
+body.cv-character-only .cv-mobile-motion-toolbar>.cv-momonga-flight-tools,
+body.cv-character-only .cv-mobile-motion-toolbar>.cv-pair-greeting-tools{
+ position:static;flex:1 1 320px;width:100%;max-width:460px;height:auto;
+ box-sizing:border-box;margin:0;
+}
+@media(max-width:639px){
+ body.cv-character-only .cv-mobile-motion-toolbar{flex-direction:column;}
+ body.cv-character-only .cv-mobile-motion-toolbar>.cv-momonga-flight-tools,
+ body.cv-character-only .cv-mobile-motion-toolbar>.cv-pair-greeting-tools{
+  flex:0 0 auto;max-width:100%;
+ }
+}
+
 </style>
   <style>/* Scoped 2D interactive pet layer: no global element selectors, no CSS framework needed. */
 .cv-pet-layer {
@@ -2429,7 +2448,7 @@ function createMomongaWebGlide({asset,getEngine,coordinator,clipObstacle=(el,r)=
   const obstacles=els.filter(el=>!surface?.contains(el)&&el!==surface&&!(el.closest?.('.cv-pet')?.dataset.character==='momonga'&&lease)&&visible(el)).map(el=>clipObstacle(el,glidePaintRect(el,e=>win.getComputedStyle(e)))).filter(r=>!r?.ownedClipped);
   const fixed=els.filter(el=>!el.closest?.('.cv-pet-layer')&&!surface?.contains(el)&&visible(el)).map(el=>clipObstacle(el,glidePaintRect(el,e=>win.getComputedStyle(e)))).filter(r=>!r?.ownedClipped);
   if(obstacles.some(r=>!r)||fixed.some(r=>!r))return null;
-  const signature=JSON.stringify([viewport,clip,mainLeft,fixed]);if(lastGeometry&&signature!==lastGeometry)version++;lastGeometry=signature;
+  const signature=JSON.stringify([viewport,clip,mainLeft,fixed]);if(lastGeometry&&signature!==lastGeometry){status.dataset.motionGeometry=JSON.stringify({before:JSON.parse(lastGeometry),after:JSON.parse(signature)});version++;}lastGeometry=signature;
   return {version,viewport,clip,reserved:characterOnly()?{...viewport}:{left:0,top:0,right:mainLeft,bottom:h},obstacles,margin:6};
  }
  function remove(){surface?.remove();surface=null;image=null;}
@@ -3744,16 +3763,16 @@ function greetingFrame(plan,elapsed){
  return plan.map(p=>({id:p.id,x:p.x+p.dx*ease,y:p.y,width:p.width,height:p.height,pose:t>=1000&&t<1800?'happy':'idle'}));
 }
 function createPairGreeting({read,acquire,owns,release,decode,paint,remove,status=()=>{},clock}){
- let generation=0,phase='off',lease=null,resource=null,abort=null,raf=null,timer=null,expected=null,plan=null,started=0,disposed=false;
+ let generation=0,phase='off',lease=null,resource=null,abort=null,raf=null,timer=null,expected=null,plan=null,started=0,disposed=false,lastChangedDetail=null;
  const eligible=s=>!disposed&&s?.eligible===true&&s.admission?.safe===true&&!!planGreeting(s.actors,s.viewport,s.obstacles);
  function cancel(reason='cancel'){
   generation++;abort?.abort();abort=null;if(raf!==null)clock.cancel(raf);raf=null;if(timer!==null)clock.clearTimeout(timer);timer=null;
   const old=lease;lease=null;phase='off';expected=null;plan=null;
   try{remove();}finally{try{resource?.cleanup?.();}finally{resource=null;if(old)release(old);}}
-  if(!disposed)status(reason==='complete'?'다가가기 · 반응 · 제자리 복귀 완료':'안전 조건이 달라져 인사를 생략하거나 중단',{reason});
+  if(!disposed)status(reason==='complete'?'다가가기 · 반응 · 제자리 복귀 완료':'안전 조건이 달라져 인사를 생략하거나 중단',{reason,detail:lastChangedDetail});
  }
  function stable(s){return eligible(s)&&s.key===expected.key&&s.engine===expected.engine&&s.geometryKey===expected.geometryKey;}
- function changedReason(s){return !s?.eligible?'context':s.admission?.safe!==true?'admission':!planGreeting(s.actors,s.viewport,s.obstacles)?'path':s.key!==expected.key?'actor-key':s.engine!==expected.engine?'engine':s.geometryKey!==expected.geometryKey?'geometry':'unknown';}
+ function changedReason(s){lastChangedDetail={beforeKey:expected.key,afterKey:s.key};return !s?.eligible?'context':s.admission?.safe!==true?'admission':!planGreeting(s.actors,s.viewport,s.obstacles)?'path':s.key!==expected.key?'actor-key':s.engine!==expected.engine?'engine':s.geometryKey!==expected.geometryKey?'geometry':'unknown';}
  function tick(token){
   raf=null;if(token!==generation||phase!=='playing')return;
   let s;try{s=read();}catch{cancel('read');return;}
@@ -3799,7 +3818,7 @@ function createPairGreeting({read,acquire,owns,release,decode,paint,remove,statu
   function removeGreeting(){greetingSurface?.remove();greetingSurface=null;}
   const greeting=GreetingModule.createPairGreeting({read:readGreeting,
     acquire:(s,onCancel)=>pets?.tryAcquirePairPresentation(s,onCancel),owns:t=>pets?.ownsPairPresentation(t)===true,release:t=>pets?.releasePairPresentation(t),remove:removeGreeting,
-    status:(text,diagnostic)=>{greetingStatus.textContent=text;greetingStatus.dataset.motionReason=diagnostic?.reason??'started';},
+    status:(text,diagnostic)=>{greetingStatus.textContent=text;greetingStatus.dataset.motionReason=diagnostic?.reason??'started';greetingStatus.dataset.motionDetail=diagnostic?.detail?JSON.stringify(diagnostic.detail):'';},
     decode:async(s,{signal})=>{const images=[],sources={};const cleanup=()=>images.forEach(im=>im.removeAttribute('src'));signal.addEventListener('abort',cleanup,{once:true});try{await Promise.all(['chiikawa','hachiware'].flatMap(id=>['idle','happy'].map(async pose=>{const source=s.sources[id]?.[pose];if(typeof source!=='string')throw Error('source');const im=new Image();images.push(im);im.src=source;await im.decode();if(signal.aborted||im.naturalWidth!==390||im.naturalHeight!==520)throw Error('dimensions');sources[id+':'+pose]=source;})));return {sources,cleanup};}catch(e){cleanup();throw e;}finally{signal.removeEventListener('abort',cleanup);}},
     paint:(resource,frames)=>{if(!greetingSurface){greetingSurface=document.createElement('div');greetingSurface.className='cv-pair-greeting-surface';greetingSurface.setAttribute('aria-hidden','true');for(const frame of frames){const im=document.createElement('img');im.alt='';im.draggable=false;im.dataset.actor=frame.id;const ownerSurface=greetingSurface;im.addEventListener('error',()=>{if(greetingSurface===ownerSurface)greeting.cancel('image-error');});im.addEventListener('pointerdown',event=>{event.preventDefault();event.stopPropagation();greeting.cancel('pointer');});greetingSurface.appendChild(im);}pets.getTransientPresentationHost().appendChild(greetingSurface);}for(const frame of frames){const im=greetingSurface.querySelector('[data-actor="'+frame.id+'"]'),src=resource.sources[frame.id+':'+frame.pose];if(im.getAttribute('src')!==src)im.src=src;Object.assign(im.style,{width:frame.width+'px',height:frame.height+'px',transform:`translate3d(${frame.x}px,${frame.y}px,0)`});}},
     clock:{now:()=>performance.now(),request:fn=>requestAnimationFrame(fn),cancel:id=>cancelAnimationFrame(id),setTimeout:(fn,ms)=>setTimeout(fn,ms),clearTimeout:id=>clearTimeout(id)}});
@@ -3847,7 +3866,7 @@ function createIdleGreeting({isEnabled,isEligible,startOwned,setTimer,clearTimer
   const mobileControlHomes=[flightTools,greetingTools].map(node=>{const anchor=document.createComment('motion-controls-home');node.parentNode.insertBefore(anchor,node);return {node,anchor};});
   let controlsMoved=false;
   function syncMobileMotionToolbar(){
-    const needed=characterOnlyMode&&innerWidth<640,focus=document.activeElement;
+    const needed=characterOnlyMode,focus=document.activeElement;
     if(needed&&!controlsMoved){characterViewStage.insertBefore(mobileMotionToolbar,characterViewStage.firstChild);for(const {node} of mobileControlHomes)mobileMotionToolbar.appendChild(node);controlsMoved=true;}
     else if(!needed&&controlsMoved){for(const {node,anchor} of mobileControlHomes)if(anchor.parentNode)anchor.parentNode.insertBefore(node,anchor.nextSibling);mobileMotionToolbar.remove();controlsMoved=false;}
     if(focus&&document.activeElement!==focus&&focus.isConnected)focus.focus?.({preventScroll:true});
