@@ -249,7 +249,7 @@ body.cv-character-only .cv-character-only-stage>.cv-extra-static-panel{margin:0!
 body.cv-character-only .cv-character-only-stage>.cv-extra-static-panel>:not(.cv-extra-static-rail){display:none!important;}
 body.cv-character-only .cv-character-only-stage .cv-direct-stage{background:transparent;outline:0;margin:0;}
 body.cv-character-only .cv-direct-stage>button,body.cv-character-only .cv-direct-caption{display:none!important;}
-body.cv-character-only .cv-mobile-pet-slot>button{visibility:hidden;}
+body.cv-character-only .cv-mobile-pet-slot>button{display:none;}
 @media(max-width:639px){body.cv-character-only .cv-character-only-stage{padding:76px 0 24px;}}
 
 .cv-momonga-flight-tools{position:fixed;left:12px;top:72px;z-index:120;width:min(440px,calc(100vw - 24px));height:132px;box-sizing:border-box;overflow:auto;padding:10px;display:flex;flex-wrap:wrap;align-content:flex-start;gap:6px 10px;background:#fffaf0;border:1px solid #dacdb9;border-radius:12px;font:12px/1.4 system-ui,sans-serif;}
@@ -280,18 +280,22 @@ body.cv-character-only .cv-mobile-pet-slot>button{visibility:hidden;}
   padding:0!important;min-height:0!important;height:100dvh;overflow:hidden!important;
  }
  body.cv-reserved-lane-candidate:not(.cv-character-only)>.cv-content-viewport{
-  position:relative;border-radius:0;box-sizing:border-box;height:calc(100dvh - 220px - env(safe-area-inset-bottom,0px));
+  position:relative;border-radius:0;box-sizing:border-box;height:calc(100dvh - 236px - env(safe-area-inset-bottom,0px));
   overflow:auto;padding:60px 14px 24px;overscroll-behavior-y:contain;
  }
  body.cv-reserved-lane-candidate:not(.cv-character-only)>.cv-mobile-pet-dock{
   position:fixed;left:0;right:0;bottom:0;z-index:80;box-sizing:border-box;
-  height:calc(220px + env(safe-area-inset-bottom,0px));margin:0;
+  height:calc(236px + env(safe-area-inset-bottom,0px));margin:0;
   padding:8px 18px calc(8px + env(safe-area-inset-bottom,0px));
   border-radius:14px 14px 0 0;
  }
  body.cv-reserved-lane-candidate:not(.cv-character-only):has(>.cv-mobile-pet-dock[hidden])>.cv-content-viewport{
   height:100dvh;
  }
+}
+/* VISIBLE_DOCK_GAP: 44px button + 8px gap + 140px actor + 8px floor = 200px. */
+@media(max-width:639px){
+ body.cv-reserved-lane-candidate:not(.cv-character-only)>.cv-mobile-pet-dock>.cv-mobile-pet-slot{height:200px;}
 }
 /* Extremely short/landscape windows cannot reserve a 220px lane safely.
    Fall back to scrollable document flow instead of a negative-height owner. */
@@ -511,6 +515,17 @@ body.cv-character-only .cv-character-only-stage>.cv-kani-static-panel>[role="sta
 /* Interactive iframe must not inherit decorative rail pointer-events:none. */
 body.cv-character-only .cv-kani-input-stage:not([hidden]),
 body.cv-character-only .cv-kani-input-stage:not([hidden])>iframe{pointer-events:auto;}
+</style>
+<style>
+/* The persistent view-toggle is also a measured obstacle. Moving the pointer
+   from this button to a motion button must not animate its collision box. */
+.cv-character-view-toggle,
+.cv-character-view-toggle:hover:not(:disabled),
+.cv-character-view-toggle:active:not(:disabled) {
+  transform: none;
+  box-shadow: 0 3px 0 #d8cbb967;
+  transition: background-color .18s ease;
+}
 </style>
 </head>
 <body>
@@ -1498,7 +1513,7 @@ function mountChiikawaPets(options = {}) {
     let study;try{study=readStudyState?.();}catch(_){}
     const studySafe=study?.phase==='home'&&study.busy===false&&study.composing===false&&study.audioPending===false&&Number.isSafeInteger(study.revision);
     const safe=pairArtApproved===true&&studySafe&&!destroyed&&!document.hidden&&!paused()&&(v.w>=640||responsiveSafe)&&!otherOwner&&!pair&&!pending&&members.every(p=>p&&requestedVisible.has(p.id)&&!p.assetUnavailable&&p.img.naturalWidth>0&&!p.scalePlacementUnavailable&&(!stageRect(p)||responsiveSafe)&&!isBeta(p)&&p.mode==='idle'&&!p.action&&hachiPaintSafe({outer:paintRect(p)},{left:0,top:0,right:v.w,bottom:v.h},null,obstacles))&&!pets.some(p=>p.pointerId!==null||p.touch||p.airborne||PHYSICAL.has(p.mode));
-    return {safe,scope,responsiveEligible:responsiveSafe,epoch:transientEpoch,key:JSON.stringify([scope,responsive?.map(r=>r?.key),transientEpoch,study?.revision,[...requestedVisible],pets.map(p=>[p.id,p.x,p.y,p.width,p.height,p.mode,p.pointerId,!!p.touch,p.airborne]),manualPaused,reduced]),actors:ids};
+    return {safe,scope,responsiveEligible:responsiveSafe,epoch:transientEpoch,key:JSON.stringify([scope,responsive?.map(r=>r?.key),transientEpoch,study?.revision,[...requestedVisible],pets.map(p=>[p.id,p.x,p.y,p.width,p.height,ids.includes(p.id)||PHYSICAL.has(p.mode)?p.mode:null,p.pointerId,!!p.touch,p.airborne]),manualPaused,reduced]),actors:ids};
   }
   function releasePairPresentation(token){
     if(!pairPresentation||pairPresentation.token!==token||!presentationRegistry.owns(token))return false;
@@ -2351,7 +2366,7 @@ function glideRefusalMessage(reason,s={}){
  const labels={captured:'모몽가를 잡고 있어 생략',touch:'모몽가의 터치 입력을 기다리는 중이라 생략',airborne:'모몽가가 내려오는 중이라 생략',physical:'모몽가 이동이 끝나지 않아 생략','physical-mode':'모몽가 이동이 끝나지 않아 생략',ime:'글자를 조합하는 중이라 생략',inputActive:'글자를 입력하는 중이라 생략',audioActive:'음성 또는 영상이 재생 중이라 생략',studyActive:'학습 입력을 처리 중이라 생략',reduced:'움직임 줄이기 설정으로 생략',paused:'캐릭터가 일시정지되어 있어 생략','busy-other':'다른 반응 또는 캐릭터 이동이 진행 중이라 생략',busy:'이미 활공 요청을 처리 중입니다'};
  return labels[reason]??'화면 상태가 달라져 안전하게 실행할 수 없어 생략';
 }
-function createMomongaWebGlide({asset,getEngine,coordinator,clipObstacle=(el,r)=>r,displayed,enabled,status,characterOnly=()=>false,document:doc=globalThis.document,window:win=globalThis.window}){
+function createMomongaWebGlide({asset,getEngine,coordinator,clipObstacle=(el,r)=>r,displayed,enabled,status,onFinish=()=>{},characterOnly=()=>false,document:doc=globalThis.document,window:win=globalThis.window}){
  let disposed=false,ime=false,version=0,lastGeometry='',requestSerial=0,lease=null,surface=null,image=null,loadingImage=null,lastAdmissionState=null,leaseRequestSerial=null,leasePainted=false;
  const id='momonga-web-glide',listeners=[];
  const listen=(el,type,fn,opts)=>{el.addEventListener(type,fn,opts);listeners.push(()=>el.removeEventListener(type,fn,opts));};
@@ -2380,8 +2395,8 @@ function createMomongaWebGlide({asset,getEngine,coordinator,clipObstacle=(el,r)=
   return {version,viewport,clip,reserved:characterOnly()?{...viewport}:{left:0,top:0,right:mainLeft,bottom:h},obstacles,margin:6};
  }
  function remove(){surface?.remove();surface=null;image=null;}
- function release(token,reason){const current=lease===token&&leaseRequestSerial===requestSerial&&!disposed,painted=leasePainted;try{getEngine()?.releaseTransientPresentation?.(token);}finally{if(lease===token){lease=null;leaseRequestSerial=null;leasePainted=false;}if(current)status.textContent=painted&&['complete-ui-cut','absolute-deadline-ui-cut'].includes(reason)?'여백 활공 종료 · 원래 배우로 UI 복귀 (착지 아님)':painted?'안전 조건이 달라져 활공을 중단 · 원래 배우로 UI 복귀':'표시 전에 안전 조건이 달라져 활공을 생략';}}
- const clock={now:()=>win.performance.now(),request:fn=>win.requestAnimationFrame(fn),cancel:n=>win.cancelAnimationFrame(n),setTimeout:(fn,n)=>win.setTimeout(fn,n),clearTimeout:n=>win.clearTimeout(n)};
+ function release(token,reason){const current=lease===token&&leaseRequestSerial===requestSerial&&!disposed,painted=leasePainted;try{getEngine()?.releaseTransientPresentation?.(token);}finally{if(lease===token){lease=null;leaseRequestSerial=null;leasePainted=false;}if(current){status.textContent=painted&&['complete-ui-cut','absolute-deadline-ui-cut'].includes(reason)?'여백 활공 종료 · 원래 배우로 UI 복귀 (착지 아님)':painted?'안전 조건이 달라져 활공을 중단 · 원래 배우로 UI 복귀':'표시 전에 안전 조건이 달라져 활공을 생략';try{onFinish(status.textContent);}catch(_){}}}}
+ const clock={now:()=>win.performance.now(),request:fn=>win.requestAnimationFrame(()=>fn(win.performance.now())),cancel:n=>win.cancelAnimationFrame(n),setTimeout:(fn,n)=>win.setTimeout(fn,n),clearTimeout:n=>win.clearTimeout(n)};
  const core=createGlide({readState:state,readGeometry:geometry,clock,
   tryAcquire:expected=>{if(coordinator.hasOtherOpen(id))return null;const current=state();const token=getEngine()?.tryAcquireTransientPresentation?.({...expected,scope:responsiveScope(),responsiveKey:current?.responsiveKey},reason=>cancel(reason));if(!token)return null;lease=token;leaseRequestSerial=requestSerial;leasePainted=false;return token;},
   owns:token=>getEngine()?.ownsTransientPresentation?.(token)===true,
@@ -2392,7 +2407,7 @@ function createMomongaWebGlide({asset,getEngine,coordinator,clipObstacle=(el,r)=
     Object.assign(surface.style,{width:r.width+'px',height:r.height+'px',transform:`translate3d(${r.x}px,${r.y}px,0)`});leasePainted=true;
    }catch(_){cancel('paint-error');}}
  });
- function cancel(reason='cancel'){requestSerial++;const open=core.state().mode!=='off';try{core.cancel(reason);}finally{if(lease){remove();release(lease);}if(loadingImage){loadingImage.onload=loadingImage.onerror=null;loadingImage.removeAttribute('src');loadingImage=null;}}if(open)status.textContent='여백 활공 취소 · 원래 배우로 UI 복귀 (착지 아님)';}
+ function cancel(reason='cancel'){requestSerial++;const open=core.state().mode!=='off';try{core.cancel(reason);}finally{if(lease){remove();release(lease);}if(loadingImage){loadingImage.onload=loadingImage.onerror=null;loadingImage.removeAttribute('src');loadingImage=null;}}if(open){status.textContent='여백 활공 취소 · 원래 배우로 UI 복귀 (착지 아님)';try{onFinish(status.textContent);}catch(_){}}}
  async function start(){
   if(disposed||core.state().mode!=='off')return false;
   if(!asset||asset.type!=='AUTHORED_UI_GLIDE'||asset.localTestingAuthorized!==true||asset.enabledByDefault!==false||asset.width!==96||asset.durationMs!==1800||asset.autonomous!==false||asset.originalFullMotionActivation!==false||asset.assetSha256!==R3.sha256||!asset.source){status.textContent='검토된 몸 그림이 없어 생략';return false;}
@@ -3014,7 +3029,8 @@ return {createHachiFullbodyResponse};
   glideTools.innerHTML='<label><input id="momonga-web-glide-enabled" type="checkbox"> 모몽가 여백 활공 실험</label><button type="button" id="momonga-web-glide-start" disabled>여백 활공 1회</button><p>Desktop 빈 여백에서만 펼친 자세 96px를 고정해 이동합니다. 표시 배율과 별개인 작성 UI 경로이며 이륙·착지 재현이 아닙니다. 이동 중 누르면 취소만 되며, 잡기는 복귀한 배우에서 새로 시작하세요.</p><span id="momonga-web-glide-status" role="status">기본 꺼짐 · 공간 부족 시 실행 생략</span>';
   visibilityTools.appendChild(glideTools);
   const glideToggle=glideTools.querySelector('input'),glideStart=glideTools.querySelector('button'),glideStatus=glideTools.querySelector('[role="status"]');
-  const webGlide=WebGlideModule.createMomongaWebGlide({asset:authoredGlideAsset,getEngine:()=>pets,coordinator:previewCoordinator,displayed:petObstacleIsDisplayed,clipObstacle:ownedObstacleRect,enabled:()=>glideToggle.checked||characterOnlyMode,status:glideStatus,characterOnly:()=>characterOnlyMode});
+  let reportCharacterFlight=()=>{};
+  const webGlide=WebGlideModule.createMomongaWebGlide({asset:authoredGlideAsset,getEngine:()=>pets,coordinator:previewCoordinator,displayed:petObstacleIsDisplayed,clipObstacle:ownedObstacleRect,enabled:()=>glideToggle.checked||characterOnlyMode,status:glideStatus,onFinish:text=>reportCharacterFlight(text),characterOnly:()=>characterOnlyMode});
   previewCoordinator.register('momonga-web-glide',webGlide);
   glideToggle.addEventListener('change',()=>{webGlide.cancel('setting');glideStart.disabled=!glideToggle.checked;});
   glideStart.addEventListener('click',()=>webGlide.start()); // Never use preempting coordinator.start for admission.
@@ -3631,6 +3647,7 @@ function createAutoMotionQueue({now,setTimer,clearTimer,onChange=()=>{},maxWaitM
   flightTools.innerHTML='<button type="button" class="cv-momonga-fly-once">모몽가 날기 1회</button><label><input type="checkbox" class="cv-momonga-fly-auto"> 자동 날기 (기본 꺼짐)</label><span role="status"></span><small>기존 펼친 자세 그림을 1.8초 이동하는 웹 연출입니다. 자동은 8초 간격으로 안전할 때만 실행하며 날갯짓·이륙·착지 재현은 아닙니다.</small>';
   document.body.appendChild(flightTools);
   const flyOnce=flightTools.querySelector('button'),flyAuto=flightTools.querySelector('input'),flyStatus=flightTools.querySelector('[role="status"]');
+  reportCharacterFlight=text=>{if(characterOnlyMode)flyStatus.textContent=text;};
   const loopFactory=(()=>{/** Opt-in deterministic UI loop. No random selector or preference writes. */
 function createFlightLoop({isEnabled,isEligible,start,cancel,setTimer,clearTimer,intervalMs=8000}){
  if(!Number.isFinite(intervalMs)||intervalMs<8000)throw Error('interval');
