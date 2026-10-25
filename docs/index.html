@@ -273,6 +273,39 @@ body.cv-character-only .cv-mobile-pet-slot>button{visibility:hidden;}
  body.cv-character-only .cv-mobile-motion-toolbar{flex-basis:100%;display:flex;flex-direction:column;gap:8px;margin:0 12px;min-width:0;}
  body.cv-character-only .cv-mobile-motion-toolbar>.cv-momonga-flight-tools,body.cv-character-only .cv-mobile-motion-toolbar>.cv-pair-greeting-tools{position:static;width:100%;max-width:100%;height:auto;box-sizing:border-box;margin:0;}
 }
+
+/* MOBILE_DISPLAY_RECOVERY: reserve a real dock row, never force actor visibility. */
+@media(max-width:639px){
+ body.cv-reserved-lane-candidate:not(.cv-character-only){
+  padding:0!important;min-height:0!important;height:100dvh;overflow:hidden!important;
+ }
+ body.cv-reserved-lane-candidate:not(.cv-character-only)>.cv-content-viewport{
+  box-sizing:border-box;height:calc(100dvh - 220px - env(safe-area-inset-bottom,0px));
+  overflow:auto;padding:60px 14px 24px;overscroll-behavior-y:contain;
+ }
+ body.cv-reserved-lane-candidate:not(.cv-character-only)>.cv-mobile-pet-dock{
+  position:fixed;left:0;right:0;bottom:0;z-index:80;box-sizing:border-box;
+  height:calc(220px + env(safe-area-inset-bottom,0px));margin:0;
+  padding:8px 18px calc(8px + env(safe-area-inset-bottom,0px));
+  border-radius:14px 14px 0 0;
+ }
+ body.cv-reserved-lane-candidate:not(.cv-character-only):has(>.cv-mobile-pet-dock[hidden])>.cv-content-viewport{
+  height:100dvh;
+ }
+}
+/* Extremely short/landscape windows cannot reserve a 220px lane safely.
+   Fall back to scrollable document flow instead of a negative-height owner. */
+@media(max-width:639px) and (max-height:379px){
+ body.cv-reserved-lane-candidate:not(.cv-character-only){height:auto;overflow:auto!important;}
+ body.cv-reserved-lane-candidate:not(.cv-character-only)>.cv-content-viewport,
+ body.cv-reserved-lane-candidate:not(.cv-character-only):has(>.cv-mobile-pet-dock[hidden])>.cv-content-viewport{
+  height:auto;overflow:visible;
+ }
+ body.cv-reserved-lane-candidate:not(.cv-character-only)>.cv-mobile-pet-dock{
+  position:relative;left:auto;right:auto;bottom:auto;
+ }
+}
+
 </style>
   <style>/* Scoped 2D interactive pet layer: no global element selectors, no CSS framework needed. */
 .cv-pet-layer {
@@ -436,6 +469,13 @@ body.cv-character-only .cv-mobile-pet-slot>button{visibility:hidden;}
 .cv-pet:focus-visible { outline-offset:-3px; }
 /* Usagi's reviewed B ear tips reach the top of its existing hitbox: do not cover them with the visual name pill. ARIA/focus remain on the actor. */
 .cv-pet[data-character="usagi"][data-mode="inline-response"] .cv-pet__name { visibility:hidden; opacity:0; }
+</style>
+<style>
+/* Keep explicit Kani input controls reachable in character-only mode.
+   The general static-panel rule deliberately hides all non-rail children. */
+body.cv-character-only .cv-character-only-stage>.cv-kani-static-panel{width:min(100%,440px);box-sizing:border-box;}
+body.cv-character-only .cv-character-only-stage>.cv-kani-static-panel>.cv-kani-input-switch,
+body.cv-character-only .cv-character-only-stage>.cv-kani-static-panel>[role="status"]{display:block!important;}
 </style>
 </head>
 <body>
@@ -2817,7 +2857,7 @@ return {createHachiFullbodyResponse};
   const previewCoordinator=createPreviewCoordinator();
 
   const visibilityTools = document.createElement('details');
-  visibilityTools.className = 'cv-visibility-tools'; visibilityTools.open = true;
+  visibilityTools.className = 'cv-visibility-tools'; visibilityTools.open = window.innerWidth >= 640;
   visibilityTools.innerHTML = '<summary>캐릭터 꺼내기 / 넣기</summary><div class="cv-visibility-choices"></div><div class="cv-visibility-actions"><button type="button" id="pets-show-all">모두 꺼내기</button><button type="button" id="pets-hide-all">모두 넣기</button><span id="pets-visibility-status" role="status"></span></div><p>숨기기와 자동 동작 일시정지는 별개입니다. 모바일에서는 아래 가로 무대를 밀어 선택한 친구를 볼 수 있어요.</p>';
   document.querySelector('.pet-tools').after(visibilityTools);
   const choices = visibilityTools.querySelector('.cv-visibility-choices');
@@ -3441,6 +3481,8 @@ async function decodeReviewedStep(frames,{signal,ImageCtor=Image,setTimer=setTim
     contentViewport=document.createElement('div');contentViewport.className='cv-content-viewport';contentViewport.setAttribute('role','region');contentViewport.setAttribute('aria-label','학습 콘텐츠');
     document.querySelector('.site-header').before(contentViewport);
     for(const el of [document.querySelector('.site-header'),document.querySelector('main'),pairPanel,extraPanel,pajamaPanel,...ownedContentPanels])contentViewport.appendChild(el);
+    // Keep the same stage outside the scrolling learning owner; character-only restores this exact node.
+    contentViewport.after(mobileDock);
     document.body.classList.add('cv-reserved-lane-candidate');
     const revalidateStaticPanels=()=>{extraController.revalidate();pajamaController.revalidate();for(const revalidate of kaniRailRevalidators)revalidate();};
     contentViewport.addEventListener('scroll',revalidateStaticPanels,{passive:true});
