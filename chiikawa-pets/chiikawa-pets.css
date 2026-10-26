@@ -160,3 +160,8 @@
 .cv-pet:focus-visible { outline-offset:-3px; }
 /* Usagi's reviewed B ear tips reach the top of its existing hitbox: do not cover them with the visual name pill. ARIA/focus remain on the actor. */
 .cv-pet[data-character="usagi"][data-mode="inline-response"] .cv-pet__name { visibility:hidden; opacity:0; }
+
+/* This explicit review's measured controls must not move on hover/press. */
+[data-preview="chi-foot-manual-review"] :is(.chi-foot-start,.chi-foot-stop),
+[data-preview="chi-foot-manual-review"] :is(.chi-foot-start,.chi-foot-stop):hover:not(:disabled),
+[data-preview="chi-foot-manual-review"] :is(.chi-foot-start,.chi-foot-stop):active:not(:disabled) { transform:none; }

@@ -167,11 +167,21 @@ if hashlib.sha256(_capture_bytes).hexdigest() != 'd38ead18705743d3bcb44f0ab666db
     raise ValueError('capture art identity changed')
 
 integration = StreamText((root / 'chiikawa-pets/integration.js').read_text(encoding='utf-8')).replace('__PET_ENGINE__', engine)
+# Exact reviewed foot copies, offline bytes preserved; hosted rewriting belongs to release.
+import hashlib
+chi_foot_dir=root/'chiikawa-pets/reviewed-foot-assets'
+chi_foot=json.loads((chi_foot_dir/'manifest.json').read_text())
+for frame in chi_foot['frames']:
+    image_path=chi_foot_dir/frame.pop('file')
+    assert hashlib.sha256(image_path.read_bytes()).hexdigest()==frame['sha256']
+    frame['source']=data_uri(image_path)
+integration=integration.replace('__CHI_FOOT_STATUS_AUDIT_MODULE__',inline_module('chi-foot-status-obstacle.mjs',['createBackgroundStatusAudit']))
+integration=integration.replace('__REVIEWED_STEP_MODULE__',inline_module('reviewed-step-controller.mjs',['createAuthoredStepController','createStepEngineAdapter','decodeReviewedStep'])).replace('__CHI_FOOT_ART__',json.dumps(chi_foot,separators=(',',':')))
 from kani_static_art import load_kani_static_art
 kani_static_art=load_kani_static_art(root,data_uri)
 integration=integration.replace('__KANI_INPUT_HOST_MODULE__',inline_module('kani-input-host.mjs',['createKaniInputHost'])).replace('__KANI_INPUT_ENGINE__',json.dumps((root/'chiikawa-pets/kani-input-engine.js').read_text(),ensure_ascii=False).replace('<','\\u003c')).replace('__KANI_INPUT_CSS__',json.dumps((root/'chiikawa-pets/chiikawa-pets.css').read_text(),ensure_ascii=False).replace('<','\\u003c'))
 integration=integration.replace('__KANI_RAIL_MODULE__',inline_module('kani-rail-controller.mjs',['createKaniRailController'])).replace('__KANI_RAIL_ART__',json.dumps(kani_static_art,ensure_ascii=False,separators=(',', ':')).replace('<','\\u003c'))
-integration = integration.replace('__OWNED_VIEWPORT_MODULE__', inline_module('owned-viewport.mjs',['clipOwnedPaint','fullStageEligible','stagePresentation']))
+integration = integration.replace('__OWNED_VIEWPORT_MODULE__', inline_module('owned-viewport.mjs',['clipOwnedPaint','fullStageEligible','stagePresentation','collectOwnedObstacles']))
 integration = integration.replace('__AUTHORED_GLIDE_CONFIG__',json.dumps(authored_glide,ensure_ascii=False,separators=(',', ':')).replace('<', '\\u003c'))
 from extra_static_art import load_extra_static_art
 extra_static_art=load_extra_static_art(root,data_uri)

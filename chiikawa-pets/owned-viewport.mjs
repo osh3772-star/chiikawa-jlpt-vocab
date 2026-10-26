@@ -3,13 +3,13 @@ export const validRect=r=>!!r&&['left','top','right','bottom'].every(k=>Number.i
 const copy=r=>({left:r.left,top:r.top,right:r.right,bottom:r.bottom,width:r.right-r.left,height:r.bottom-r.top});
 export function intersect(a,b){if(!validRect(a)||!validRect(b))return null;const r={left:Math.max(a.left,b.left),top:Math.max(a.top,b.top),right:Math.min(a.right,b.right),bottom:Math.min(a.bottom,b.bottom)};return validRect(r)?copy(r):null;}
 const none=v=>v===undefined||v===''||v==='none';
-function unsupported(s){return !none(s.transform)||!none(s.perspective)||!none(s.filter)||!none(s.backdropFilter)||!none(s.clipPath)||!none(s.maskImage)||!none(s.translate)||!none(s.rotate)||!none(s.scale)||(s.zoom&&s.zoom!=='normal'&&Number(s.zoom)!==1)||(s.contain&&s.contain!=='none')||(s.contentVisibility&&s.contentVisibility!=='visible');}
+function unsupported(s,auditedSelfPaint=false){return !none(s.transform)||!none(s.perspective)||!none(s.filter)||!none(s.backdropFilter)||!none(s.clipPath)||!none(s.maskImage)||!none(s.translate)||!none(s.rotate)||!none(s.scale)||(s.zoom&&s.zoom!=='normal'&&Number(s.zoom)!==1)||(s.contain&&s.contain!=='none'&&!(auditedSelfPaint&&s.contain==='paint'))||(s.contentVisibility&&s.contentVisibility!=='visible');}
 const invalid=reason=>({kind:'invalid',reason});
 /** No global selectors, no writes, no scroll. Invalid never means clipped. */
-export function ownedClipContext(el,{owner,getStyle}){
+export function ownedClipContext(el,{owner,getStyle,auditedPaintLeaf}){
  if(!owner||el===owner||!owner.contains(el))return{kind:'unowned'};
- let fixedEscape=false;
- for(let n=el;n&&n!==owner;n=n.parentElement){const s=getStyle(n);if(unsupported(s))return invalid('unsupported-descendant-coordinate-system');if(s.position==='fixed')fixedEscape=true;}
+ let fixedEscape=false,auditedSelf=false;
+ for(let n=el;n&&n!==owner;n=n.parentElement){const s=getStyle(n),selfPaint=n===el&&s.contain==='paint'&&typeof auditedPaintLeaf==='function'&&auditedPaintLeaf(n,s)===true;if(unsupported(s,selfPaint))return invalid('unsupported-descendant-coordinate-system');if(selfPaint)auditedSelf=true;if(s.position==='fixed')fixedEscape=true;}
  // Guard owner and ancestor coordinate/containing-block assumptions before accepting fixed escape.
  for(let n=owner;n;n=n.parentElement)if(unsupported(getStyle(n)))return invalid('unsupported-owner-coordinate-system');
  if(fixedEscape)return{kind:'unowned',reason:'fixed-escapes-owned-clip'};
@@ -19,12 +19,14 @@ export function ownedClipContext(el,{owner,getStyle}){
  if(!validRect(r)||![clientLeft,clientTop,clientWidth,clientHeight].every(Number.isFinite)||clientLeft<0||clientTop<0||clientWidth<=0||clientHeight<=0)return invalid('invalid-owner-box');
  const c={left:r.left+clientLeft,top:r.top+clientTop,right:r.left+clientLeft+clientWidth,bottom:r.top+clientTop+clientHeight};
  if(c.right>r.right+1e-6||c.bottom>r.bottom+1e-6)return invalid('owner-metric-mismatch');
- return{kind:'owned',clip:copy(c)};
+ return{kind:'owned',clip:copy(c),...(auditedSelf?{auditedPaintLeaf:true}:{})};
 }
 export function clipOwnedPaint(el,paint,env){
  if(!validRect(paint))return invalid('invalid-paint');
  const c=ownedClipContext(el,env);if(c.kind==='invalid')return c;
  if(c.kind==='unowned')return{kind:'visible',rect:copy(paint),owned:false};
+ // The audited leaf remains its whole raw paint box, even outside the owner's clip.
+ if(c.auditedPaintLeaf===true)return{kind:'visible',rect:copy(paint),owned:true};
  const r=intersect(paint,c.clip);return r?{kind:'visible',rect:r,owned:true}:{kind:'clipped'};
 }
 /** Keep existing selection, displayed policy, exclusions and paint expansion at caller. */

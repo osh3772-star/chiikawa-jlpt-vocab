@@ -1,0 +1,97 @@
+{
+  "schema": "chi-foot-v4-expanded-review",
+  "characterId": "chiikawa",
+  "reviewCandidate": true,
+  "productionApproved": false,
+  "enabledByDefault": false,
+  "autonomous": false,
+  "rootTravel": false,
+  "loop": false,
+  "displayMode": "actor-expanded-registration",
+  "frames": [
+    {
+      "poseId": "00",
+      "sha256": "09526837455f4384430ef1e7f6c68b68b8e693da7fb57ce7185cba610e7303f3",
+      "width": 1254,
+      "height": 1254,
+      "file": "00_R0_fixed.png"
+    },
+    {
+      "poseId": "01",
+      "sha256": "1c90f622c51589025695a0fec55568719627cc2030582e06bb9617b89835f32d",
+      "width": 1254,
+      "height": 1254,
+      "file": "01_R0_to_R25_1.png"
+    },
+    {
+      "poseId": "02",
+      "sha256": "40f956e223a22ed1eb978ee5163d46095d8e765bc561f5c162d364b87f8bbdf7",
+      "width": 1254,
+      "height": 1254,
+      "file": "02_R0_to_R25_2.png"
+    },
+    {
+      "poseId": "03",
+      "sha256": "0d48828ca2adbfe124489be261c2f9a78ad29ab037e0829af83fdf63e017dc48",
+      "width": 1254,
+      "height": 1254,
+      "file": "03_R25_fixed.png"
+    },
+    {
+      "poseId": "04",
+      "sha256": "f89be8a1dca9efd10c998b901a995575f59fd98426944daca1ff563be33e2013",
+      "width": 1254,
+      "height": 1254,
+      "file": "04_R25_to_R50_1.png"
+    },
+    {
+      "poseId": "05",
+      "sha256": "228915d0fde57acd3fce9aa06a303c4989bce72d107408984fe18e30325948ad",
+      "width": 1254,
+      "height": 1254,
+      "file": "05_R25_to_R50_2.png"
+    },
+    {
+      "poseId": "06",
+      "sha256": "a31368e4fac8a11ec638e3e5c864cd2d36c4c54fd0c545c239ab284b256fd7d3",
+      "width": 1254,
+      "height": 1254,
+      "file": "06_R50_fixed.png"
+    },
+    {
+      "poseId": "07",
+      "sha256": "57796e78b711e408945d06126d687ee2944d90e744e520a93755f3d570adc065",
+      "width": 1254,
+      "height": 1254,
+      "file": "07_R50_to_R75_1.png"
+    },
+    {
+      "poseId": "08",
+      "sha256": "874a369c3c6ae2b1331ce66f56367c7194a233c30016f0d4b0d85c0169af4a95",
+      "width": 1254,
+      "height": 1254,
+      "file": "08_R50_to_R75_2.png"
+    },
+    {
+      "poseId": "09",
+      "sha256": "590155819ebae2b41dc2b90b2eb1eeac182117da8eaeee7a8dfe249e86f4c181",
+      "width": 1254,
+      "height": 1254,
+      "file": "09_R75_fixed.png"
+    },
+    {
+      "poseId": "10",
+      "sha256": "656290e36fb9c214ea07a34c0b8d4ca66a5367ca130f66ab6ed177b7e48c637c",
+      "width": 1254,
+      "height": 1254,
+      "file": "10_R75_to_R0_1.png"
+    },
+    {
+      "poseId": "11",
+      "sha256": "4410d59938f0ef46dc70063a43fa42b3764cebbcf91241a737f8f373b8cb1c7a",
+      "width": 1254,
+      "height": 1254,
+      "file": "11_R75_to_R0_2.png"
+    }
+  ]
+}

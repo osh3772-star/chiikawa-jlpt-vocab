@@ -243,6 +243,14 @@ export function createInlineActorResponse({asset,getContext,prepare,paint,restor
  return{start,cancel,getState:()=>({mode,index,active:owned,loading:mode==='loading'})};
 }
 
+
+/** Exact authored UI registration only; never a foot-contact or source-size claim. */
+export function chiFootReviewBounds(p){
+ if(!p||p.id!=='chiikawa'||![p.x,p.y,p.width,p.height].every(Number.isFinite)||p.width<=0||Math.abs(p.height-p.width*4/3)>1e-6)return null;
+ const scale=(328*p.width/390)/785,left=p.x+p.width/2-607*scale,top=p.y+442*p.width/390-1065*scale;
+ return {left,top,right:left+1254*scale,bottom:top+1254*scale};
+}
+
 export function mountChiikawaPets(options = {}) {
   const { assetBase = '/chiikawa', enabledCharacters = DATA.map(p => p.id), floorOffset = 8,
     startPaused = false, onStatusChange = null, spriteSources = null, characterProfiles = {}, experimentalCharacters = [], experimentalStage = null, visibleCharacters = enabledCharacters, mobilePetStages = null, mobileStageViewport = null, decorativeStages = null, decorativeStageWindowWidths = null, onDeliberateInteraction = null, onCharacterHidden = null, onPresentationCancelled = null,
@@ -833,14 +841,17 @@ export function mountChiikawaPets(options = {}) {
   function cancelPairPresentation(reason){const old=pairPresentation;if(!old)return;releasePairPresentation(old.token);try{old.onCancel?.(reason);}catch(_){}}
   const api = {
     ownsExternalPresentation(id,lease){return !destroyed&&externalPresentation===id&&externalLease===lease&&presentationRegistry.owns(lease);},
-    readAuthoredStepAdmission(id,lease=null){
+    readAuthoredStepAdmission(id,lease=null,scope=null){
+      if(!((id==='hachiware'&&scope===null)||(id==='chiikawa'&&scope==='chi-foot-v4-expanded-review')))return {safe:false,profile:scope??'invalid-actor',actorId:id,key:null};
       dirty=true;refreshObstacles();const p=pets.find(q=>q.id===id),v=viewport();
       const own=!!lease&&!destroyed&&externalPresentation===id&&externalLease===lease&&presentationRegistry.owns(lease);
       let study;try{study=readStudyState?.();}catch(_){}
       const physical=pets.some(q=>q.pointerId!==null||q.touch||q.airborne||PHYSICAL.has(q.mode));
       const sourceSafe=!!p&&hachiPaintSafe({outer:paintRect(p)},{left:0,top:0,right:v.w,bottom:v.h},null,obstacles);
-      const safe=id==='hachiware'&&!destroyed&&!document.hidden&&v.w>=640&&study?.phase==='home'&&study.busy===false&&study.composing===false&&study.audioPending===false&&Number.isSafeInteger(study.revision)&&(!presentationRegistry.get()||own)&&!!p&&requestedVisible.has(id)&&(!p.el.hidden||own)&&!p.assetUnavailable&&p.img.naturalWidth>0&&!p.scalePlacementUnavailable&&!stageRect(p)&&!isBeta(p)&&p.mode==='idle'&&!p.action&&!pair&&!pending&&!physical&&sourceSafe;
-      return {safe,epoch:transientEpoch,studyRevision:study?.revision,paused:paused(),reduced,own,touchPending:pets.some(q=>!!q.touch),captured:pets.some(q=>q.pointerId!==null),physical,pending:!!pending,key:JSON.stringify([transientEpoch,study?.revision,[...requestedVisible],pets.map(q=>[q.id,q.x,q.y,q.width,q.height,q.mode,!!q.action,q.pointerId,!!q.touch,q.airborne,q.scalePlacementUnavailable]),!!pair,!!pending,manualPaused,reduced,v,obstacles])};
+      const chiScope=id==='chiikawa'&&scope==='chi-foot-v4-expanded-review',paintBounds=chiScope?chiFootReviewBounds(p):null;
+      const chiSafe=chiScope&&paintBounds&&hachiPaintSafe({outer:paintBounds},{left:0,top:0,right:v.w,bottom:v.h},null,obstacles)&&pets.every(q=>q.mode==='idle'&&!q.action)&&![...inlineResponses.values()].some(c=>c.getState().mode!=='off');
+      const safe=((id==='hachiware'&&scope===null)||chiSafe)&&!destroyed&&!document.hidden&&v.w>=640&&study?.phase==='home'&&study.busy===false&&study.composing===false&&study.audioPending===false&&Number.isSafeInteger(study.revision)&&(!presentationRegistry.get()||own)&&!!p&&requestedVisible.has(id)&&(!p.el.hidden||own)&&!p.assetUnavailable&&p.img.naturalWidth>0&&!p.scalePlacementUnavailable&&!stageRect(p)&&!isBeta(p)&&p.mode==='idle'&&!p.action&&!pair&&!pending&&!physical&&sourceSafe;
+      return {...(chiScope?{profile:scope,actorId:id,paintBounds}:{}),safe,epoch:transientEpoch,studyRevision:study?.revision,paused:paused(),reduced,own,touchPending:pets.some(q=>!!q.touch),captured:pets.some(q=>q.pointerId!==null),physical,pending:!!pending,key:JSON.stringify([transientEpoch,study?.revision,[...requestedVisible],pets.map(q=>[q.id,q.x,q.y,q.width,q.height,q.mode,!!q.action,q.pointerId,!!q.touch,q.airborne,q.scalePlacementUnavailable]),!!pair,!!pending,manualPaused,reduced,v,obstacles,...(chiScope?[scope,paintBounds]:[])])};
     },
     getPresentationOwner(){const p=presentationRegistry.get();return p?{kind:p.kind,actors:[...p.actors],epoch:p.epoch}:null;},
     readPairAdmission:pairSnapshot,
@@ -913,10 +924,13 @@ export function mountChiikawaPets(options = {}) {
     setMobileCharacters(ids) { if (destroyed) return; mobileOrder = [...new Set(ids)].filter(id => selected.some(p => p.id === id)); mobileLimit = mobileOrder.length; layout(); },
     setVisibleCharacters(ids) { if (destroyed) return; requestedVisible = new Set(ids.filter(id => selected.some(p => p.id === id))); if (externalPresentation && !requestedVisible.has(externalPresentation)) cancelExternalPresentation('hidden'); layout(); },
     tryAcquireAuthoredStepPresentation(expected){
-      const current=api.readAuthoredStepAdmission('hachiware');
+      const chi=expected?.profile==='chi-foot-v4-expanded-review';
+      if(expected?.profile!==undefined&&!chi)return null;
+      const id=chi?'chiikawa':'hachiware',current=api.readAuthoredStepAdmission(id,null,chi?expected.profile:null);
+      if(chi&&(expected.actorId!==id||JSON.stringify(current.paintBounds)!==JSON.stringify(expected.paintBounds)))return null;
       if(!current.safe||presentationRegistry.get()||current.epoch!==expected?.epoch||current.key!==expected?.key)return null;
-      const p=pets.find(p=>p.id==='hachiware'),token=presentationRegistry.acquire('single',['hachiware']);if(!token)return null;
-      externalPresentation='hachiware';externalLease=token;externalLeaseRequired=true;externalStageAnchor=null;externalNoLayout=true;
+      const p=pets.find(p=>p.id===id),token=presentationRegistry.acquire('single',[id]);if(!token)return null;
+      externalPresentation=id;externalLease=token;externalLeaseRequired=true;externalStageAnchor=null;externalNoLayout=true;
       p.el.hidden=true;render(p);return token;
     },
     beginExternalPresentation(id, {preserveStageAnchor=false,returnLease=false}={}) {
