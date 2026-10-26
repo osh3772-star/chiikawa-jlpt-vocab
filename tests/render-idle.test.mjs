@@ -10,7 +10,7 @@ function setup(file='pet-engine.js',opts={}) {
  const media=new E();media.matches=!!opts.reduced;
  const win=new E();win.innerWidth=1200;win.innerHeight=800;win.matchMedia=()=>media;
  let observer;
- const ctx=vm.createContext({document:doc,window:win,Image:class{},performance:{now:()=>now},Date,ResizeObserver:class{constructor(fn){observer=fn}observe(){}disconnect(){}},requestAnimationFrame:fn=>{queue.set(++id,fn);return id},cancelAnimationFrame:id=>queue.delete(id)});
+ const ctx=vm.createContext({document:doc,window:win,AbortController,setTimeout,clearTimeout,Image:class{removeAttribute(k){delete this[k];}decode(){return Promise.reject(Error('fixture image unavailable'));}},performance:{now:()=>now},Date,ResizeObserver:class{constructor(fn){observer=fn}observe(){}disconnect(){}},requestAnimationFrame:fn=>{queue.set(++id,fn);return id},cancelAnimationFrame:id=>queue.delete(id)});
  vm.runInContext(fs.readFileSync(new URL('../chiikawa-pets/'+file,import.meta.url),'utf8').replaceAll('export function','function')+';this.mount=mountChiikawaPets;',ctx);
  const cancelled=[];const api=ctx.mount({enabledCharacters:['chiikawa'],startPaused:!!opts.paused,onPresentationCancelled:r=>cancelled.push(r),...(opts.mount??{})});
  const el=doc.body.children[0].children[0];
