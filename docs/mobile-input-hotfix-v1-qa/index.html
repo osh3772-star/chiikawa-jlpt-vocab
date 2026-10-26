@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="ko"><head><script src="qa-isolation.js?v=3ad9ea5bcc93"></script><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>QA · JLPT 단어장 · 시작</title><link rel="stylesheet" href="app.css?v=2b2ac3c53fde"></head><body data-page="home">
+  <div class="scenery" aria-hidden="true"><span class="sun"></span><span class="cloud cloud-one"></span><span class="cloud cloud-two"></span><span class="hill hill-one"></span><span class="hill hill-two"></span></div>
+<nav class="cv-page-nav" aria-label="페이지 이동"><a data-cv-link href="index.html" aria-current="page">시작</a><a data-cv-link href="character-settings.html">캐릭터 설정</a><a data-cv-link href="study.html">공부 이어하기</a></nav><p id="navigation-status" role="status" tabindex="-1"></p><header class="site-header"><p class="header-sticker" lang="ja">ひとつずつ、ゆっくり。</p><h1>QA · 합성 데이터 전용 · JLPT 단어장 · 시작</h1><p class="header-description">작은 한 걸음도 차곡차곡. 오늘도 내 속도로 공부해요.</p><p id="storage-note">급수별 위치와 학습 기록은 이 브라우저에 자동 저장됩니다.</p></header><main><details id="bgm-player" class="cv-bgm-player">
+  <summary>♫ 내 MP3 플레이어 <span>파일 선택 · 재생</span></summary>
+  <div class="cv-bgm-content">
+    <p id="bgm-local-note">파일은 서버에 업로드하지 않습니다. 이 페이지에서만 재생되며, 페이지 이동·새로고침 후에는 다시 선택해 주세요. 자동재생은 꺼져 있습니다.</p>
+    <label for="bgm-files">MP3 파일 선택 (여러 곡 가능)</label>
+    <input id="bgm-files" type="file" accept=".mp3,audio/mpeg" multiple aria-describedby="bgm-local-note">
+    <label for="bgm-track">재생할 곡</label>
+    <select id="bgm-track" disabled><option value="">선택한 곡 없음</option></select>
+    <div class="cv-bgm-transport" role="group" aria-label="음악 재생 조작">
+      <button type="button" id="bgm-prev" disabled>이전곡</button>
+      <button type="button" id="bgm-play" aria-label="음악 재생" aria-pressed="false" disabled>재생</button>
+      <button type="button" id="bgm-stop" disabled>정지 (처음으로)</button>
+      <button type="button" id="bgm-next" disabled>다음곡</button>
+    </div>
+    <div class="cv-bgm-preferences">
+      <label for="bgm-volume">음량 <output id="bgm-volume-value" for="bgm-volume">50%</output><input id="bgm-volume" type="range" min="0" max="100" step="1" value="50"></label>
+      <label for="bgm-repeat">반복<select id="bgm-repeat"><option value="off">반복 안 함</option><option value="all">전체 반복</option><option value="one">한 곡 반복</option></select></label>
+      <button type="button" id="bgm-clear" disabled>파일 선택 해제</button>
+    </div>
+    <p id="bgm-status" role="status" aria-live="polite" aria-atomic="true">MP3 파일을 선택해 주세요.</p>
+    <p id="bgm-preferences-status">음량·반복 설정만 이 브라우저에 저장됩니다. 파일·곡 목록·재생 위치는 저장하지 않습니다.</p>
+  </div>
+</details>
+    <section id="home" aria-label="메인 화면">
+      <section class="paper-panel grade-panel" aria-labelledby="grade-title">
+      <p class="section-tag">오늘의 작은 공부</p>
+      <h2 id="grade-title">어디부터 시작할까요?</h2><p><a class="cv-primary-link" data-cv-link href="study.html">마지막 학습 이어하기 →</a></p>
+      <p>급수를 선택하면 마지막으로 보던 단어부터 이어서 학습합니다.</p>
+      <div id="level-buttons"></div>
+      <p class="panel-footnote">조금씩 익숙해지면 돼요. 이어서 한 단어 더!</p>
+      </section>
+      <section class="paper-panel review-panel" aria-label="모르겠음 단어 모음">
+        <p class="section-tag pink-tag">한 번 더 만나기</p>
+        <h2>모르겠음 단어 모음</h2>
+        <label for="review-level">복습할 급수</label>
+        <select id="review-level">
+          <option value="all">전체 급수</option>
+          <option>N5</option><option>N4</option><option>N3</option><option>N2</option><option>N1</option>
+        </select>
+        <p id="review-summary"></p>
+        <button id="start-review" type="button">모르겠음 단어만 복습</button>
+        <p id="review-empty">아직 모르겠음으로 표시한 단어가 없습니다. 학습 화면에서 ↓를 눌러 등록하세요.</p>
+        <div class="table-scroll" tabindex="0" role="region" aria-label="모르겠음 단어 목록">
+        <table id="review-table">
+          <caption>모르겠음으로 표시한 단어 목록 · 단어를 누르면 해당 위치에서 복습합니다.</caption>
+          <thead><tr><th scope="col">급수</th><th scope="col">단어</th><th scope="col">읽는 법</th><th scope="col">뜻</th></tr></thead>
+          <tbody id="review-rows"></tbody>
+        </table>
+        </div>
+      </section>
+    </section>
+    <details id="study-backup" class="paper-panel" style="margin-top:1rem">
+      <summary>학습 기록 백업 · 복원</summary>
+      <p>급수별 위치와 알고 있음·모르겠음 기록만 옮깁니다. 캐릭터 설정은 포함하지 않습니다.</p>
+      <button id="backup-export" type="button">현재 학습 기록 파일 저장</button>
+      <p><label for="backup-file">복원할 학습 기록 JSON (최대 1MB)</label> <input id="backup-file" type="file" accept="application/json,.json"></p>
+      <p id="backup-status" role="status" aria-live="polite"></p>
+      <div id="backup-preview" hidden>
+        <p id="backup-summary"></p>
+        <p>적용하면 현재 학습 기록 전체를 교체하고 메인 화면으로 돌아갑니다. 먼저 현재 기록을 백업해 두세요.</p>
+        <button id="backup-apply" type="button" disabled>확인한 기록으로 교체</button>
+      </div>
+      <button id="backup-cancel" type="button">복원 선택 취소</button>
+    </details>
+</main><script src="navigation.js?v=e7f7ee825510"></script><script src="vocabulary.js?v=98d642358b20"></script><script src="study-runtime.js?v=caed72b483d2"></script><script src="bgm-player.js?v=3f0b75092c95"></script></body></html>
