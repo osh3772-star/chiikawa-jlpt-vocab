@@ -29,3 +29,36 @@ body.cv-study-overlay .cv-pet{pointer-events:auto}
 body.cv-study-overlay .cv-pet[aria-hidden="true"],body.cv-study-overlay .cv-pet--yielding{pointer-events:none}
 /* The actor's accessible name remains; hover labels must not spill over study UI. */
 body.cv-study-overlay .cv-pet__name{display:none}
+
+/* Character-only view: the return action and navigation own separate flow rows.
+   Only settings is affected; study's viewport overlay and protected controls stay unchanged. */
+body[data-page=settings] .cv-character-view-bar{display:flex;justify-content:center;box-sizing:border-box;max-width:760px;margin:8px auto;padding:0 8px}
+body[data-page=settings] .cv-character-view-toggle{position:static;inset:auto;max-width:100%;margin:0;min-height:44px}
+body[data-page=settings].cv-character-only .cv-character-only-stage{padding:calc(8px + env(safe-area-inset-top,0px)) max(8px,env(safe-area-inset-right,0px)) calc(24px + env(safe-area-inset-bottom,0px)) max(8px,env(safe-area-inset-left,0px));gap:8px;align-content:flex-start}
+body[data-page=settings].cv-character-only .cv-character-only-stage>.cv-character-view-bar{flex-basis:100%;margin:0;order:0}
+body[data-page=settings].cv-character-only .cv-character-only-stage>.cv-page-nav{position:static;inset:auto;flex-basis:100%;width:100%;margin:0;order:1}
+body[data-page=settings].cv-character-only .cv-character-only-stage>#navigation-status{flex-basis:100%;margin:0;order:2}
+body[data-page=settings].cv-character-only .cv-character-only-stage>.cv-mobile-pet-dock{order:3;box-sizing:border-box;width:100%;max-width:100%;margin:8px 0}
+body[data-page=settings].cv-character-only .cv-character-only-stage>.cv-direct-stage,
+body[data-page=settings].cv-character-only .cv-character-only-stage>.cv-extra-static-panel{order:4}
+body[data-page=settings].cv-character-only .cv-character-only-stage>.cv-mobile-motion-toolbar{order:5;margin:8px 0;max-width:100%;box-sizing:border-box}
+
+/* Restore companions to the viewport floor without selection buttons or a large dock. */
+body[data-page=study].cv-floor-layout{height:100dvh;min-height:0;overflow:hidden;padding:0}
+body.cv-floor-layout>.cv-floor-content{position:relative;box-sizing:border-box;height:calc(100dvh - var(--cv-floor-height,96px));overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain;padding:12px 16px 20px}
+body.cv-floor-layout>.cv-floor-lane{position:fixed;left:0;right:0;bottom:0;height:var(--cv-floor-height,96px);pointer-events:none;background:transparent;border:0;padding:0;margin:0}
+body.cv-floor-layout .cv-pet__name{display:none}
+body.cv-floor-layout .cv-pet--yielding{opacity:0;pointer-events:none}
+
+/* Settings uses the same bottom baseline; its existing horizontal slots remain real,
+   scrollable input stages on narrow displays, not middle-of-document previews. */
+body[data-page=settings].cv-floor-layout{height:100dvh;min-height:0;overflow:hidden;padding:0}
+body[data-page=settings].cv-floor-layout>.cv-content-viewport{box-sizing:border-box;height:calc(100dvh - var(--cv-floor-height,184px));overflow:auto;padding:12px 16px 20px}
+body[data-page=settings].cv-floor-layout.cv-character-only .cv-character-only-stage{height:calc(100dvh - var(--cv-floor-height,184px));min-height:0;overflow:auto;padding-bottom:20px}
+@media(max-width:639px){
+ body[data-page=settings].cv-floor-layout .cv-mobile-pet-dock{position:fixed;left:0;right:0;bottom:0;width:100%;max-width:100%;height:184px;box-sizing:border-box;padding:0 18px;margin:0;border:0;border-radius:0;background:transparent;z-index:3}
+ body[data-page=settings].cv-floor-layout .cv-mobile-pet-slot>button{display:none}
+}
+@media(max-width:639px){
+ body[data-page=settings].cv-floor-layout .cv-mobile-pet-dock>.cv-mobile-pet-slot{height:184px}
+}

@@ -35,10 +35,16 @@ def build(output):
     integration=scripts[3][1];study=scripts[4][1]
     from study_overlay import adapt_engine
     integration=adapt_engine(integration)
+    from floor_layout import adapt_floor_layout
+    integration=adapt_floor_layout(integration)
+    from continuous_walk import adapt_continuous_walk
+    integration=adapt_continuous_walk(integration)
     # Only document-head styles belong to the parent page. The body contains a
     # literal <style> inside Kani's iframe srcdoc JavaScript; never promote it.
     head=html.split('</head>',1)[0]
-    styles='\n'.join(re.findall(r'<style[^>]*>(.*?)</style>',head,re.S))+'\n'+(ROOT/'page-adapters/pages.css').read_text()+'\n'+(ROOT/'page-adapters/bgm-player.css').read_text()
+    styles='\n'.join(re.findall(r'<style[^>]*>(.*?)</style>',head,re.S))+'\n'+(ROOT/'page-adapters/pages.css').read_text()+'\n'+(ROOT/'page-adapters/bgm-player.css').read_text()+'\n'+(ROOT/'continuous-walk/ui.css').read_text()
+    # Legacy study top padding belongs to the old document scroller, not the floor owner.
+    styles=replace_once(styles,'body:has(#study:not([hidden])) { padding-top: 24px; }','body:not(.cv-floor-layout):has(#study:not([hidden])) { padding-top: 24px; }')
     body=html.split('<body>',1)[1].split('<script id="vocabulary"',1)[0]
     scenery=body[:body.index('  <header')]
     home=body[body.index('    <section id="home"'):body.index('    <section id="study"')]
@@ -51,13 +57,14 @@ def build(output):
     # study never inserts any settings form into the actual document.
     prefix='''
   const page=window.CVPage.page;
-  if(page==='study')document.body.classList.add('cv-study-overlay');
+  document.body.classList.add('cv-floor-layout');
   const settingsRoot=document.createElement('div');
   if(page!=='settings')settingsRoot.innerHTML=__CONTROLS__;
   const control=id=>document.getElementById(id)||settingsRoot.querySelector('[id="'+id+'"]');
   const controlQuery=selector=>document.querySelector(selector)||settingsRoot.querySelector(selector);
 '''.replace('__CONTROLS__',json.dumps(controls,ensure_ascii=False))
     integration=replace_once(integration,'  // Self-contained offline application.',prefix+'  // Self-contained offline application.')
+    integration=replace_once(integration,"owner:!characterOnlyMode&&B_LAYOUT_ENABLED&&((window.innerWidth>=1000&&window.innerHeight>=640)||(window.innerWidth<640&&window.innerHeight>=380))?contentViewport:null","owner:!characterOnlyMode?contentViewport:null")
     # Restrict the fallback to known setting controls; actor geometry stays real DOM.
     for ident in ['background-choice','background-status','pet-toggle','mobile-pets','pets-visibility-status','pets-show-all','pets-hide-all','motion-preview-summary','chiikawa-beta','chiikawa-beta-walk','chiikawa-beta-note','momonga-preview-start','momonga-preview-close','momonga-preview-status','chiikawa-cameo-start','chiikawa-cameo-close','chiikawa-cameo-status']:
         integration=integration.replace("document.getElementById('"+ident+"')","control('"+ident+"')")
@@ -91,17 +98,19 @@ def build(output):
     integration=integration.replace("input.checked=requested;rail.hidden=!requested||inputExclusive;","input.checked=requested;if(page!=='settings'){kaniPanel.hidden=!requested;kaniPanel.open=requested;}rail.hidden=!requested||inputExclusive;")
     integration=replace_once(integration,marker,layout+marker)
     integration=replace_once(integration,"for(const el of [document.querySelector('.site-header'),document.querySelector('main'),pairPanel,extraPanel,pajamaPanel,...ownedContentPanels])contentViewport.appendChild(el);","for(const el of [document.querySelector('.cv-page-nav'),document.getElementById('navigation-status'),document.querySelector('.site-header'),document.querySelector('main'),...(page==='settings'?[pairPanel,extraPanel,pajamaPanel,...ownedContentPanels]:[document.querySelector('.cv-study-extras')])].filter(Boolean))contentViewport.appendChild(el);")
-    integration=integration.replace('movable:[mobileDock,directStage,betaStage,extraPanel,pajamaPanel,',"movable:[document.querySelector('.cv-page-nav'),document.getElementById('navigation-status'),mobileDock,directStage,betaStage,extraPanel,pajamaPanel,")
-    integration=replace_once(integration,'document.body.append(characterViewStage,characterViewButton);',"if(page==='settings')document.body.append(characterViewStage,characterViewButton);")
+    integration=integration.replace('movable:[mobileDock,directStage,betaStage,extraPanel,pajamaPanel,',"movable:[characterViewBar,document.querySelector('.cv-page-nav'),document.getElementById('navigation-status'),mobileDock,directStage,betaStage,extraPanel,pajamaPanel,")
+    integration=replace_once(integration,'document.body.append(characterViewStage,characterViewButton);',"const characterViewBar=document.createElement('div');characterViewBar.className='cv-character-view-bar';if(page==='settings'){document.querySelector('.cv-page-nav').after(characterViewBar);characterViewBar.appendChild(characterViewButton);document.body.appendChild(characterViewStage);}")
     integration=integration.replace("active?'단어장으로 돌아가기':'캐릭터만 보기'","active?'캐릭터 설정으로 돌아가기':'캐릭터만 크게 보기'")
     integration=integration.replace("active?'단어장 다시 표시하기':'단어장을 숨기고 캐릭터만 보기'","active?'캐릭터 설정 다시 표시하기':'설정을 접고 캐릭터만 크게 보기'")
     integration=integration.replace("'먼저 단어장 설정에서 모몽가를 켜 주세요'","'먼저 캐릭터 설정에서 모몽가를 켜 주세요'")
     # Study uses the real viewport engine, not an invisible dock/stage rectangle.
     integration=integration.replace('const B_LAYOUT_ENABLED=true;',"const B_LAYOUT_ENABLED=page==='settings';")
-    integration=integration.replace('mobilePetStages:mobileStages,mobileStageViewport:mobileDock,',"mobilePetStages:page==='study'?null:mobileStages,mobileStageViewport:page==='study'?null:mobileDock,viewportOverlay:page==='study',readOverlayObstacles:studyOverlayObstacles,")
+    integration=integration.replace('mobilePetStages:mobileStages,mobileStageViewport:mobileDock,',"mobilePetStages:page==='study'?null:mobileStages,mobileStageViewport:page==='study'?null:mobileDock,viewportOverlay:false,readOverlayObstacles:studyOverlayObstacles,floorWalk:true,readFloorWalkViewport:()=>floorLane?.getBoundingClientRect(),onFloorLayout:height=>{const value=(page==='settings'&&window.innerWidth<640&&!mobileDock.hidden?184:height)+'px';if(document.documentElement.style.getPropertyValue('--cv-floor-height')!==value)document.documentElement.style.setProperty('--cv-floor-height',value);},")
     integration=integration.replace('maxVisibleMobile:mobile.length,mobilePriority:mobile',"maxVisibleMobile:page==='study'?-1:mobile.length,mobilePriority:mobile")
-    integration=integration.replace("const mobileDock=document.createElement('div');",(ROOT/'page-adapters/study-obstacles.js').read_text()+"\n  const mobileDock=document.createElement('div');")
+    integration=integration.replace("const mobileDock=document.createElement('div');",(ROOT/'page-adapters/study-obstacles.js').read_text()+"\n"+(ROOT/'page-adapters/floor-page.js').read_text()+"\n  const mobileDock=document.createElement('div');")
     integration=integration.replace("    settingsRoot.append(visibilityTools,evidencePanel,previewPanel,pairPanel,directStatus);","    settingsRoot.append(visibilityTools,evidencePanel,previewPanel,pairPanel,directStatus,mobileDock);\n    document.body.classList.remove('cv-mobile-dock-enabled');")
+    integration=replace_once(integration,'characterViewStage.insertBefore(mobileMotionToolbar,characterViewStage.firstChild);','characterViewStage.appendChild(mobileMotionToolbar);')
+    integration=replace_once(integration,'  render();onChange(active);','  render();if(active)window.scrollTo(0,0);onChange(active);')
     # Home navigation remains reachable in settings' optional fullscreen preview.
     integration=replace_once(integration,'  syncMobileMotionToolbar();refreshGreeting();',"  syncMobileMotionToolbar();refreshGreeting();\n  if(page!=='settings'){settingsRoot.append(flightTools,greetingTools);}")
     # Shared original study/backup behavior with page-specific wiring.
@@ -121,7 +130,7 @@ def build(output):
     study=replace_once(study,"    el['go-home'].addEventListener('click', showHome);","    window.CVPage.beforeNavigate(()=>{clearBackup();backupMessage('페이지를 이동하여 적용하지 않은 복원 선택을 취소했습니다.');});\n    }\n    el['go-home']?.addEventListener('click', showHome);")
     for target in ["el['review-level']","el['start-review']","el.level","el.prev","el.next","el.known","el.unknown","el['undo-answer']"]:
         study=study.replace(target+".addEventListener(",target+"?.addEventListener(")
-    study=study.replace(".cv-pet, #study-backup'",".cv-pet, #study-backup, #bgm-player'")
+    study=study.replace(".cv-pet, #study-backup'",".cv-pet, #study-backup, #bgm-player, #continuous-walk-controls'")
     study=study.replace("if (el.study.hidden || event.altKey", "if (!el.study || el.study.hidden || event.altKey")
     study=study.replace("clearAnswerUndo(); renderHome();","clearAnswerUndo();reviewFilter=el['review-level'].value;renderHome();")
     study=replace_once(study,"    el['go-home']?.addEventListener('click', showHome);","    window.CVPage.beforeNavigate(url=>{if(url.pathname.endsWith('/index.html'))clearAnswerUndo();});\n    el['go-home']?.addEventListener('click', showHome);")
@@ -158,16 +167,18 @@ def build(output):
     (output/'bgm-player.js').write_text((ROOT/'page-adapters/bgm-player.js').read_text())
     for name in ['study-visibility.js','study-visibility.css']:(output/name).write_text((ROOT/'page-adapters'/name).read_text())
     bgm_markup=(ROOT/'page-adapters/bgm-player.html').read_text()
+    from continuous_walk import build_continuous_script
+    (output/'continuous-walk.js').write_text(build_continuous_script())
     asset_ref=lambda name:name+'?v='+sha((output/name).read_bytes())[:12]
     title={'home':'JLPT 단어장 · 시작','settings':'캐릭터 설정 · JLPT 단어장','study':'단어 공부 · JLPT 단어장'}
     for page,name,content in [('home','index.html',home+backup),('settings','character-settings.html','<section class="paper-panel cv-settings-intro"><h2>나와 함께할 친구들</h2><p>캐릭터·크기·배경·동작을 여기서 설정해요. 아래 미리보기와 캐릭터만 크게 보기에서 직접 확인할 수 있어요.</p><p>수동 동작·자동 날기·인사·카니 입력 동작은 페이지를 떠나면 멈춥니다. 새로고침하면 세션 전용 선택은 꺼집니다.</p></section>'),('study','study.html',study_markup)]:
         nav='<nav class="cv-page-nav" aria-label="페이지 이동">'+''.join(f'<a data-cv-link href="{p}"'+(' aria-current="page"' if p==name else '')+f'>{label}</a>' for p,label in [('index.html','시작'),('character-settings.html','캐릭터 설정'),('study.html','공부 이어하기')])+'</nav>'
         header='<header class="site-header"><p class="header-sticker" lang="ja">ひとつずつ、ゆっくり。</p><h1>'+title[page]+'</h1><p class="header-description">'+('내 속도로, 한 단어씩.' if page=='study' else '작은 한 걸음도 차곡차곡. 오늘도 내 속도로 공부해요.')+'</p><p id="storage-note">급수별 위치와 학습 기록은 이 브라우저에 자동 저장됩니다.</p>'+(controls if page=='settings' else '')+'</header>'
-        modules=['navigation.js']+(['vocabulary.js','study-runtime.js'] if page=='home' else ['pet-data.js','pet-runtime.js']+(['vocabulary.js','study-runtime.js'] if page=='study' else []))+['bgm-player.js']+(['study-visibility.js'] if page=='study' else [])
+        modules=['navigation.js']+(['vocabulary.js','study-runtime.js'] if page=='home' else ['pet-data.js','pet-runtime.js']+(['vocabulary.js','study-runtime.js'] if page=='study' else []))+['bgm-player.js']+(['study-visibility.js','continuous-walk.js'] if page=='study' else [])
         markup='<!doctype html>\n<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>'+title[page]+'</title><link rel="stylesheet" href="'+asset_ref('app.css')+'">'+('<link rel="stylesheet" href="'+asset_ref('study-visibility.css')+'">' if page=='study' else '')+'</head><body data-page="'+page+'">'+scenery+nav+'<p id="navigation-status" role="status" tabindex="-1"></p>'+header+'<main>'+bgm_markup+content+'</main>'+''.join('<script src="'+asset_ref(x)+'"></script>' for x in modules)+'</body></html>\n'
         (output/name).write_text(markup)
     (output/'.nojekyll').touch()
-    report={'legacySha256':BASE_SHA,'vocabularySha256':sha(data['vocabulary'].encode()),'wordCount':sum(map(len,json.loads(data['vocabulary']).values())),'publicPNGCount':len(public),'files':{str(p.relative_to(output)):{'sha256':sha(p.read_bytes()),'bytes':p.stat().st_size} for p in sorted(output.rglob('*')) if p.is_file() and p.name!='manifest.json'}}
+    report={'legacySha256':BASE_SHA,'vocabularySha256':sha(data['vocabulary'].encode()),'wordCount':sum(map(len,json.loads(data['vocabulary']).values())),'publicPNGCount':len(public),'existingSharedAssets':{'assets/bgm/chiikawa-mix.mp3':{'sha256':'ae49185bb5b7d0cfbfb9da0d24111d2566ba992580d3c73ec790e222809f0345','bytes':23808500,'gitBlob':'e74e698356d0d7dbd4e2d29ce14a7a8b22001659','preserveExisting':True}},'files':{str(p.relative_to(output)):{'sha256':sha(p.read_bytes()),'bytes':p.stat().st_size} for p in sorted(output.rglob('*')) if p.is_file() and p.name!='manifest.json'}}
     (output/'manifest.json').write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\n');print(json.dumps({k:v for k,v in report.items() if k!='files'},indent=2))
 if __name__=='__main__':
     parser=argparse.ArgumentParser();parser.add_argument('--output',default=str(ROOT.parent/'site'));args=parser.parse_args();build(args.output)

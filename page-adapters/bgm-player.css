@@ -5,15 +5,12 @@
 .cv-bgm-content{padding:0 16px 12px;min-width:0}
 .cv-bgm-player p{font-size:13px;line-height:1.55;margin:8px 0;overflow-wrap:anywhere}
 .cv-bgm-player label{display:block;font-size:14px;font-weight:700;margin:10px 0 6px}
-.cv-bgm-player input[type=file],.cv-bgm-player select{box-sizing:border-box;max-width:100%;width:100%;min-width:0;font:inherit}
-.cv-bgm-player input[type=file]{padding:8px 0;font-size:14px}
+.cv-bgm-player select{box-sizing:border-box;max-width:100%;width:100%;min-width:0;font:inherit}
 .cv-bgm-player select{padding:8px;border:1px solid #bca98e;border-radius:8px;background:#fff;min-height:44px;text-overflow:ellipsis}
 .cv-bgm-transport,.cv-bgm-preferences{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:10px 0}
 .cv-bgm-player button{font:inherit;font-size:14px;min-height:44px;padding:9px 12px;border:1px solid #bca98e;border-radius:10px;background:#fff4d5;color:#51483b;cursor:pointer}
 .cv-bgm-player button:disabled{opacity:.5;cursor:default}
 .cv-bgm-preferences label{flex:1 1 140px;min-width:0;margin:0}
-.cv-bgm-player input[type=range]{display:block;width:100%;min-height:44px;accent-color:#826746}
-.cv-bgm-player output{font-weight:400;margin-left:4px}
 .cv-bgm-player :focus-visible{outline:3px solid #7756a7;outline-offset:3px}
 #bgm-status{font-weight:700}
 #bgm-preferences-status{color:#6e6253}

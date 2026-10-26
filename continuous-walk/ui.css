@@ -1,0 +1,5 @@
+.cv-continuous-walk{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:8px auto;padding:6px 10px;box-sizing:border-box;max-width:760px}
+.cv-continuous-walk button{font:inherit;font-size:14px;min-height:44px;border-radius:10px;border:1px solid #bfb69c;background:#fff3cf;padding:8px 12px;transform:none!important;transition:background-color .15s}
+.cv-continuous-walk button:disabled{opacity:.5}
+.cv-continuous-walk :focus-visible{outline:3px solid #7756a7;outline-offset:3px}
+#continuous-walk-status{font-size:13px;line-height:1.4;margin:0;overflow-wrap:anywhere}
