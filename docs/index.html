@@ -2033,7 +2033,9 @@ return {createBackgroundDomAdapter};
   const backgroundController=BackgroundModule.createBackgroundController({storage:backgroundStorage,key:'cv-background-v1',...backgroundAdapter});
   const renderBackground=state=>{
     backgroundChoice.value=state.requested;
-    backgroundStatus.textContent=state.status==='loading'?'배경을 불러오는 중 · 기존 배경 유지':backgroundAssets[state.active]?backgroundAssets[state.active].label+' · 정적 참고 창작 / 원작 복제 아님':state.error?'배경을 불러오지 못해 기존 배경으로 표시':'기존 배경';
+    const displayStatus=state.error==='restore-failed'?'배경을 복원하지 못했습니다':state.status==='loading'?'배경을 불러오는 중 · 기존 배경 유지':backgroundAssets[state.active]?backgroundAssets[state.active].label+' · 정적 참고 창작 / 원작 복제 아님':state.error?'배경을 불러오지 못해 기존 배경으로 표시':'기존 배경';
+    const persistenceStatus=state.persistence==='unavailable'?(['ready','original'].includes(state.status)&&state.active===state.requested?' · 이 창에 적용됨 · 설정 저장 불가':' · 설정 저장 불가'):'';
+    backgroundStatus.textContent=displayStatus+persistenceStatus;
   };
   backgroundController.subscribe(renderBackground);renderBackground(backgroundController.getState());
   backgroundChoice.addEventListener('change',()=>backgroundController.setSelection(backgroundChoice.value));
