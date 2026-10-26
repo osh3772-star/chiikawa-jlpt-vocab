@@ -45,6 +45,8 @@ def build(output):
     integration=adapt_kani_interactions(integration, ROOT)
     from continuous_walk import adapt_continuous_walk
     integration=adapt_continuous_walk(integration)
+    from main_candidate_actions import adapt_main_candidate_actions
+    integration=adapt_main_candidate_actions(integration, ROOT)
     # Only document-head styles belong to the parent page. The body contains a
     # literal <style> inside Kani's iframe srcdoc JavaScript; never promote it.
     head=html.split('</head>',1)[0]

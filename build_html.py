@@ -167,6 +167,8 @@ if hashlib.sha256(_capture_bytes).hexdigest() != 'd38ead18705743d3bcb44f0ab666db
     raise ValueError('capture art identity changed')
 
 integration = StreamText((root / 'chiikawa-pets/integration.js').read_text(encoding='utf-8')).replace('__PET_ENGINE__', engine)
+from main_candidate_actions import candidate_module
+integration=integration.replace('__CANDIDATE_ACTION_MODULE__',candidate_module(root))
 # Exact reviewed foot copies, offline bytes preserved; hosted rewriting belongs to release.
 import hashlib
 chi_foot_dir=root/'chiikawa-pets/reviewed-foot-assets'
