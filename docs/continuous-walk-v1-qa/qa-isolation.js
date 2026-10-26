@@ -1,7 +1,7 @@
 /* QA ONLY: loaded before application code; never installed by index.html. */
 (() => {
   'use strict';
-  const namespace = 'cv-qa-20261026-continuous-walk-v3:local:';
+  const namespace = 'cv-qa-20261026-continuous-walk-v4:local:';
   const backing = window.localStorage;
   const metadataKey = namespace + 'registry';
   const dataKey = key => namespace + 'data:' + String(key);
@@ -63,7 +63,7 @@
 /* QA ONLY: loaded before application code; never installed by index.html. */
 (() => {
   'use strict';
-  const namespace = 'cv-qa-20261026-continuous-walk-v3:session:';
+  const namespace = 'cv-qa-20261026-continuous-walk-v4:session:';
   const backing = window.sessionStorage;
   const metadataKey = namespace + 'registry';
   const dataKey = key => namespace + 'data:' + String(key);

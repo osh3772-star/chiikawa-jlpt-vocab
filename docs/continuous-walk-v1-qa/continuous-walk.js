@@ -95,9 +95,10 @@ async function decodeReviewedStep(frames,{signal,ImageCtor=Image,setTimer=setTim
  * Art rootTravel:false remains unchanged: movement belongs to the guarded engine.
  */
 const CONTINUOUS_WALK_SCOPE='chi-continuous-walk-v1';
+const CONTINUOUS_PLACEMENT_SCOPE='chi-continuous-placement-v1';
 const finite=p=>p&&Number.isFinite(p.x)&&Number.isFinite(p.y);
 const distance=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
-const eligible=c=>c?.scope===CONTINUOUS_WALK_SCOPE&&c.safe===true&&c.enabled===true&&c.visible===true&&c.paused===false&&c.reduced===false&&c.documentHidden===false&&c.inputBusy===false&&c.studyBusy===false&&c.captured===false&&c.physical===false&&c.composing===false&&c.mediaBusy===false;
+const eligible=c=>[CONTINUOUS_WALK_SCOPE,CONTINUOUS_PLACEMENT_SCOPE].includes(c?.scope)&&c.safe===true&&c.enabled===true&&c.visible===true&&c.paused===false&&c.reduced===false&&c.documentHidden===false&&c.inputBusy===false&&c.studyBusy===false&&c.captured===false&&c.physical===false&&c.composing===false&&c.mediaBusy===false;
 function createContinuousWalkController({fixture,host,decode,now=()=>performance.now(),requestFrame=fn=>requestAnimationFrame(fn),cancelFrame=cancelAnimationFrame,setTimer=setTimeout,clearTimer=clearTimeout,onState=()=>{}}){
  let enabled=false,disposed=false,generation=0,mode='off',reason='default-off',lease=null,resource=null,abort=null,raf=null,timer=null,position=null,frameIndex=0,cycles=0;
  let initial=null,points=null,target=1,lastTime=0,frameElapsed=0,lastTick=0;
@@ -111,7 +112,7 @@ function createContinuousWalkController({fixture,host,decode,now=()=>performance
  }
  function context(){
   const c=host.read(lease);
-  return eligible(c)&&(!initial||(c.mount===initial.mount&&c.revision===initial.revision&&c.geometryEpoch===initial.geometryEpoch))?c:null;
+  return eligible(c)&&(!initial||(c.scope===initial.scope&&c.mount===initial.mount&&c.revision===initial.revision&&c.geometryEpoch===initial.geometryEpoch))?c:null;
  }
  function validSources(sources){return validChiStepArt(fixture)&&fixture.frames.every((f,i)=>f.source===sources[i]);}
  function canStart(){if(!enabled||disposed||mode!=='off'||!validChiStepArt(fixture))return false;try{return !!context()&&host.owner()===null;}catch{return false;}}
@@ -165,14 +166,15 @@ function createContinuousWalkEngineAdapter({getEngine,readUI}){
  function owner(){const e=getEngine();if(held&&e===held.engine&&e.ownsContinuousWalk(held.token)===true)return held.token;return valid(e)&&e.getPresentationOwner()===null?null:other;}
  function read(token){
   const e=getEngine(),u=readUI();if(disposed||!valid(e)||(token!==null&&token!==undefined&&(!held||token!==held.token||e!==held.engine)))return {safe:false};
-  const s=e.readContinuousWalkAdmission({scope:CONTINUOUS_WALK_SCOPE,actorId:'chiikawa',lease:token??null});
-  if(!s||s.scope!==CONTINUOUS_WALK_SCOPE||s.actorId!=='chiikawa')return {safe:false};
+  const scope=u?.placementRequested===true?CONTINUOUS_PLACEMENT_SCOPE:CONTINUOUS_WALK_SCOPE;
+  const s=e.readContinuousWalkAdmission({scope,actorId:'chiikawa',lease:token??null});
+  if(!s||s.scope!==scope||s.actorId!=='chiikawa')return {safe:false};
   return {...s,mount:e,enabled:u?.enabled===true,documentHidden:s.documentHidden!==false||u?.documentHidden!==false,inputBusy:s.inputBusy!==false||u?.inputBusy!==false,mediaBusy:s.mediaBusy!==false||u?.mediaBusy!==false,composing:s.composing!==false||u?.composing!==false};
  }
  function acquire(expected){
   if(disposed||held||getEngine()!==expected.mount||owner()!==null)return null;
   const fresh=read(null);
-  if(fresh.safe!==true||fresh.enabled!==true||fresh.visible!==true||fresh.paused!==false||fresh.reduced!==false||fresh.documentHidden!==false||fresh.inputBusy!==false||fresh.studyBusy!==false||fresh.captured!==false||fresh.physical!==false||fresh.composing!==false||fresh.mediaBusy!==false||fresh.key!==expected.key||fresh.revision!==expected.revision||fresh.geometryEpoch!==expected.geometryEpoch)return null;
+  if(fresh.safe!==true||fresh.enabled!==true||fresh.visible!==true||fresh.paused!==false||fresh.reduced!==false||fresh.documentHidden!==false||fresh.inputBusy!==false||fresh.studyBusy!==false||fresh.captured!==false||fresh.physical!==false||fresh.composing!==false||fresh.mediaBusy!==false||fresh.scope!==expected.scope||fresh.key!==expected.key||fresh.revision!==expected.revision||fresh.geometryEpoch!==expected.geometryEpoch)return null;
   const e=getEngine(),token=e.tryAcquireContinuousWalk(fresh);
   if(token===null||token===undefined||token===false)return null;
   if(disposed||e!==getEngine()||e.ownsContinuousWalk(token)!==true){e.releaseContinuousWalk(token,'acquire-race');return null;}
@@ -198,13 +200,14 @@ function bindContinuousWalkCancellation({controller,window,document,controls}){
 const art={"schema": "chi-foot-v4-expanded-review", "characterId": "chiikawa", "reviewCandidate": true, "productionApproved": false, "enabledByDefault": false, "autonomous": false, "rootTravel": false, "loop": false, "displayMode": "actor-expanded-registration", "frames": [{"poseId": "00", "sha256": "09526837455f4384430ef1e7f6c68b68b8e693da7fb57ce7185cba610e7303f3", "width": 1254, "height": 1254, "source": "assets/09526837455f4384430ef1e7f6c68b68b8e693da7fb57ce7185cba610e7303f3.png"}, {"poseId": "01", "sha256": "1c90f622c51589025695a0fec55568719627cc2030582e06bb9617b89835f32d", "width": 1254, "height": 1254, "source": "assets/1c90f622c51589025695a0fec55568719627cc2030582e06bb9617b89835f32d.png"}, {"poseId": "02", "sha256": "40f956e223a22ed1eb978ee5163d46095d8e765bc561f5c162d364b87f8bbdf7", "width": 1254, "height": 1254, "source": "assets/40f956e223a22ed1eb978ee5163d46095d8e765bc561f5c162d364b87f8bbdf7.png"}, {"poseId": "03", "sha256": "0d48828ca2adbfe124489be261c2f9a78ad29ab037e0829af83fdf63e017dc48", "width": 1254, "height": 1254, "source": "assets/0d48828ca2adbfe124489be261c2f9a78ad29ab037e0829af83fdf63e017dc48.png"}, {"poseId": "04", "sha256": "f89be8a1dca9efd10c998b901a995575f59fd98426944daca1ff563be33e2013", "width": 1254, "height": 1254, "source": "assets/f89be8a1dca9efd10c998b901a995575f59fd98426944daca1ff563be33e2013.png"}, {"poseId": "05", "sha256": "228915d0fde57acd3fce9aa06a303c4989bce72d107408984fe18e30325948ad", "width": 1254, "height": 1254, "source": "assets/228915d0fde57acd3fce9aa06a303c4989bce72d107408984fe18e30325948ad.png"}, {"poseId": "06", "sha256": "a31368e4fac8a11ec638e3e5c864cd2d36c4c54fd0c545c239ab284b256fd7d3", "width": 1254, "height": 1254, "source": "assets/a31368e4fac8a11ec638e3e5c864cd2d36c4c54fd0c545c239ab284b256fd7d3.png"}, {"poseId": "07", "sha256": "57796e78b711e408945d06126d687ee2944d90e744e520a93755f3d570adc065", "width": 1254, "height": 1254, "source": "assets/57796e78b711e408945d06126d687ee2944d90e744e520a93755f3d570adc065.png"}, {"poseId": "08", "sha256": "874a369c3c6ae2b1331ce66f56367c7194a233c30016f0d4b0d85c0169af4a95", "width": 1254, "height": 1254, "source": "assets/874a369c3c6ae2b1331ce66f56367c7194a233c30016f0d4b0d85c0169af4a95.png"}, {"poseId": "09", "sha256": "590155819ebae2b41dc2b90b2eb1eeac182117da8eaeee7a8dfe249e86f4c181", "width": 1254, "height": 1254, "source": "assets/590155819ebae2b41dc2b90b2eb1eeac182117da8eaeee7a8dfe249e86f4c181.png"}, {"poseId": "10", "sha256": "656290e36fb9c214ea07a34c0b8d4ca66a5367ca130f66ab6ed177b7e48c637c", "width": 1254, "height": 1254, "source": "assets/656290e36fb9c214ea07a34c0b8d4ca66a5367ca130f66ab6ed177b7e48c637c.png"}, {"poseId": "11", "sha256": "4410d59938f0ef46dc70063a43fa42b3764cebbcf91241a737f8f373b8cb1c7a", "width": 1254, "height": 1254, "source": "assets/4410d59938f0ef46dc70063a43fa42b3764cebbcf91241a737f8f373b8cb1c7a.png"}]};
   if(document.body?.dataset.page!=='study'||document.getElementById('continuous-walk-controls'))return;
   const panel=document.createElement('details');panel.id='continuous-walk-controls';panel.className='cv-continuous-walk';
-  panel.innerHTML='<summary>치이카와 연속 동작 · 시험</summary><div class="cv-walk-content"><p>기존 발 보정 12장을 반복하며 안전한 짧은 경로를 왕복합니다. 원작의 자연스러운 걷기를 재현했다고 검증한 기능은 아닙니다.</p><label><input id="continuous-walk-enabled" type="checkbox"> 이 페이지에서 연속 동작 허용</label><div><button id="continuous-walk-start" type="button" disabled>연속 동작 시작</button> <button id="continuous-walk-stop" type="button" disabled>정지</button></div><p id="continuous-walk-status" role="status">꺼짐 · 허용 체크만으로 자동 시작하지 않습니다.</p><p>공간이 부족하면 시작하지 않습니다. 치이카와를 빈 곳으로 옮긴 뒤 시작해 주세요. 잡기·학습·스크롤·일시정지·음악 재생은 동작을 멈추며, 다시 시작하려면 시작 버튼을 눌러 주세요.</p></div>';
+  panel.innerHTML='<summary>치이카와 연속 동작 · 시험</summary><div class="cv-walk-content"><p>기존 발 보정 12장을 반복하며 안전한 짧은 경로를 왕복합니다. 원작의 자연스러운 걷기를 재현했다고 검증한 기능은 아닙니다.</p><label><input id="continuous-walk-enabled" type="checkbox"> 이 페이지에서 연속 동작 허용</label><div><button id="continuous-walk-start" type="button" disabled>현재 자리에서 걷기</button> <button id="continuous-walk-place" type="button" disabled>빈 공간에 배치 후 걷기</button> <button id="continuous-walk-stop" type="button" disabled>정지</button></div><p id="continuous-walk-status" role="status">꺼짐 · 허용 체크만으로 자동 시작하지 않습니다.</p><p>현재 자리가 좁으면 “빈 공간에 배치 후 걷기”를 누르세요. 같은 화면의 안전한 빈 곳에 바로 배치한 뒤 걷습니다. 중간 경로를 이동하는 애니메이션은 아닙니다. 종료 시 원래 자리가 안전할 때만 돌려놓고, 직접 잡기는 현재 위치를 유지합니다. 잡기·학습·스크롤·일시정지·음악 재생은 동작을 멈추며, 다시 시작하려면 시작 버튼을 눌러 주세요.</p></div>';
   document.getElementById('study').before(panel);
-  const enabled=document.getElementById('continuous-walk-enabled'),start=document.getElementById('continuous-walk-start'),stop=document.getElementById('continuous-walk-stop'),status=document.getElementById('continuous-walk-status');
+  let placementRequested=false;
+  const enabled=document.getElementById('continuous-walk-enabled'),start=document.getElementById('continuous-walk-start'),place=document.getElementById('continuous-walk-place'),stop=document.getElementById('continuous-walk-stop'),status=document.getElementById('continuous-walk-status');
   const engine=()=>window[Symbol.for('jlpt.chiikawa-pets')];
-  const bridge=createContinuousWalkEngineAdapter({getEngine:engine,readUI:()=>({enabled:enabled.checked,documentHidden:document.hidden,inputBusy:false,composing:false,mediaBusy:document.getElementById('bgm-play')?.getAttribute('aria-pressed')==='true'})});
+  const bridge=createContinuousWalkEngineAdapter({getEngine:engine,readUI:()=>({enabled:enabled.checked,placementRequested,documentHidden:document.hidden,inputBusy:false,composing:false,mediaBusy:document.getElementById('bgm-play')?.getAttribute('aria-pressed')==='true'})});
   const controller=createContinuousWalkController({fixture:art,host:bridge,decode:decodeReviewedStep,onState:s=>{
-    start.disabled=!s.enabled||s.mode!=='off';stop.disabled=s.mode==='off';delete status.dataset.reason;
+    start.disabled=place.disabled=!s.enabled||s.mode!=='off';if(s.mode==='off')placementRequested=false;stop.disabled=s.mode==='off';delete status.dataset.reason;
     status.textContent=!s.enabled?'꺼짐 · 자동으로 시작하지 않습니다.':s.mode==='loading'?'프레임 준비 중 · 정지할 수 있어요.':s.mode==='walking'?'연속 동작 시험 중 · 직접 잡거나 정지할 수 있어요.':'준비 / 멈춤 · 시작 버튼으로 다시 실행해 주세요.';
   }});
   const unbind=bindContinuousWalkCancellation({controller,window,document,controls:panel});
@@ -221,17 +224,20 @@ const art={"schema": "chi-foot-v4-expanded-review", "characterId": "chiikawa", "
     'motion-active':'다른 캐릭터 동작이 끝난 뒤 시작해 주세요.',
     'outside-viewport':'전체 그림과 안전 여백이 화면 밖에 있어요. 치이카와를 화면 가장자리에서 안쪽으로 옮겨 주세요.',
     'protected-space':'전체 그림이 글자·버튼·다른 캐릭터와 겹쳐요. 치이카와를 빈 곳으로 옮겨 주세요.',
-    'no-safe-path':'좌우로 움직일 빈 공간이 부족해요. 치이카와 주변에 여유 공간을 확보해 주세요.',
+    'no-safe-path':'좌우로 움직일 빈 공간이 부족해요. 빈 공간에 배치 후 걷기를 이용하거나 주변에 여유 공간을 확보해 주세요.',
+    'no-safe-placement':'현재 화면에 전체 그림이 안전하게 걷는 빈 공간을 찾지 못했어요. 화면을 스크롤하거나 다른 캐릭터의 위치를 옮긴 뒤 다시 눌러 주세요.',
     'geometry-unavailable':'현재 화면 배치를 안전하게 확인하지 못했어요. 화면 확대나 배치가 안정된 뒤 다시 시도해 주세요.',
     'frame-unavailable':'동작 그림을 불러오지 못했어요. 새로고침 후 다시 시도해 주세요.',
     'decode-or-host-error':'동작 그림을 준비하지 못했어요. 새로고침 후 다시 시도해 주세요.',
     'unsupported-context':'이 동작은 공부 화면에서만 사용할 수 있어요.'
   };
-  start.addEventListener('click',async()=>{await Promise.resolve();if(!enabled.checked||controller.getState().mode!=='off')return;delete status.dataset.reason;const ok=await controller.start();if(!ok&&controller.getState().mode==='off'&&enabled.checked){
-    let admission;try{admission=bridge.read(null);}catch{}
+  async function begin(explicitPlacement){await Promise.resolve();if(!enabled.checked||controller.getState().mode!=='off')return;placementRequested=explicitPlacement;delete status.dataset.reason;const ok=await controller.start();if(!ok&&controller.getState().mode==='off'&&enabled.checked){
+    let admission;placementRequested=explicitPlacement;try{admission=bridge.read(null);}catch{}
     const reason=admission?.mediaBusy?'audio-active':admission?.inputBusy?'input-active':admission?.composing?'composing':admission?.reason||controller.getState().reason||'state-changed';
     status.dataset.reason=reason;status.textContent='시작하지 않았어요. '+(refusalLabels[reason]||'시작하는 동안 상태가 바뀌었어요. 입력과 다른 동작이 끝난 뒤 다시 눌러 주세요.')+' ['+reason+']';
-  }});
+  }if(!ok)placementRequested=false;}
+  start.addEventListener('click',()=>begin(false));
+  place.addEventListener('click',()=>begin(true));
   stop.addEventListener('click',()=>controller.stop('manual-stop'));
   panel.addEventListener('toggle',()=>{if(!panel.open)controller.stop('panel-closed');});
   const reset=()=>{controller.setEnabled(false);enabled.checked=false;};

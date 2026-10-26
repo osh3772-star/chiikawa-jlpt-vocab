@@ -398,7 +398,7 @@ function mountChiikawaPets(options = {}) {
   const presentationRegistry=createPresentationRegistry(transientEpoch);let pairPresentation=null;
   let externalPresentation = null, externalLease = null, externalStageAnchor = null, externalLeaseRequired = false, externalNoLayout = false, leaseSerial = 0;
   // Dedicated opt-in capability. The old authored-step/manual guards are untouched.
-  const CW_SCOPE='chi-continuous-walk-v1', CW_FRAMES=[{"poseId":"00","sha256":"09526837455f4384430ef1e7f6c68b68b8e693da7fb57ce7185cba610e7303f3","width":1254,"height":1254,"source":"assets/09526837455f4384430ef1e7f6c68b68b8e693da7fb57ce7185cba610e7303f3.png"},{"poseId":"01","sha256":"1c90f622c51589025695a0fec55568719627cc2030582e06bb9617b89835f32d","width":1254,"height":1254,"source":"assets/1c90f622c51589025695a0fec55568719627cc2030582e06bb9617b89835f32d.png"},{"poseId":"02","sha256":"40f956e223a22ed1eb978ee5163d46095d8e765bc561f5c162d364b87f8bbdf7","width":1254,"height":1254,"source":"assets/40f956e223a22ed1eb978ee5163d46095d8e765bc561f5c162d364b87f8bbdf7.png"},{"poseId":"03","sha256":"0d48828ca2adbfe124489be261c2f9a78ad29ab037e0829af83fdf63e017dc48","width":1254,"height":1254,"source":"assets/0d48828ca2adbfe124489be261c2f9a78ad29ab037e0829af83fdf63e017dc48.png"},{"poseId":"04","sha256":"f89be8a1dca9efd10c998b901a995575f59fd98426944daca1ff563be33e2013","width":1254,"height":1254,"source":"assets/f89be8a1dca9efd10c998b901a995575f59fd98426944daca1ff563be33e2013.png"},{"poseId":"05","sha256":"228915d0fde57acd3fce9aa06a303c4989bce72d107408984fe18e30325948ad","width":1254,"height":1254,"source":"assets/228915d0fde57acd3fce9aa06a303c4989bce72d107408984fe18e30325948ad.png"},{"poseId":"06","sha256":"a31368e4fac8a11ec638e3e5c864cd2d36c4c54fd0c545c239ab284b256fd7d3","width":1254,"height":1254,"source":"assets/a31368e4fac8a11ec638e3e5c864cd2d36c4c54fd0c545c239ab284b256fd7d3.png"},{"poseId":"07","sha256":"57796e78b711e408945d06126d687ee2944d90e744e520a93755f3d570adc065","width":1254,"height":1254,"source":"assets/57796e78b711e408945d06126d687ee2944d90e744e520a93755f3d570adc065.png"},{"poseId":"08","sha256":"874a369c3c6ae2b1331ce66f56367c7194a233c30016f0d4b0d85c0169af4a95","width":1254,"height":1254,"source":"assets/874a369c3c6ae2b1331ce66f56367c7194a233c30016f0d4b0d85c0169af4a95.png"},{"poseId":"09","sha256":"590155819ebae2b41dc2b90b2eb1eeac182117da8eaeee7a8dfe249e86f4c181","width":1254,"height":1254,"source":"assets/590155819ebae2b41dc2b90b2eb1eeac182117da8eaeee7a8dfe249e86f4c181.png"},{"poseId":"10","sha256":"656290e36fb9c214ea07a34c0b8d4ca66a5367ca130f66ab6ed177b7e48c637c","width":1254,"height":1254,"source":"assets/656290e36fb9c214ea07a34c0b8d4ca66a5367ca130f66ab6ed177b7e48c637c.png"},{"poseId":"11","sha256":"4410d59938f0ef46dc70063a43fa42b3764cebbcf91241a737f8f373b8cb1c7a","width":1254,"height":1254,"source":"assets/4410d59938f0ef46dc70063a43fa42b3764cebbcf91241a737f8f373b8cb1c7a.png"}];
+  const CW_SCOPE='chi-continuous-walk-v1',CW_PLACEMENT_SCOPE='chi-continuous-placement-v1', CW_FRAMES=[{"poseId":"00","sha256":"09526837455f4384430ef1e7f6c68b68b8e693da7fb57ce7185cba610e7303f3","width":1254,"height":1254,"source":"assets/09526837455f4384430ef1e7f6c68b68b8e693da7fb57ce7185cba610e7303f3.png"},{"poseId":"01","sha256":"1c90f622c51589025695a0fec55568719627cc2030582e06bb9617b89835f32d","width":1254,"height":1254,"source":"assets/1c90f622c51589025695a0fec55568719627cc2030582e06bb9617b89835f32d.png"},{"poseId":"02","sha256":"40f956e223a22ed1eb978ee5163d46095d8e765bc561f5c162d364b87f8bbdf7","width":1254,"height":1254,"source":"assets/40f956e223a22ed1eb978ee5163d46095d8e765bc561f5c162d364b87f8bbdf7.png"},{"poseId":"03","sha256":"0d48828ca2adbfe124489be261c2f9a78ad29ab037e0829af83fdf63e017dc48","width":1254,"height":1254,"source":"assets/0d48828ca2adbfe124489be261c2f9a78ad29ab037e0829af83fdf63e017dc48.png"},{"poseId":"04","sha256":"f89be8a1dca9efd10c998b901a995575f59fd98426944daca1ff563be33e2013","width":1254,"height":1254,"source":"assets/f89be8a1dca9efd10c998b901a995575f59fd98426944daca1ff563be33e2013.png"},{"poseId":"05","sha256":"228915d0fde57acd3fce9aa06a303c4989bce72d107408984fe18e30325948ad","width":1254,"height":1254,"source":"assets/228915d0fde57acd3fce9aa06a303c4989bce72d107408984fe18e30325948ad.png"},{"poseId":"06","sha256":"a31368e4fac8a11ec638e3e5c864cd2d36c4c54fd0c545c239ab284b256fd7d3","width":1254,"height":1254,"source":"assets/a31368e4fac8a11ec638e3e5c864cd2d36c4c54fd0c545c239ab284b256fd7d3.png"},{"poseId":"07","sha256":"57796e78b711e408945d06126d687ee2944d90e744e520a93755f3d570adc065","width":1254,"height":1254,"source":"assets/57796e78b711e408945d06126d687ee2944d90e744e520a93755f3d570adc065.png"},{"poseId":"08","sha256":"874a369c3c6ae2b1331ce66f56367c7194a233c30016f0d4b0d85c0169af4a95","width":1254,"height":1254,"source":"assets/874a369c3c6ae2b1331ce66f56367c7194a233c30016f0d4b0d85c0169af4a95.png"},{"poseId":"09","sha256":"590155819ebae2b41dc2b90b2eb1eeac182117da8eaeee7a8dfe249e86f4c181","width":1254,"height":1254,"source":"assets/590155819ebae2b41dc2b90b2eb1eeac182117da8eaeee7a8dfe249e86f4c181.png"},{"poseId":"10","sha256":"656290e36fb9c214ea07a34c0b8d4ca66a5367ca130f66ab6ed177b7e48c637c","width":1254,"height":1254,"source":"assets/656290e36fb9c214ea07a34c0b8d4ca66a5367ca130f66ab6ed177b7e48c637c.png"},{"poseId":"11","sha256":"4410d59938f0ef46dc70063a43fa42b3764cebbcf91241a737f8f373b8cb1c7a","width":1254,"height":1254,"source":"assets/4410d59938f0ef46dc70063a43fa42b3764cebbcf91241a737f8f373b8cb1c7a.png"}];
   const CWGeometry=(()=>{/** Full painted bounds, not alpha-only collision. Inputs must come from audited live geometry. */
 const validRect=r=>r&&['left','top','right','bottom'].every(k=>Number.isFinite(r[k]))&&r.right>r.left&&r.bottom>r.top;
 const contains=(a,b)=>a.left>=b.left&&a.top>=b.top&&a.right<=b.right&&a.bottom<=b.bottom;
@@ -420,8 +420,43 @@ function proposeWalkPath({position,bounds,viewport,obstacles,distance=24}){
  }
  return null;
 }
-;return{validRect,sweptPaintSafe,proposeWalkPath};})();
-  let continuousWalk=null,cwGeometryKey=null,cwGeometryEpoch=0;
+;return{validRect,translateBounds,sweptPaintSafe,proposeWalkPath};})();
+  const CWPlacement=(()=>{const {validRect,translateBounds,sweptPaintSafe}=CWGeometry;/** Pure explicit-request planner. No actor writes, decode, timers, automatic activation or art changes. */
+function findWalkPlacements({position,walkingBounds,actorBounds,viewport,obstacles,distance=24,margin=4,maxRelocation=Infinity}={}){
+ if(!position||![position.x,position.y,distance,margin].every(Number.isFinite)||distance<4||distance>128||margin<4||!(maxRelocation===Infinity||Number.isFinite(maxRelocation)&&maxRelocation>=0&&maxRelocation<=256)||![walkingBounds,actorBounds,viewport].every(validRect)||!Array.isArray(obstacles)||!obstacles.every(validRect))return [];
+ const candidates=[];
+ for(const sign of [1,-1]){
+  const dx=sign*distance;
+  const offsets={left:walkingBounds.left-position.x+Math.min(0,dx)-margin,right:walkingBounds.right-position.x+Math.max(0,dx)+margin,top:walkingBounds.top-position.y-margin,bottom:walkingBounds.bottom-position.y+margin};
+  const minX=viewport.left-offsets.left,maxX=viewport.right-offsets.right,minY=viewport.top-offsets.top,maxY=viewport.bottom-offsets.bottom;
+  if(minX>maxX||minY>maxY)continue;
+  const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
+  const xs=new Set([clamp(position.x,minX,maxX),minX,maxX]),ys=new Set([clamp(position.y,minY,maxY),minY,maxY]);
+  for(const r of obstacles){for(const x of [r.left-offsets.right,r.right-offsets.left])if(x>=minX&&x<=maxX)xs.add(x);for(const y of [r.top-offsets.bottom,r.bottom-offsets.top])if(y>=minY&&y<=maxY)ys.add(y);}
+  for(const x of xs)for(const y of ys){
+   const start={x,y},end={x:x+dx,y},travel=Math.hypot(x-position.x,y-position.y);
+   if(travel>maxRelocation)continue;
+   const bounds=translateBounds(walkingBounds,position,start);
+   if(!sweptPaintSafe({bounds,from:start,to:end,viewport,obstacles,margin}))continue;
+   const placedActor=translateBounds(actorBounds,position,start);
+   if(!sweptPaintSafe({bounds:placedActor,from:start,to:start,viewport,obstacles,margin}))continue;
+   const relocationSafe=sweptPaintSafe({bounds:actorBounds,from:position,to:start,viewport,obstacles,margin});
+   candidates.push({start,end,walkingBounds:bounds,relocation:[{...position},start],path:[start,end],distance:travel,walkDistance:distance,directRelocationSafe:relocationSafe,needsRelocation:travel>1e-6,requiresExplicitPlacement:travel>1e-6});
+  }
+ }
+ candidates.sort((a,b)=>a.distance-b.distance||a.start.y-b.start.y||a.start.x-b.start.x||b.end.x-a.end.x);
+ return candidates;
+}
+
+function planWalkPlacement(input){return findWalkPlacements({...input,maxRelocation:input?.maxRelocation??192}).find(p=>p.directRelocationSafe)??null;}
+/** Separate endpoint availability from how the original actor can reach it. */
+function nearestAvailableWalkPlacement(input){
+ const candidates=[24,12,8,4].flatMap(distance=>findWalkPlacements({...input,distance}));
+ candidates.sort((a,b)=>a.distance-b.distance||b.walkDistance-a.walkDistance||a.start.y-b.start.y||a.start.x-b.start.x);
+ return candidates[0]??null;
+}
+;return nearestAvailableWalkPlacement;})();
+  let continuousWalk=null,cwGeometryKey=null,cwGeometryEpoch=0,cwPlacementCache=null;
   function continuousWalkStyleSafe(){
     // Five known nodes only: animated ancestor transforms can change without a DOM mutation.
     let cwAuditSafe=false;
@@ -438,8 +473,8 @@ function proposeWalkPath({position,bounds,viewport,obstacles,distance=24}){
     }catch{}
     return cwAuditSafe;
   }
-  function continuousWalkGeometry(p){
-    refreshObstacles();const v=viewport(),vv=window.visualViewport;
+  function continuousWalkGeometry(p,fresh=false){
+    if(fresh)dirty=true;refreshObstacles();const v=viewport(),vv=window.visualViewport;
     if(vv&&(![vv.offsetLeft,vv.offsetTop,vv.width,vv.height,vv.scale].every(Number.isFinite)||vv.scale!==1||vv.width<=0||vv.height<=0))return null;
     const view=vv?{left:Math.max(0,vv.offsetLeft),top:Math.max(0,vv.offsetTop),right:Math.min(v.w,vv.offsetLeft+vv.width),bottom:Math.min(v.h,vv.offsetTop+vv.height)}:{left:0,top:0,right:v.w,bottom:v.h};
     const others=pets.filter(q=>q!==p&&!q.el.hidden&&!q.overlayUnavailable&&!q.assetUnavailable).map(q=>paintRect(q));
@@ -451,25 +486,31 @@ function proposeWalkPath({position,bounds,viewport,obstacles,distance=24}){
     return{bounds,viewport:view,obstacles:blockers,epoch:cwGeometryEpoch};
   }
   function readContinuousWalkAdmission({scope,actorId,lease=null}={}){
-    if(scope!==CW_SCOPE||actorId!=='chiikawa'||!viewportOverlay)return{safe:false,reason:'unsupported-context',scope:scope??null,actorId:actorId??null};
-    const p=pets.find(p=>p.id==='chiikawa'),own=!!continuousWalk&&continuousWalk.token===lease&&presentationRegistry.owns(lease);
+    const placement=scope===CW_PLACEMENT_SCOPE;
+    if(![CW_SCOPE,CW_PLACEMENT_SCOPE].includes(scope)||actorId!=='chiikawa'||!viewportOverlay)return{safe:false,reason:'unsupported-context',scope:scope??null,actorId:actorId??null};
+    const p=pets.find(p=>p.id==='chiikawa'),own=!!continuousWalk&&continuousWalk.scope===scope&&continuousWalk.token===lease&&presentationRegistry.owns(lease);
     let study;try{study=readStudyState?.();}catch{}
     const focusedInput=!!document.activeElement?.closest?.('input:not([type=checkbox]):not([type=radio]):not([type=button]):not([type=range]),textarea,[contenteditable="true"]');
     const captured=pets.some(q=>q.pointerId!==null),physical=pets.some(q=>q.airborne||PHYSICAL.has(q.mode)),inputBusy=focusedInput||pets.some(q=>!!q.touch),composing=study?.composing!==false;
     const mediaBusy=study?.audioPending!==false||document.getElementById('bgm-play')?.getAttribute('aria-pressed')==='true';
-    // Legacy busy deliberately means every non-home phase, including idle study.
-    // Only this explicit walking capability admits a quiescent study/review document.
-    // Never weaken the legacy readStudyState/manual-preview policy.
+    // Legacy busy remains unchanged. Only a quiescent explicit study/review request qualifies.
     const studyBusy=!['study','review'].includes(study?.phase)||!Number.isSafeInteger(study?.revision)||!Number.isSafeInteger(study?.transactionDepth)||study.transactionDepth!==0;
     const visible=!!p&&requestedVisible.has(p.id)&&!p.el.hidden&&!p.assetUnavailable&&!p.scalePlacementUnavailable&&!p.overlayUnavailable&&p.img.naturalWidth>0;
-    const g=p?continuousWalkGeometry(p):null;
-    const path=own?continuousWalk.path:g?CWGeometry.proposeWalkPath({position:{x:p.x,y:p.y},...g}):null;
-    const pathSafe=g&&path&&CWGeometry.sweptPaintSafe({...g,from:{x:p.x,y:p.y},to:{x:p.x,y:p.y}});
-    const safe=!!pathSafe&&!destroyed&&visible&&!document.hidden&&!paused()&&!reduced&&!captured&&!physical&&!inputBusy&&!studyBusy&&!composing&&!mediaBusy&&!stageRect(p)&&!isBeta(p)&&!pair&&!pending&&!externalPresentation&&!transient&&(!presentationRegistry.get()||own)&&pets.every(q=>q.mode==='idle'&&!q.action)&&![...inlineResponses.values()].some(c=>c.getState().mode!=='off')&&CW_FRAMES.every(f=>!failed.has(f.source));
-    // Explain the existing gate; do not relax geometry or alter actor placement to start.
+    const g=p?continuousWalkGeometry(p,placement&&!own):null;
+    const available=!destroyed&&visible&&!document.hidden&&!paused()&&!reduced&&!captured&&!physical&&!inputBusy&&!studyBusy&&!composing&&!mediaBusy&&!stageRect(p)&&!isBeta(p)&&!pair&&!pending&&!externalPresentation&&!transient&&(!presentationRegistry.get()||own)&&pets.every(q=>q.mode==='idle'&&!q.action)&&![...inlineResponses.values()].some(c=>c.getState().mode!=='off')&&CW_FRAMES.every(f=>!failed.has(f.source));
+    let plan=null;
+    if(placement&&!own&&g&&available){
+      const key=JSON.stringify([g.epoch,p.x,p.y,g.bounds,paintRect(p)]);
+      if(cwPlacementCache?.key===key)plan=cwPlacementCache.plan;
+      // Extra quarter CSS pixel keeps recomputed registration / 0.1px display rounding inside the unchanged 4px guard.
+      else {plan=CWPlacement({position:{x:p.x,y:p.y},walkingBounds:g.bounds,actorBounds:paintRect(p),viewport:g.viewport,obstacles:g.obstacles,margin:4.25});cwPlacementCache={key,plan};}
+    }
+    const path=own?continuousWalk.path:placement?plan?.path:g?CWGeometry.proposeWalkPath({position:{x:p.x,y:p.y},...g}):null;
+    const pathSafe=placement&&!own?!!plan:g&&path&&CWGeometry.sweptPaintSafe({...g,from:{x:p.x,y:p.y},to:{x:p.x,y:p.y}});
+    const safe=!!pathSafe&&available;
     const stationaryInside=g&&CWGeometry.sweptPaintSafe({...g,obstacles:[],from:{x:p.x,y:p.y},to:{x:p.x,y:p.y}});
-    const reason=safe?null:destroyed?'engine-unavailable':!visible?'actor-unavailable':document.hidden?'document-hidden':paused()?'paused':reduced?'reduced-motion':captured||inputBusy?'input-active':composing?'composing':studyBusy?'study-active':mediaBusy?'audio-active':physical?'physical-motion':stageRect(p)||isBeta(p)?'unsupported-context':pair||pending||externalPresentation||transient||presentationRegistry.get()&&!own||pets.some(q=>q.mode!=='idle'||q.action)||[...inlineResponses.values()].some(c=>c.getState().mode!=='off')?'motion-active':!CW_FRAMES.every(f=>!failed.has(f.source))?'frame-unavailable':!g?'geometry-unavailable':!stationaryInside?'outside-viewport':!pathSafe&&path?'protected-space':!CWGeometry.sweptPaintSafe({...g,from:{x:p.x,y:p.y},to:{x:p.x,y:p.y}})?'protected-space':!path?'no-safe-path':'state-changed';
-    return{scope:CW_SCOPE,actorId:'chiikawa',safe,reason,visible,paused:paused(),reduced,documentHidden:!!document.hidden,inputBusy,studyBusy,captured,physical,composing,mediaBusy,revision:study?.revision,geometryEpoch:g?.epoch??-1,key:JSON.stringify([transientEpoch,study?.revision,g?.epoch,p?.x,p?.y,[...requestedVisible],manualPaused,reduced]),path:path?.map(q=>({...q}))??null,speed:16};
+    const reason=safe?null:destroyed?'engine-unavailable':!visible?'actor-unavailable':document.hidden?'document-hidden':paused()?'paused':reduced?'reduced-motion':captured||inputBusy?'input-active':composing?'composing':studyBusy?'study-active':mediaBusy?'audio-active':physical?'physical-motion':stageRect(p)||isBeta(p)?'unsupported-context':pair||pending||externalPresentation||transient||presentationRegistry.get()&&!own||pets.some(q=>q.mode!=='idle'||q.action)||[...inlineResponses.values()].some(c=>c.getState().mode!=='off')?'motion-active':!CW_FRAMES.every(f=>!failed.has(f.source))?'frame-unavailable':!g?'geometry-unavailable':placement&&!own?'no-safe-placement':!stationaryInside?'outside-viewport':!CWGeometry.sweptPaintSafe({...g,from:{x:p.x,y:p.y},to:{x:p.x,y:p.y}})?'protected-space':!path?'no-safe-path':'state-changed';
+    return{scope,actorId:'chiikawa',safe,reason,visible,paused:paused(),reduced,documentHidden:!!document.hidden,inputBusy,studyBusy,captured,physical,composing,mediaBusy,revision:study?.revision,geometryEpoch:g?.epoch??-1,key:JSON.stringify([scope,transientEpoch,study?.revision,g?.epoch,p?.x,p?.y,[...requestedVisible],manualPaused,reduced,path]),path:path?.map(q=>({...q}))??null,speed:16,requiresExplicitPlacement:!!plan?.needsRelocation};
   }
   function ownsContinuousWalk(token){return !destroyed&&!!continuousWalk&&continuousWalk.token===token&&presentationRegistry.owns(token);}
   function tryAcquireContinuousWalk(expected){
@@ -479,7 +520,8 @@ function proposeWalkPath({position,bounds,viewport,obstacles,distance=24}){
     if(!current.safe||current.key!==expected?.key||current.revision!==expected?.revision||current.geometryEpoch!==expected?.geometryEpoch)return null;
     const p=pets.find(p=>p.id==='chiikawa'),token=presentationRegistry.acquire('single',['chiikawa']);if(!token)return null;
     const fields=(style,keys)=>Object.fromEntries(keys.map(k=>[k,style[k]||'']));
-    continuousWalk={token,path:current.path.map(q=>({...q})),revision:current.revision,geometryEpoch:current.geometryEpoch,frame:null,rootStyle:fields(p.el.style,['width','height','overflow']),figureStyle:fields(p.figure.style,['position','left','top','width','height'])};
+    continuousWalk={token,scope:current.scope,origin:current.scope===CW_PLACEMENT_SCOPE?{x:p.x,y:p.y}:null,path:current.path.map(q=>({...q})),revision:current.revision,geometryEpoch:current.geometryEpoch,frame:null,rootStyle:fields(p.el.style,['width','height','overflow']),figureStyle:fields(p.figure.style,['position','left','top','width','height'])};
+    if(current.scope===CW_PLACEMENT_SCOPE){p.x=current.path[0].x;p.y=current.path[0].y;}
     if(typeof MutationObserver==='function'){
       const observer=new MutationObserver(records=>{const controls=document.getElementById('continuous-walk-controls');if(records.some(record=>!controls?.contains(record.target))){invalidate();cancelContinuousWalk('document-change');}});
       observer.observe(document.querySelector('main')||document.body,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:['hidden','open','class','style','aria-hidden']});continuousWalk.observer=observer;
@@ -489,7 +531,15 @@ function proposeWalkPath({position,bounds,viewport,obstacles,distance=24}){
   function releaseContinuousWalk(token,reason='stop'){
     if(!continuousWalk||continuousWalk.token!==token)return false;
     const old=continuousWalk;continuousWalk=null;old.observer?.disconnect();presentationRegistry.release(token);
-    const p=pets.find(p=>p.id==='chiikawa');if(p){Object.assign(p.el.style,old.rootStyle);Object.assign(p.figure.style,old.figureStyle);delete p.el.dataset.continuousWalk;pose(p);if(!destroyed)render(p);}
+    const p=pets.find(p=>p.id==='chiikawa');if(p){
+      Object.assign(p.el.style,old.rootStyle);Object.assign(p.figure.style,old.figureStyle);delete p.el.dataset.continuousWalk;pose(p);
+      const inputOwnsPosition=['pointerdown','pointer-input','direct-input','keydown','keyboard-input','beforeinput','compositionstart','other-action'].includes(reason);
+      if(old.origin&&!inputOwnsPosition&&!destroyed&&p.pointerId===null&&!PHYSICAL.has(p.mode)){
+        const g=continuousWalkGeometry(p,true),point=old.origin,bounds=paintRect(p,point.x,point.y);
+        if(g&&CWGeometry.sweptPaintSafe({bounds,from:point,to:point,viewport:g.viewport,obstacles:g.obstacles,margin:4})){p.x=point.x;p.y=point.y;}
+      }
+      if(!destroyed)render(p);
+    }
     wake();return true;
   }
   function cancelContinuousWalk(reason){if(continuousWalk)releaseContinuousWalk(continuousWalk.token,reason);}
@@ -510,7 +560,7 @@ function proposeWalkPath({position,bounds,viewport,obstacles,distance=24}){
     const p=pets.find(p=>p.id==='chiikawa'),old=continuousWalk;
     const approved=CW_FRAMES.find(f=>f.poseId===frame?.poseId);
     if(!approved||['sha256','source','width','height'].some(k=>approved[k]!==frame[k])||![from?.x,from?.y,to?.x,to?.y].every(Number.isFinite)||Math.abs(from.x-p.x)>1e-6||Math.abs(from.y-p.y)>1e-6||Math.hypot(to.x-from.x,to.y-from.y)>5)return false;
-    const s=readContinuousWalkAdmission({scope:CW_SCOPE,actorId:'chiikawa',lease:token});
+    const s=readContinuousWalkAdmission({scope:old.scope,actorId:'chiikawa',lease:token});
     if(!s.safe||s.revision!==old.revision||s.geometryEpoch!==old.geometryEpoch)return false;
     const [a,b]=old.path,min=Math.min(a.x,b.x),max=Math.max(a.x,b.x);
     if(Math.abs(to.y-a.y)>1e-6||to.x<min-1e-6||to.x>max+1e-6)return false;
