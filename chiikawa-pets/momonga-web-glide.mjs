@@ -62,7 +62,7 @@ export function glideRefusalMessage(reason,s={}){
  const labels={captured:'모몽가를 잡고 있어 생략',touch:'모몽가의 터치 입력을 기다리는 중이라 생략',airborne:'모몽가가 내려오는 중이라 생략',physical:'모몽가 이동이 끝나지 않아 생략','physical-mode':'모몽가 이동이 끝나지 않아 생략',ime:'글자를 조합하는 중이라 생략',inputActive:'글자를 입력하는 중이라 생략',audioActive:'음성 또는 영상이 재생 중이라 생략',studyActive:'학습 입력을 처리 중이라 생략',reduced:'움직임 줄이기 설정으로 생략',paused:'캐릭터가 일시정지되어 있어 생략','busy-other':'다른 반응 또는 캐릭터 이동이 진행 중이라 생략',busy:'이미 활공 요청을 처리 중입니다'};
  return labels[reason]??'화면 상태가 달라져 안전하게 실행할 수 없어 생략';
 }
-export function createMomongaWebGlide({asset,getEngine,coordinator,clipObstacle=(el,r)=>r,displayed,enabled,status,characterOnly=()=>false,document:doc=globalThis.document,window:win=globalThis.window}){
+export function createMomongaWebGlide({asset,getEngine,coordinator,clipObstacle=(el,r)=>r,displayed,enabled,status,onFinish=()=>{},characterOnly=()=>false,document:doc=globalThis.document,window:win=globalThis.window}){
  let disposed=false,ime=false,version=0,lastGeometry='',requestSerial=0,lease=null,surface=null,image=null,loadingImage=null,lastAdmissionState=null,leaseRequestSerial=null,leasePainted=false;
  const id='momonga-web-glide',listeners=[];
  const listen=(el,type,fn,opts)=>{el.addEventListener(type,fn,opts);listeners.push(()=>el.removeEventListener(type,fn,opts));};
@@ -91,8 +91,8 @@ export function createMomongaWebGlide({asset,getEngine,coordinator,clipObstacle=
   return {version,viewport,clip,reserved:characterOnly()?{...viewport}:{left:0,top:0,right:mainLeft,bottom:h},obstacles,margin:6};
  }
  function remove(){surface?.remove();surface=null;image=null;}
- function release(token,reason){const current=lease===token&&leaseRequestSerial===requestSerial&&!disposed,painted=leasePainted;try{getEngine()?.releaseTransientPresentation?.(token);}finally{if(lease===token){lease=null;leaseRequestSerial=null;leasePainted=false;}if(current)status.textContent=painted&&['complete-ui-cut','absolute-deadline-ui-cut'].includes(reason)?'여백 활공 종료 · 원래 배우로 UI 복귀 (착지 아님)':painted?'안전 조건이 달라져 활공을 중단 · 원래 배우로 UI 복귀':'표시 전에 안전 조건이 달라져 활공을 생략';}}
- const clock={now:()=>win.performance.now(),request:fn=>win.requestAnimationFrame(fn),cancel:n=>win.cancelAnimationFrame(n),setTimeout:(fn,n)=>win.setTimeout(fn,n),clearTimeout:n=>win.clearTimeout(n)};
+ function release(token,reason){const current=lease===token&&leaseRequestSerial===requestSerial&&!disposed,painted=leasePainted;try{getEngine()?.releaseTransientPresentation?.(token);}finally{if(lease===token){lease=null;leaseRequestSerial=null;leasePainted=false;}if(current){status.textContent=painted&&['complete-ui-cut','absolute-deadline-ui-cut'].includes(reason)?'여백 활공 종료 · 원래 배우로 UI 복귀 (착지 아님)':painted?'안전 조건이 달라져 활공을 중단 · 원래 배우로 UI 복귀':'표시 전에 안전 조건이 달라져 활공을 생략';try{onFinish(status.textContent);}catch(_){}}}}
+ const clock={now:()=>win.performance.now(),request:fn=>win.requestAnimationFrame(()=>fn(win.performance.now())),cancel:n=>win.cancelAnimationFrame(n),setTimeout:(fn,n)=>win.setTimeout(fn,n),clearTimeout:n=>win.clearTimeout(n)};
  const core=createGlide({readState:state,readGeometry:geometry,clock,
   tryAcquire:expected=>{if(coordinator.hasOtherOpen(id))return null;const current=state();const token=getEngine()?.tryAcquireTransientPresentation?.({...expected,scope:responsiveScope(),responsiveKey:current?.responsiveKey},reason=>cancel(reason));if(!token)return null;lease=token;leaseRequestSerial=requestSerial;leasePainted=false;return token;},
   owns:token=>getEngine()?.ownsTransientPresentation?.(token)===true,
@@ -103,7 +103,7 @@ export function createMomongaWebGlide({asset,getEngine,coordinator,clipObstacle=
     Object.assign(surface.style,{width:r.width+'px',height:r.height+'px',transform:`translate3d(${r.x}px,${r.y}px,0)`});leasePainted=true;
    }catch(_){cancel('paint-error');}}
  });
- function cancel(reason='cancel'){requestSerial++;const open=core.state().mode!=='off';try{core.cancel(reason);}finally{if(lease){remove();release(lease);}if(loadingImage){loadingImage.onload=loadingImage.onerror=null;loadingImage.removeAttribute('src');loadingImage=null;}}if(open)status.textContent='여백 활공 취소 · 원래 배우로 UI 복귀 (착지 아님)';}
+ function cancel(reason='cancel'){requestSerial++;const open=core.state().mode!=='off';try{core.cancel(reason);}finally{if(lease){remove();release(lease);}if(loadingImage){loadingImage.onload=loadingImage.onerror=null;loadingImage.removeAttribute('src');loadingImage=null;}}if(open){status.textContent='여백 활공 취소 · 원래 배우로 UI 복귀 (착지 아님)';try{onFinish(status.textContent);}catch(_){}}}
  async function start(){
   if(disposed||core.state().mode!=='off')return false;
   if(!asset||asset.type!=='AUTHORED_UI_GLIDE'||asset.localTestingAuthorized!==true||asset.enabledByDefault!==false||asset.width!==96||asset.durationMs!==1800||asset.autonomous!==false||asset.originalFullMotionActivation!==false||asset.assetSha256!==R3.sha256||!asset.source){status.textContent='검토된 몸 그림이 없어 생략';return false;}

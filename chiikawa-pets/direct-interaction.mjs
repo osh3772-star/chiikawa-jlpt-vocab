@@ -8,7 +8,9 @@ export function directCarryRegistration(asset){
 export function createDirectInteractionAdapter({characterId='chiikawa',getContext,getPlaybackState,start,focusTarget,onRejected=()=>{}}){
  function request(id,input){
   const c=getContext();if(id!==characterId||!c.enabled)return false;
-  if(!input||!['keyboard','native-button'].includes(input.kind)||(input.kind==='keyboard'&&!['Enter',' '].includes(input.key)))return false;
+  if(!input||!['keyboard','native-button','pointer-tap','pointer-click'].includes(input.kind)||(input.kind==='keyboard'&&!['Enter',' '].includes(input.key)))return false;
+  if(input.kind==='pointer-tap'&&input.pointerType!=='touch')return false;
+  if(input.kind==='pointer-click'&&input.pointerType!=='mouse')return false;
   // true means handled/consumed, including busy or unsafe requests; never leak into generic react.
   if(input.repeat===true)return true;
   if(getPlaybackState().mode!=='off')return true;

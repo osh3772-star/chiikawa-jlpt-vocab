@@ -7,7 +7,7 @@
   const kaniRailRevalidators=[],kaniRailDisposers=[];
   const KaniRailModule=__KANI_RAIL_MODULE__;
   const ownedContentPanels=[]; // Explicit handles only; never collect all body children.
-  const ownedEnv=()=>({owner:!characterOnlyMode&&B_LAYOUT_ENABLED&&window.innerWidth>=1000&&window.innerHeight>=640?contentViewport:null,getStyle:el=>getComputedStyle(el)});
+  const ownedEnv=()=>({owner:!characterOnlyMode&&B_LAYOUT_ENABLED&&((window.innerWidth>=1000&&window.innerHeight>=640)||(window.innerWidth<640&&window.innerHeight>=380))?contentViewport:null,getStyle:el=>getComputedStyle(el)});
   function ownedObstacleRect(el,raw){const r=OwnedGeometry.clipOwnedPaint(el,raw,ownedEnv());return r.kind==='clipped'?{left:0,top:0,right:0,bottom:0,width:0,height:0,ownedClipped:true}:r.kind==='visible'?r.rect:raw;}
   const ownedNotClipped=r=>!r?.ownedClipped;
   const ownedFullStage=el=>!ownedEnv().owner||OwnedGeometry.fullStageEligible(el,el.getBoundingClientRect(),{left:0,top:0,right:innerWidth,bottom:innerHeight},ownedEnv());
@@ -25,7 +25,9 @@
   const backgroundController=BackgroundModule.createBackgroundController({storage:backgroundStorage,key:'cv-background-v1',...backgroundAdapter});
   const renderBackground=state=>{
     backgroundChoice.value=state.requested;
-    backgroundStatus.textContent=state.status==='loading'?'배경을 불러오는 중 · 기존 배경 유지':backgroundAssets[state.active]?backgroundAssets[state.active].label+' · 정적 참고 창작 / 원작 복제 아님':state.error?'배경을 불러오지 못해 기존 배경으로 표시':'기존 배경';
+    const displayStatus=state.error==='restore-failed'?'배경을 복원하지 못했습니다':state.status==='loading'?'배경을 불러오는 중 · 기존 배경 유지':backgroundAssets[state.active]?backgroundAssets[state.active].label+' · 정적 참고 창작 / 원작 복제 아님':state.error?'배경을 불러오지 못해 기존 배경으로 표시':'기존 배경';
+    const persistenceStatus=state.persistence==='unavailable'?(['ready','original'].includes(state.status)&&state.active===state.requested?' · 이 창에 적용됨 · 설정 저장 불가':' · 설정 저장 불가'):'';
+    backgroundStatus.textContent=displayStatus+persistenceStatus;
   };
   backgroundController.subscribe(renderBackground);renderBackground(backgroundController.getState());
   backgroundChoice.addEventListener('change',()=>backgroundController.setSelection(backgroundChoice.value));
@@ -78,7 +80,7 @@
   const previewCoordinator=createPreviewCoordinator();
 
   const visibilityTools = document.createElement('details');
-  visibilityTools.className = 'cv-visibility-tools'; visibilityTools.open = true;
+  visibilityTools.className = 'cv-visibility-tools'; visibilityTools.open = window.innerWidth >= 640;
   visibilityTools.innerHTML = '<summary>캐릭터 꺼내기 / 넣기</summary><div class="cv-visibility-choices"></div><div class="cv-visibility-actions"><button type="button" id="pets-show-all">모두 꺼내기</button><button type="button" id="pets-hide-all">모두 넣기</button><span id="pets-visibility-status" role="status"></span></div><p>숨기기와 자동 동작 일시정지는 별개입니다. 모바일에서는 아래 가로 무대를 밀어 선택한 친구를 볼 수 있어요.</p>';
   document.querySelector('.pet-tools').after(visibilityTools);
   const choices = visibilityTools.querySelector('.cv-visibility-choices');
@@ -134,7 +136,7 @@
     });
   }
   const directTools=document.createElement('div');directTools.className='cv-direct-tools';
-  directTools.innerHTML='<label><input type="checkbox" id="chiikawa-direct-enabled"> 캐릭터 직접 반응 실험 (기본 꺼짐)</label><p>한 친구를 장식 무대로 골라 Enter/Space 또는 반응 버튼으로 관찰 조각을 한 번 표시합니다. 상체/장면 창은 명시 UI 컷이며 소품 획득·착지·회복 재현이 아닙니다. 클릭/드래그에는 연결하지 않습니다.</p>';
+  directTools.innerHTML='<label><input type="checkbox" id="chiikawa-direct-enabled"> 캐릭터 직접 반응 실험 (기본 꺼짐)</label><p>실험을 켜고 한 친구를 장식 무대로 고르면 짧은 터치·왼쪽 클릭, Enter/Space 또는 반응 버튼으로 기존 관찰 조각을 한 번 표시합니다. 끌기·길게 누르기는 잡기이며, 실험을 끄면 기존 잡기 방식을 유지합니다. 상체/장면 창은 명시 UI 컷이며 소품 획득·착지·회복 재현이 아닙니다.</p>';
   visibilityTools.appendChild(directTools);const directToggle=directTools.querySelector('input');directToggle.checked=directEnabled;
   const directChoiceLabel=document.createElement('label');directChoiceLabel.textContent='반응 무대의 친구 ';const directChoice=document.createElement('select');directChoice.id='direct-character-choice';for(const[id,label]of Object.entries(labels)){const option=document.createElement('option');option.value=id;option.textContent=label;directChoice.appendChild(option);}directChoice.value=directCharacter;directChoiceLabel.appendChild(directChoice);directTools.appendChild(directChoiceLabel);
   // Explicit navigation only: never toggle preferences, cancel owners, or autoplay.
@@ -200,7 +202,8 @@
   glideTools.innerHTML='<label><input id="momonga-web-glide-enabled" type="checkbox"> 모몽가 여백 활공 실험</label><button type="button" id="momonga-web-glide-start" disabled>여백 활공 1회</button><p>Desktop 빈 여백에서만 펼친 자세 96px를 고정해 이동합니다. 표시 배율과 별개인 작성 UI 경로이며 이륙·착지 재현이 아닙니다. 이동 중 누르면 취소만 되며, 잡기는 복귀한 배우에서 새로 시작하세요.</p><span id="momonga-web-glide-status" role="status">기본 꺼짐 · 공간 부족 시 실행 생략</span>';
   visibilityTools.appendChild(glideTools);
   const glideToggle=glideTools.querySelector('input'),glideStart=glideTools.querySelector('button'),glideStatus=glideTools.querySelector('[role="status"]');
-  const webGlide=WebGlideModule.createMomongaWebGlide({asset:authoredGlideAsset,getEngine:()=>pets,coordinator:previewCoordinator,displayed:petObstacleIsDisplayed,clipObstacle:ownedObstacleRect,enabled:()=>glideToggle.checked||characterOnlyMode,status:glideStatus,characterOnly:()=>characterOnlyMode});
+  let reportCharacterFlight=()=>{};
+  const webGlide=WebGlideModule.createMomongaWebGlide({asset:authoredGlideAsset,getEngine:()=>pets,coordinator:previewCoordinator,displayed:petObstacleIsDisplayed,clipObstacle:ownedObstacleRect,enabled:()=>glideToggle.checked||characterOnlyMode,status:glideStatus,onFinish:text=>reportCharacterFlight(text),characterOnly:()=>characterOnlyMode});
   previewCoordinator.register('momonga-web-glide',webGlide);
   glideToggle.addEventListener('change',()=>{webGlide.cancel('setting');glideStart.disabled=!glideToggle.checked;});
   glideStart.addEventListener('click',()=>webGlide.start()); // Never use preempting coordinator.start for admission.
@@ -260,6 +263,17 @@
  const sync=()=>{if(disposed)return;input.checked=requested;rail.hidden=!requested||inputExclusive;for(const b of buttons)b.disabled=!requested||inputExclusive;controller.revalidate();revalidateInput();};
  on(input,'change',()=>{requested=input.checked;sync();});
  for(const b of buttons)on(b,'click',()=>{if(!requested)return;if(b.hasAttribute('data-kani-stop'))controller.stop();else controller.play(b.dataset.kaniState);});
+ // Study intent cancels only this rail's manual sequence. It neither acquires nor
+ // cancels another preview lease, and Kani's own controls/iframe stay independent.
+ const cancelKaniForStudy=event=>{
+  if(kaniPanel.contains(event.target))return;
+  const studyVisible=!document.getElementById('study')?.hidden;
+  const studyInput=event.target?.closest?.('main')&&['beforeinput','input','compositionstart'].includes(event.type);
+  if(studyInput||shouldCancelPreviewForStudyInput(event,studyVisible))controller.cancelForInput();
+ };
+ for(const type of ['click','change','keydown','beforeinput','input','compositionstart'])on(document,type,cancelKaniForStudy,{capture:true});
+ on(document,'keydown',event=>{if(event.key==='Escape'&&!event.isComposing)controller.cancelForInput();},{capture:true});
+ on(window,'blur',event=>{if(event.target===window)controller.cancelForInput();});
  on(image,'error',()=>controller.imageError());on(kaniPanel,'toggle',sync);on(document,'visibilitychange',sync);on(window,'scroll',sync,true);on(window,'resize',sync);
  if(window.visualViewport?.addEventListener){on(window.visualViewport,'resize',sync);on(window.visualViewport,'scroll',sync);}
  if(reducedQuery?.addEventListener)on(reducedQuery,'change',sync);
@@ -537,7 +551,7 @@
   }
   document.getElementById('pets-show-all').addEventListener('click',()=>{for(const id of groups.all)preferences.visible[id]=true;applyVisibility();});
   document.getElementById('pets-hide-all').addEventListener('click',()=>{for(const id of groups.all)preferences.visible[id]=false;applyVisibility();});
-  toggle.addEventListener('click',()=>{previewCoordinator.cancelAll('pause-change');userPaused=!pets.isPaused();if(userPaused)pets.pause();else pets.resume();saveVisibility();syncToggle();refreshCharacterGreeting();});
+  toggle.addEventListener('click',()=>{previewCoordinator.cancelAll('pause-change');userPaused=!pets.isPaused();if(userPaused)pets.pause();else pets.resume();saveVisibility();syncToggle();refreshCharacterFlight();refreshCharacterGreeting();});
   picker.addEventListener('change',()=>{pets.setMobileCharacters(groups[picker.value]);try{localStorage.setItem(preferenceKey,picker.value);}catch(_) {}});
   betaToggle.addEventListener('change',()=>{pets.destroy();mount();try{localStorage.setItem(betaPreferenceKey,String(betaToggle.checked));}catch(_) {}if(betaToggle.checked&&previewPanel.open)pets.playAction('walk','chiikawa');});
   betaWalk.addEventListener('click',()=>pets.playAction('walk','chiikawa'));
@@ -674,6 +688,8 @@ async function decodeReviewedStep(frames,{signal,ImageCtor=Image,setTimer=setTim
     contentViewport=document.createElement('div');contentViewport.className='cv-content-viewport';contentViewport.setAttribute('role','region');contentViewport.setAttribute('aria-label','학습 콘텐츠');
     document.querySelector('.site-header').before(contentViewport);
     for(const el of [document.querySelector('.site-header'),document.querySelector('main'),pairPanel,extraPanel,pajamaPanel,...ownedContentPanels])contentViewport.appendChild(el);
+    // Keep the same stage outside the scrolling learning owner; character-only restores this exact node.
+    contentViewport.after(mobileDock);
     document.body.classList.add('cv-reserved-lane-candidate');
     const revalidateStaticPanels=()=>{extraController.revalidate();pajamaController.revalidate();for(const revalidate of kaniRailRevalidators)revalidate();};
     contentViewport.addEventListener('scroll',revalidateStaticPanels,{passive:true});
@@ -787,6 +803,7 @@ function createAutoMotionQueue({now,setTimer,clearTimer,onChange=()=>{},maxWaitM
   flightTools.innerHTML='<button type="button" class="cv-momonga-fly-once">모몽가 날기 1회</button><label><input type="checkbox" class="cv-momonga-fly-auto"> 자동 날기 (기본 꺼짐)</label><span role="status"></span><small>기존 펼친 자세 그림을 1.8초 이동하는 웹 연출입니다. 자동은 8초 간격으로 안전할 때만 실행하며 날갯짓·이륙·착지 재현은 아닙니다.</small>';
   document.body.appendChild(flightTools);
   const flyOnce=flightTools.querySelector('button'),flyAuto=flightTools.querySelector('input'),flyStatus=flightTools.querySelector('[role="status"]');
+  reportCharacterFlight=text=>{if(characterOnlyMode)flyStatus.textContent=text;};
   const loopFactory=(()=>{/** Opt-in deterministic UI loop. No random selector or preference writes. */
 function createFlightLoop({isEnabled,isEligible,start,cancel,setTimer,clearTimer,intervalMs=8000}){
  if(!Number.isFinite(intervalMs)||intervalMs<8000)throw Error('interval');
@@ -907,7 +924,7 @@ function createPairGreeting({read,acquire,owns,release,decode,paint,remove,statu
     clock:{now:()=>performance.now(),request:fn=>requestAnimationFrame(fn),cancel:id=>cancelAnimationFrame(id),setTimeout:(fn,ms)=>setTimeout(fn,ms),clearTimeout:id=>clearTimeout(id)}});
   previewCoordinator.register('pair-greeting',greeting);
   const greetingAutoContext=()=>characterOnlyMode&&greetingWindowFocused&&greetingPageActive&&!document.hidden&&!motionQuery.matches&&!pets?.isPaused();
-  function refreshGreeting(){greetingTools.hidden=!characterOnlyMode;const ready=greeting.canStart();greetingButton.disabled=!(ready||(autoMotions.hasOwned()&&greetingAutoContext()));greetingStatus.textContent=ready?'두 캐릭터가 다가가 인사하고 돌아옵니다':'두 캐릭터의 전체 모습과 안전한 빈 공간이 화면에 함께 필요합니다';}
+  function refreshGreeting(){greetingTools.hidden=!characterOnlyMode;const ready=greeting.canStart();greetingButton.disabled=!(ready||(autoMotions.hasOwned()&&greetingAutoContext()));greetingStatus.textContent=ready?'두 캐릭터가 다가가 인사하고 돌아옵니다':['study','review'].includes(readPairStudy()?.phase)?'학습 중에는 인사하지 않아요 · 단어장 홈에서 캐릭터만 보기를 켜 주세요':'두 캐릭터의 전체 모습과 안전한 빈 공간이 화면에 함께 필요합니다';}
   greetingButton.addEventListener('click',()=>{autoMotions.cancel(undefined,'manual');if(greeting.canStart())greeting.start();});
   for(const type of ['resize','scroll','blur','pagehide'])window.addEventListener(type,event=>{if(type==='blur'&&event.target!==window)return;if(type==='blur')greetingWindowFocused=false;if(type==='pagehide')greetingPageActive=false;greeting.cancel(type);refreshGreeting();},{capture:true,passive:true});
   window.addEventListener('focus',()=>{greetingWindowFocused=true;refreshGreeting();});window.addEventListener('pageshow',()=>{greetingPageActive=true;refreshGreeting();});
@@ -949,7 +966,7 @@ function createIdleGreeting({isEnabled,isEligible,startOwned,setTimer,clearTimer
   const mobileControlHomes=[flightTools,greetingTools].map(node=>{const anchor=document.createComment('motion-controls-home');node.parentNode.insertBefore(anchor,node);return {node,anchor};});
   let controlsMoved=false;
   function syncMobileMotionToolbar(){
-    const needed=characterOnlyMode&&innerWidth<640,focus=document.activeElement;
+    const needed=characterOnlyMode,focus=document.activeElement;
     if(needed&&!controlsMoved){characterViewStage.insertBefore(mobileMotionToolbar,characterViewStage.firstChild);for(const {node} of mobileControlHomes)mobileMotionToolbar.appendChild(node);controlsMoved=true;}
     else if(!needed&&controlsMoved){for(const {node,anchor} of mobileControlHomes)if(anchor.parentNode)anchor.parentNode.insertBefore(node,anchor.nextSibling);mobileMotionToolbar.remove();controlsMoved=false;}
     if(focus&&document.activeElement!==focus&&focus.isConnected)focus.focus?.({preventScroll:true});

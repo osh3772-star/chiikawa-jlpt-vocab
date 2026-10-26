@@ -242,7 +242,7 @@ body.cv-character-only .cv-character-only-stage>.cv-extra-static-panel{margin:0!
 body.cv-character-only .cv-character-only-stage>.cv-extra-static-panel>:not(.cv-extra-static-rail){display:none!important;}
 body.cv-character-only .cv-character-only-stage .cv-direct-stage{background:transparent;outline:0;margin:0;}
 body.cv-character-only .cv-direct-stage>button,body.cv-character-only .cv-direct-caption{display:none!important;}
-body.cv-character-only .cv-mobile-pet-slot>button{visibility:hidden;}
+body.cv-character-only .cv-mobile-pet-slot>button{display:none;}
 @media(max-width:639px){body.cv-character-only .cv-character-only-stage{padding:76px 0 24px;}}
 
 .cv-momonga-flight-tools{position:fixed;left:12px;top:72px;z-index:120;width:min(440px,calc(100vw - 24px));height:132px;box-sizing:border-box;overflow:auto;padding:10px;display:flex;flex-wrap:wrap;align-content:flex-start;gap:6px 10px;background:#fffaf0;border:1px solid #dacdb9;border-radius:12px;font:12px/1.4 system-ui,sans-serif;}

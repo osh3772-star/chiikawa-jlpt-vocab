@@ -9,7 +9,8 @@ export function createKaniRailController({assets,read,decode,paint,clear,status=
   generation++;abort?.abort();abort=null;cancelFrame(raf);raf=0;const old=resources;resources=[];phase='off';key=null;animated=false;clear();old.forEach(release);status(message);
  }
  function validFrames(state){const s=assets?.states?.[state];return s?.frames?.length===counts[state]&&s.frames.every(f=>f&&typeof f.source==='string'&&f.source.length>0&&f.nativeSize?.join(',')==='512,512');}
- function tick(t){raf=0;if(destroyed||phase!=='playing')return;const c=context();if(!eligible(c)){stop('표시 조건이 바뀌어 숨김 · 선택 유지');return;}if(c.paused||c.reduced){load('idle',false);return;}const elapsed=t-start;if(!Number.isFinite(elapsed)||elapsed<0){stop('시간 상태가 바뀌어 정지');return;}const n=resources.length;index=Math.min(n-1,Math.floor(elapsed*rates[key]/1000));paint(resources[index],{state:key,index});if(elapsed>=n*1000/rates[key]){phase='hold';status(key+' 자세 1회 완료 · 마지막 그림 유지');return;}raf=requestFrame(tick);}
+ // RAF schedules work; elapsed time uses the same injected monotonic clock as start.
+ function tick(){raf=0;if(destroyed||phase!=='playing')return;const c=context();if(!eligible(c)){stop('표시 조건이 바뀌어 숨김 · 선택 유지');return;}if(c.paused||c.reduced){load('idle',false);return;}const elapsed=now()-start;if(!Number.isFinite(elapsed)||elapsed<0){stop('시간 상태가 바뀌어 정지');return;}const n=resources.length;index=Math.min(n-1,Math.floor(elapsed*rates[key]/1000));paint(resources[index],{state:key,index});if(elapsed>=n*1000/rates[key]){phase='hold';status(key+' 자세 1회 완료 · 마지막 그림 유지');return;}raf=requestFrame(tick);}
  async function load(state,animate){
   stop('카니 그림 준비 중');const c=context();if(destroyed||!eligible(c)){status(c.requested?'표시 조건 부족 · 선택 유지':'꺼짐');return false;}if(!Object.hasOwn(rates,state)||!validFrames(state)){phase='error';status('에셋 목록 불일치 · 숨김');return false;}
   if(animate&&(c.paused||c.reduced)){state='idle';animate=false;if(!validFrames(state)){phase='error';return false;}}
@@ -22,5 +23,7 @@ export function createKaniRailController({assets,read,decode,paint,clear,status=
   }catch(_){if(destroyed||generation!==token)return false;stop('그림 로드 실패 · 숨김');phase='error';return false;}
  }
  function revalidate(){if(destroyed)return;const c=context();if(!eligible(c)){if(phase!=='off')stop(c.requested?'접힘/공간/숨김 조건 · 선택 유지':'꺼짐');return;}if((c.reduced||c.paused)&&animated){load('idle',false);return;}if(phase==='off')load('idle',false);}
- return{revalidate,play:state=>load(state,true),stop:()=>load('idle',false),imageError(){stop('그림 표시 실패 · 숨김');phase='error';},getState:()=>({phase,key,index,generation,resourceCount:resources.length}),destroy(){if(destroyed)return;destroyed=true;stop('꺼짐');}};
+ // Cancel only an explicitly started sequence, never restart static/idle decoding.
+ function cancelForInput(){if(destroyed||!animated)return Promise.resolve(false);return load('idle',false);}
+ return{revalidate,play:state=>load(state,true),stop:()=>load('idle',false),cancelForInput,imageError(){stop('그림 표시 실패 · 숨김');phase='error';},getState:()=>({phase,key,index,generation,resourceCount:resources.length}),destroy(){if(destroyed)return;destroyed=true;stop('꺼짐');}};
 }
