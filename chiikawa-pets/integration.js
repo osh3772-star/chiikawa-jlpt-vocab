@@ -927,11 +927,11 @@ function createIdleGreeting({isEnabled,isEligible,startOwned,setTimer,clearTimer
   for(const type of ['resize','scroll'])window.visualViewport?.addEventListener(type,()=>{autoMotions.cancel(undefined,'viewport');refreshCharacterFlight();refreshCharacterGreeting();},{passive:true});
   // Move only existing controls; source actor slots and their sizes remain unchanged.
   const mobileMotionToolbar=document.createElement('div');mobileMotionToolbar.className='cv-mobile-motion-toolbar';
-  const mobileControlHomes=[flightTools,greetingTools].map(node=>{const anchor=document.createComment('motion-controls-home');node.parentNode.insertBefore(anchor,node);return {node,anchor};});
+  const mobileControlHomes=[toggle,flightTools,greetingTools].map(node=>{const anchor=document.createComment('motion-controls-home');node.parentNode.insertBefore(anchor,node);return {node,anchor};});
   let controlsMoved=false;
   function syncMobileMotionToolbar(){
     const needed=characterOnlyMode,focus=document.activeElement;
-    if(needed&&!controlsMoved){characterViewStage.insertBefore(mobileMotionToolbar,characterViewStage.firstChild);for(const {node} of mobileControlHomes)mobileMotionToolbar.appendChild(node);controlsMoved=true;}
+    if(needed&&!controlsMoved){characterViewStage.insertBefore(mobileMotionToolbar,characterViewStage.firstChild);for(const {node} of mobileControlHomes){if(node===toggle)flightTools.insertBefore(node,flightTools.firstChild);else mobileMotionToolbar.appendChild(node);}controlsMoved=true;}
     else if(!needed&&controlsMoved){for(const {node,anchor} of mobileControlHomes)if(anchor.parentNode)anchor.parentNode.insertBefore(node,anchor.nextSibling);mobileMotionToolbar.remove();controlsMoved=false;}
     if(focus&&document.activeElement!==focus&&focus.isConnected)focus.focus?.({preventScroll:true});
     refreshFlightUI();refreshGreeting();
