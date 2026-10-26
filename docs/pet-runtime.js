@@ -582,7 +582,7 @@ function nearestViewportOverlayPlacement({x,y,width,height,padding,viewport,obst
     refreshObstacles();syncStagePosition(p);
     syncScaleAvailability(p);syncOverlayPlacement(p);
     p.el.dataset.scaleUnavailable=String(!!p.scalePlacementUnavailable);
-    p.el.style.touchAction = viewportOverlay && !stageRect(p) ? 'none' : mobileStage(p) ? 'pan-x pan-y' : '';
+    p.el.style.touchAction = 'none';
     const dock = mobileStage(p) && mobileStageViewport ? mobileStageViewport.getBoundingClientRect() : null;
     p.el.dataset.assetUnavailable=String(!!p.assetUnavailable);const painted=onScreen(p);p.el.style.visibility=painted?'':'hidden';p.el.tabIndex=painted?0:-1;p.el.setAttribute('aria-hidden',String(!painted));
     if(!painted&&document.activeElement===p.el)p.el.blur?.();
@@ -616,13 +616,13 @@ function nearestViewportOverlayPlacement({x,y,width,height,padding,viewport,obst
   }
   function pointerDown(p, e) {
     cancelPairPresentation('pointer-input');
-    if (e.isPrimary === false) { for (const actor of pets) { actor.touch = null; if(viewportOverlay&&actor.pointerId!==null)safeReset(actor); } return; }
+    if (e.isPrimary === false) { for (const actor of pets) { actor.touch = null; if(actor.pointerId!==null)safeReset(actor); } return; }
     if(e.pointerType==='mouse' && (e.button!==0 || (e.buttons!==undefined && e.buttons!==1))) { p.touch=null; return; }
     if (e.button !== 0 || e.isPrimary === false || destroyed || p.pointerId !== null || p.touch || document.hidden) return;
     refreshObstacles();syncStagePosition(p);syncScaleAvailability(p);syncOverlayPlacement(p);if(!onScreen(p))return;
     inlineFor(p)?.cancel('pointer-intent');
     // Direct study drag after tap slop; legacy dock retains long-press/scroll.
-    if (e.pointerType === 'touch') { p.touch = { pointerId: e.pointerId, pointerType: 'touch', directDrag: viewportOverlay && !stageRect(p), clientX: e.clientX, clientY: e.clientY, at: performance.now() }; wake(); return; }
+    if (e.pointerType === 'touch') { p.touch = { pointerId: e.pointerId, pointerType: 'touch', directDrag: true, clientX: e.clientX, clientY: e.clientY, at: performance.now() }; wake(); return; }
     if(e.pointerType==='mouse' && (inlineFor(p)||decorativeStage(p))) {
       p.touch={pointerId:e.pointerId,pointerType:'mouse',clientX:e.clientX,clientY:e.clientY,at:performance.now()};wake();return;
     }
@@ -647,6 +647,11 @@ function nearestViewportOverlayPlacement({x,y,width,height,padding,viewport,obst
     scaleAnchors.delete(p.id);
     p.x = constrainX(p, e.clientX - p.grabDX); p.y = clamp(e.clientY - p.grabDY, 0, ground(p)); render(p);
   }
+  function deliberateFallbackSafe(){
+    try{const hasStudy=typeof window.__cvStudyRead==='function',study=hasStudy?window.__cvStudyRead():null,active=document.activeElement;
+      return !active?.isContentEditable&&!['INPUT','TEXTAREA','SELECT'].includes(active?.tagName)&&(!hasStudy||!!study&&['home','study','review'].includes(study.phase)&&study.transactionDepth===0&&study.composing===false&&study.audioPending!==true);
+    }catch(_){return false;}
+  }
   function pointerEnd(p, e, cancelled = false) {
     if (p.touch?.pointerId === e.pointerId) {
       const press = p.touch; p.touch = null;
@@ -656,7 +661,9 @@ function nearestViewportOverlayPlacement({x,y,width,height,padding,viewport,obst
         refreshObstacles(); syncStagePosition(p); syncScaleAvailability(p);
         if (onScreen(p) && p.pointerId === null && !PHYSICAL.has(p.mode)) {
           // Reuse opt-in responses only; no generic motion fallback or synthetic click.
-          try { onDeliberateInteraction?.(p.id,{kind:press.pointerType==='mouse'?'pointer-click':'pointer-tap',pointerType:press.pointerType==='mouse'?'mouse':'touch',repeat:false}); } catch (_) {}
+          try { const accepted=onDeliberateInteraction?.(p.id,{kind:press.pointerType==='mouse'?'pointer-click':'pointer-tap',pointerType:press.pointerType==='mouse'?'mouse':'touch',repeat:false});
+            if(accepted===false&&deliberateFallbackSafe())react('start',p.id,{deliberateFallback:true});
+          } catch (_) {}
         }
       }
       return;
@@ -727,7 +734,7 @@ function nearestViewportOverlayPlacement({x,y,width,height,padding,viewport,obst
     listen(el, 'focus', () => { (decorativeStage(p)??mobileStage(p))?.scrollIntoView?.({ block: 'nearest', inline: 'nearest' }); });
     listen(el, 'pointerdown', e => pointerDown(p, e)); listen(el, 'pointermove', e => pointerMove(p, e));
     listen(el, 'pointerup', e => pointerEnd(p, e));
-    listen(el, 'pointercancel', e => pointerEnd(p, e, true)); listen(el, 'lostpointercapture', e => pointerEnd(p, e, true));
+    listen(el, 'pointercancel', e => pointerEnd(p, e, true)); listen(el, 'lostpointercapture', e => { if(e.target!==el && p.pointerId===e.pointerId && el.hasPointerCapture?.(e.pointerId)===true)return; pointerEnd(p, e, true); });
     listen(el, 'keydown', e => {
       if (['Enter', ' ', 'Escape'].includes(e.key)) { p.touch = null; e.preventDefault(); e.stopPropagation();
         if (e.key === 'Escape') { cancelPair(); safeReset(p); } else { refreshObstacles();syncStagePosition(p);syncScaleAvailability(p);syncOverlayPlacement(p);if(!onScreen(p))return;let handled=false;try{handled=onDeliberateInteraction?.(p.id, {kind:'keyboard',key:e.key,repeat:e.repeat===true})===true;}catch(_){} if (!handled) react('start', p.id); }
@@ -760,6 +767,7 @@ function nearestViewportOverlayPlacement({x,y,width,height,padding,viewport,obst
   }
   function processEvent(now) {
     if (!pending) return;
+    if(pending.deliberateFallback&&!deliberateFallbackSafe()){pending=null;return;}
     if (now - pending.at > 1000) { pending = null; return; }
     // New owned clipping revokes queued intent even within the coalescing window.
     if(!pets.some(p=>onScreen(p)&&ownedAdmission(p)&&(pending.target==='all'||p.id===pending.target))&&pets.some(p=>!ownedAdmission(p)&&(pending.target==='all'||p.id===pending.target))){pending=null;return;}
@@ -789,7 +797,7 @@ function nearestViewportOverlayPlacement({x,y,width,height,padding,viewport,obst
     if (Number.isFinite(metadata.occurredAt) && Date.now() - metadata.occurredAt > 1000) return;
     // Coalesce same-turn correct + complete; latest event replaces, never a backlog.
     if (pending?.type === 'complete' && type === 'correct' && now - pending.at < 100) return;
-    pending = { type, target, at: now, ready: now + 45 };
+    pending = { type, target, at: now, ready: now + 45, deliberateFallback:metadata.deliberateFallback===true };
     wake();
   }
   function decide(p) {
@@ -841,7 +849,7 @@ function nearestViewportOverlayPlacement({x,y,width,height,padding,viewport,obst
   listen(document,'pointermove',e=>{for(const p of pets)if((p.touch?.pointerType==='mouse'||p.touch?.directDrag)&&p.touch.pointerId===e.pointerId)pointerMove(p,e);});
   listen(document,'pointerup',e=>{for(const p of pets)if((p.touch?.pointerType==='mouse'||p.touch?.directDrag)&&p.touch.pointerId===e.pointerId)p.touch=null;});
   listen(document,'pointercancel',e=>{for(const p of pets)if(p.touch?.pointerId===e.pointerId)p.touch=null;});
-  listen(document, 'pointerdown', e => { if (e.isPrimary === false || (e.pointerType==='mouse' && (e.button!==0 || (e.buttons!==undefined && e.buttons!==1)))) for (const p of pets) { p.touch = null; if(viewportOverlay&&e.isPrimary===false&&p.pointerId!==null)safeReset(p); } }, {capture:true,passive:true});
+  listen(document, 'pointerdown', e => { if (e.isPrimary === false || (e.pointerType==='mouse' && (e.button!==0 || (e.buttons!==undefined && e.buttons!==1)))) for (const p of pets) { p.touch = null; if(e.isPrimary===false&&p.pointerId!==null)safeReset(p); } }, {capture:true,passive:true});
   listen(window, 'scroll', () => { for (const p of pets) p.touch = null; invalidate(); for (const p of pets) if (stageRect(p) && PHYSICAL.has(p.mode)) safeReset(p); }, { passive: true, capture: true });
   listen(document, 'keydown', e => { if (e.key === 'Escape' && pets.some(p => PHYSICAL.has(p.mode))) { e.preventDefault(); resetAll(); } });
   listen(window, 'resize', () => { cancelExternalPresentation('resize'); layout(); });

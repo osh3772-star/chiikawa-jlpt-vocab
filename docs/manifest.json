@@ -69,7 +69,7 @@
       "bytes": 10355
     },
     "character-settings.html": {
-      "sha256": "56993b73af506a7cef5b8c26595a01686ccf97108152c69c38311edd3dd8e0a1",
+      "sha256": "960fb5e28481bf082ec2046e03601c8475cf08c8ad090398b2abf76db97454d6",
       "bytes": 4697
     },
     "index.html": {
@@ -85,8 +85,8 @@
       "bytes": 2963577
     },
     "pet-runtime.js": {
-      "sha256": "ca2c0aa41d54fb7779e6a3ba42c64028c253d71886f179177400e484314e9c77",
-      "bytes": 11436575
+      "sha256": "b7dcc1823d7696962902aa4d5e12f8fe165c3357d2f06e51f1dcc2b98f8d349a",
+      "bytes": 11437272
     },
     "study-runtime.js": {
       "sha256": "c7467195823fe3e98a84f7de174ff4ccb34b62bc2dc1755e171dafa89bf8c93f",
@@ -101,7 +101,7 @@
       "bytes": 3559
     },
     "study.html": {
-      "sha256": "17295b7e0e6497d787380f2b9f72bcd5176232aec284bc582e7ed93fd658c0ed",
+      "sha256": "cebeb8cffbeb50337a30d9261b25d2871c56a8558b3dbdf03a3af0edb028c698",
       "bytes": 5104
     },
     "vocabulary.js": {
