@@ -1,0 +1,7 @@
+#study-visibility-controls { display: flex; flex-wrap: wrap; gap: .5rem 1rem; margin: .75rem 0; padding: .65rem .8rem; min-width: 0; border: 1px solid #b8b4ac; border-radius: .7rem; }
+#study-visibility-controls legend { padding: 0 .3rem; font-size: .9rem; }
+#study-visibility-controls label { display: inline-flex; align-items: center; gap: .35rem; min-height: 2.75rem; cursor: pointer; }
+#study-visibility-controls input { width: 1.15rem; height: 1.15rem; margin: 0; }
+#study-visibility-controls input:focus-visible { outline: 2px solid #315b94; outline-offset: 3px; }
+#study-visibility-status { flex-basis: 100%; font-size: .85rem; }
+#study-visibility-status:empty { display: none; }
