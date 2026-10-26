@@ -17,8 +17,8 @@
       "bytes": 0
     },
     "app.css": {
-      "sha256": "1d5c2d088457ba54fff7dc08a0ae8b5c3ad8ff0bae93bec6555d060d582bf590",
-      "bytes": 136977
+      "sha256": "86fc249fef6f1f2962f9551edebb8a601d2305a16a7a23b2bcdd737b6df7fc6e",
+      "bytes": 137300
     },
     "assets/09526837455f4384430ef1e7f6c68b68b8e693da7fb57ce7185cba610e7303f3.png": {
       "sha256": "09526837455f4384430ef1e7f6c68b68b8e693da7fb57ce7185cba610e7303f3",
@@ -77,15 +77,15 @@
       "bytes": 10135
     },
     "character-settings.html": {
-      "sha256": "a36e2d43fb886258c4bf1e3f472d7e46ebc5d2f53def235c6721f750258c0137",
+      "sha256": "daa9c520f72d0970fe53bc2768fb17a12ad4dc75a56511bf6a619bf5cac86c8d",
       "bytes": 4357
     },
     "continuous-walk.js": {
-      "sha256": "bc5c5bed953c95533952137780303f4e6b098be40fd119fb8eac3fbe49e0dbc7",
-      "bytes": 27321
+      "sha256": "343e9190bf11d82bcc9cd86fc9f7538f4e2f4f6a3356e5a72702b79516850af5",
+      "bytes": 30442
     },
     "index.html": {
-      "sha256": "3b8c633a1874736ad55e4fce0f9c6c674cdb9d4fe64425ff01eff21ca624ea27",
+      "sha256": "8adce0754d2779124fece9d813ff5137bd4b0945a08dd0450c9425247da44cf2",
       "bytes": 5843
     },
     "navigation.js": {
@@ -97,8 +97,8 @@
       "bytes": 2963577
     },
     "pet-runtime.js": {
-      "sha256": "32477ff1a7688b0c4cb572c3001c52fe5d91aebe7140b36a9367455bceef6d31",
-      "bytes": 11462875
+      "sha256": "e7a7cbc2487723df4d897895813cd28edd5c07e86c0ad4afd3180657ce0dd77f",
+      "bytes": 11464894
     },
     "study-runtime.js": {
       "sha256": "8a9a310f3bf874ee15f21f5a3f11224d87a27a34e9e111815090aa3af2266b1a",
@@ -113,7 +113,7 @@
       "bytes": 3559
     },
     "study.html": {
-      "sha256": "79af6258fde6de0acc5faa859820ba04bd2ddc5bb76ca9f2f880ebde790f985f",
+      "sha256": "6593323819f71f26015b9b65221330394561b7b93d166c7b14debde791dbb87d",
       "bytes": 4821
     },
     "vocabulary.js": {

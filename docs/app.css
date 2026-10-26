@@ -590,6 +590,9 @@ body[data-page=settings].cv-floor-layout.cv-character-only .cv-character-only-st
  body[data-page=settings].cv-floor-layout .cv-mobile-pet-dock>.cv-mobile-pet-slot{height:184px}
 }
 
+/* A captured direct gesture can be lifted across the word area; settled actors stay on the floor. */
+body.cv-floor-layout .cv-pet-layer[data-floor-lift="true"]{z-index:140}
+
 /* Normal document flow, never a fixed bottom dock or pointer overlay. */
 .cv-bgm-player{max-width:760px;width:100%;min-width:0;box-sizing:border-box;margin:8px auto 16px;border:1px solid #d6c6aa;border-radius:16px;background:#fffaf0;color:#51483b;text-align:left}
 .cv-bgm-player summary{cursor:pointer;padding:12px 16px;font-weight:700;min-height:44px;box-sizing:border-box;overflow-wrap:anywhere}
@@ -612,4 +615,5 @@ body[data-page=settings].cv-floor-layout.cv-character-only .cv-character-only-st
 .cv-continuous-walk button{font:inherit;font-size:14px;min-height:44px;border-radius:10px;border:1px solid #bfb69c;background:#fff3cf;padding:8px 12px;transform:none!important;transition:background-color .15s}
 .cv-continuous-walk button:disabled{opacity:.5}
 .cv-continuous-walk :focus-visible{outline:3px solid #7756a7;outline-offset:3px}
-#continuous-walk-status{font-size:13px;line-height:1.4;margin:0;overflow-wrap:anywhere}
+/* Keep loading on its own row; minimum room for normal status text, not a clipping height. */
+#continuous-walk-status{flex:0 0 100%;min-inline-size:0;min-block-size:4.2em;font-size:13px;line-height:1.4;margin:0;overflow-wrap:anywhere}

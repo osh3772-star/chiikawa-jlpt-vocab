@@ -498,7 +498,7 @@ function proposeFloorWalk({position,walkingBounds,actorBounds,viewport,obstacles
  return plans[0]??null;
 }
 ;return proposeFloorWalk;})();
-  let continuousWalk=null,cwGeometryKey=null,cwGeometryEpoch=0,cwPlacementCache=null;
+  let continuousWalk=null,cwLastRelease=null,cwGeometryKey=null,cwGeometryEpoch=0,cwPlacementCache=null;
   function continuousWalkStyleSafe(){
     // Five known nodes only: animated ancestor transforms can change without a DOM mutation.
     let cwAuditSafe=false;
@@ -553,7 +553,7 @@ function proposeFloorWalk({position,walkingBounds,actorBounds,viewport,obstacles
     const safe=!!pathSafe&&available;
     const stationaryInside=g&&CWGeometry.sweptPaintSafe({...g,obstacles:[],from:{x:p.x,y:p.y},to:{x:p.x,y:p.y}});
     const reason=safe?null:destroyed?'engine-unavailable':!visible?'actor-unavailable':document.hidden?'document-hidden':paused()?'paused':reduced?'reduced-motion':captured||inputBusy?'input-active':composing?'composing':studyBusy?'study-active':mediaBusy?'audio-active':physical?'physical-motion':stageRect(p)||isBeta(p)?'unsupported-context':pair||pending||externalPresentation||transient||presentationRegistry.get()&&!own||!floor&&pets.some(q=>q.mode!=='idle'||q.action)||[...inlineResponses.values()].some(c=>c.getState().mode!=='off')?'motion-active':!CW_FRAMES.every(f=>!failed.has(f.source))?'frame-unavailable':!g?'geometry-unavailable':(placement||floor)&&!own?'no-safe-placement':!stationaryInside?'outside-viewport':!CWGeometry.sweptPaintSafe({...g,from:{x:p.x,y:p.y},to:{x:p.x,y:p.y}})?'protected-space':!path?'no-safe-path':'state-changed';
-    return{scope,actorId:'chiikawa',safe,reason,visible,paused:paused(),reduced,documentHidden:!!document.hidden,inputBusy,studyBusy,captured,physical,composing,mediaBusy,revision:study?.revision,geometryEpoch:g?.epoch??-1,key:JSON.stringify([scope,transientEpoch,study?.revision,g?.epoch,p?.x,p?.y,[...requestedVisible],manualPaused,reduced,path]),path:path?.map(q=>({...q}))??null,speed:16,requiresExplicitPlacement:!!plan?.needsRelocation};
+    return{scope,actorId:'chiikawa',safe,reason,leaseReleaseReason:lease&&cwLastRelease?.token===lease&&cwLastRelease.scope===scope?cwLastRelease.reason:null,visible,paused:paused(),reduced,documentHidden:!!document.hidden,inputBusy,studyBusy,captured,physical,composing,mediaBusy,revision:study?.revision,geometryEpoch:g?.epoch??-1,key:JSON.stringify([scope,transientEpoch,study?.revision,g?.epoch,p?.x,p?.y,[...requestedVisible],manualPaused,reduced,path]),path:path?.map(q=>({...q}))??null,speed:16,requiresExplicitPlacement:!!plan?.needsRelocation};
   }
   function ownsContinuousWalk(token){return !destroyed&&!!continuousWalk&&continuousWalk.token===token&&presentationRegistry.owns(token);}
   function tryAcquireContinuousWalk(expected){
@@ -562,6 +562,7 @@ function proposeFloorWalk({position,walkingBounds,actorBounds,viewport,obstacles
     const current=readContinuousWalkAdmission({scope:expected?.scope,actorId:expected?.actorId});
     if(!current.safe||current.key!==expected?.key||current.revision!==expected?.revision||current.geometryEpoch!==expected?.geometryEpoch)return null;
     const p=pets.find(p=>p.id==='chiikawa'),token=presentationRegistry.acquire('single',['chiikawa']);if(!token)return null;
+    cwLastRelease=null;
     const fields=(style,keys)=>Object.fromEntries(keys.map(k=>[k,style[k]||'']));
     continuousWalk={token,scope:current.scope,origin:current.scope===CW_PLACEMENT_SCOPE?{x:p.x,y:p.y}:null,path:current.path.map(q=>({...q})),revision:current.revision,geometryEpoch:current.geometryEpoch,frame:null,rootStyle:fields(p.el.style,['width','height','overflow']),figureStyle:fields(p.figure.style,['position','left','top','width','height'])};
     if(current.scope===CW_PLACEMENT_SCOPE||current.scope===CW_FLOOR_SCOPE){p.x=current.path[0].x;p.y=current.path[0].y;if(current.scope===CW_FLOOR_SCOPE){p.action=null;p.mode='idle';p.airborne=false;p.vx=p.vy=0;}}
@@ -573,7 +574,7 @@ function proposeFloorWalk({position,walkingBounds,actorBounds,viewport,obstacles
   }
   function releaseContinuousWalk(token,reason='stop'){
     if(!continuousWalk||continuousWalk.token!==token)return false;
-    const old=continuousWalk;continuousWalk=null;old.observer?.disconnect();presentationRegistry.release(token);
+    const old=continuousWalk;cwLastRelease={token,scope:old.scope,reason:typeof reason==='string'?reason:'released'};continuousWalk=null;old.observer?.disconnect();presentationRegistry.release(token);
     const p=pets.find(p=>p.id==='chiikawa');if(p){
       Object.assign(p.el.style,old.rootStyle);Object.assign(p.figure.style,old.figureStyle);delete p.el.dataset.continuousWalk;pose(p);
       const inputOwnsPosition=['pointerdown','pointer-input','direct-input','keydown','keyboard-input','beforeinput','compositionstart','other-action'].includes(reason);
@@ -627,14 +628,25 @@ function proposeFloorWalk({position,walkingBounds,actorBounds,viewport,obstacles
   const constrainX = (p, x) => { const [left, right] = xBounds(p); return clamp(x, left, right); };
   const ground = p => { const r = stageRect(p); return Math.max(0, (r ? r.bottom : viewport().h) - p.height - floorOffset); };
   const paintRect=(p,x=p.x,y=p.y)=>continuousWalk&&p.id==='chiikawa'?chiFootReviewBounds({...p,x,y}):paddedGeometry(p,x,y)?.outer??{left:x,top:y,right:x+p.width,bottom:y+p.height,width:p.width,height:p.height};
+  let floorClickSuppression=null;
+  function floorOwnedLift(p){return floorWalk&&p.floorInputLift===true&&(p.pointerId!==null||p.airborne||PHYSICAL.has(p.mode));}
+  function syncFloorLiftLayer(){if(floorWalk)root.dataset.floorLift=String(pets.some(floorOwnedLift));}
+  function suppressFloorReleaseClick(e){
+    const pending=floorClickSuppression;if(!pending)return;
+    if(performance.now()>pending.until){floorClickSuppression=null;return;}
+    if(e.detail===0||!Number.isFinite(e.clientX)||!Number.isFinite(e.clientY))return;
+    if(Number.isFinite(e.pointerId)&&e.pointerId>0&&e.pointerId!==pending.pointerId)return;
+    if(Math.hypot(e.clientX-pending.x,e.clientY-pending.y)>12)return;
+    floorClickSuppression=null;e.preventDefault();e.stopImmediatePropagation();
+  }
   function onScreen(p) {
     if (p.el.hidden || p.assetUnavailable || p.scalePlacementUnavailable || p.overlayUnavailable || document.hidden) return false;
     const r = stageRect(p), x = p.x + (r && Number.isFinite(p.stageLeft) ? r.left - p.stageLeft : 0);
     const y = r && !PHYSICAL.has(p.mode) ? Math.max(0, r.bottom - p.height - floorOffset) : p.y;
-    const dock = mobileStage(p) && mobileStageViewport ? mobileStageViewport.getBoundingClientRect() : null;
+    const dock = !floorOwnedLift(p) && mobileStage(p) && mobileStageViewport ? mobileStageViewport.getBoundingClientRect() : null;
     const hit=paintRect(p,x,y);
     const sourceStage=decorativeStage(p)??mobileStage(p)??(isBeta(p)?experimentalStage:null);
-    const ownedStage=sourceStage&&ownedViewportGeometry?.stagePresentation(sourceStage,hit,dock);
+    const ownedStage=!floorOwnedLift(p)&&sourceStage&&ownedViewportGeometry?.stagePresentation(sourceStage,hit,dock);
     if(ownedStage?.owned&&ownedStage.visible===false)return false;
     // Reserve the visible direct-response scene for its owner, not unrelated settled actors.
     // Drag/physics remain visible; ordinary study-control yielding is never exempted.
@@ -699,7 +711,7 @@ function proposeFloorWalk({position,walkingBounds,actorBounds,viewport,obstacles
     if (sequence) advance(p, 0);
     wake();
   }
-  function idle(p) { inlineFor(p)?.cancel('idle'); p.action = null; p.wait = rand(1.5, 4.5); mode(p, 'idle'); pose(p); }
+  function idle(p) { p.floorInputLift=false;syncFloorLiftLayer();inlineFor(p)?.cancel('idle'); p.action = null; p.wait = rand(1.5, 4.5); mode(p, 'idle'); pose(p); }
   function advance(p, dt) {
     const a = p.action; if (!a) return;
     a.elapsed += dt;
@@ -801,15 +813,16 @@ function nearestViewportOverlayPlacement({x,y,width,height,padding,viewport,obst
     syncScaleAvailability(p);syncOverlayPlacement(p);
     p.el.dataset.scaleUnavailable=String(!!p.scalePlacementUnavailable);
     p.el.style.touchAction = 'none';
-    const dock = mobileStage(p) && mobileStageViewport ? mobileStageViewport.getBoundingClientRect() : null;
+    const lifted=floorOwnedLift(p);p.el.dataset.floorLift=String(lifted);p.el.style.pointerEvents=lifted&&p.pointerId===null?'none':'';syncFloorLiftLayer();
+    const dock = !lifted && mobileStage(p) && mobileStageViewport ? mobileStageViewport.getBoundingClientRect() : null;
     p.el.dataset.assetUnavailable=String(!!p.assetUnavailable);const painted=onScreen(p);p.el.style.visibility=painted?'':'hidden';p.el.tabIndex=painted?0:-1;p.el.setAttribute('aria-hidden',String(!painted));
     if(!painted&&document.activeElement===p.el)p.el.blur?.();
     const hit=paintRect(p);
-    const ownedPresentation=ownedViewportGeometry?.stagePresentation(decorativeStage(p)??mobileStage(p)??(isBeta(p)?experimentalStage:null),hit,dock);
+    const ownedPresentation=!lifted&&ownedViewportGeometry?.stagePresentation(decorativeStage(p)??mobileStage(p)??(isBeta(p)?experimentalStage:null),hit,dock);
     p.el.style.clipPath = (ownedPresentation?.owned?ownedPresentation.clipPath:null) ?? (dock ? `inset(${Math.max(0,dock.top-hit.top)}px ${Math.max(0,hit.right-dock.right)}px ${Math.max(0,hit.bottom-dock.bottom)}px ${Math.max(0,dock.left-hit.left)}px)` : '');
     p.el.style.transform = `translate3d(${hit.left.toFixed(1)}px, ${hit.top.toFixed(1)}px, 0)`;
     // No scaleX(-1), squash, rotation, or CSS walk substitution, including Rakko.
-    const blocked = (viewportOverlay || p.pointerId === null) && obstacles.some(r => hit.left < r.right + 4 && hit.right > r.left - 4 && hit.top < r.bottom + 4 && hit.bottom > r.top - 4);
+    const blocked = !lifted && (viewportOverlay || p.pointerId === null) && obstacles.some(r => hit.left < r.right + 4 && hit.right > r.left - 4 && hit.top < r.bottom + 4 && hit.bottom > r.top - 4);
     p.el.classList.toggle('cv-pet--yielding', blocked);
     if(!painted||blocked)inlineFor(p)?.cancel('paint-ineligible');
   }
@@ -826,6 +839,7 @@ function nearestViewportOverlayPlacement({x,y,width,height,padding,viewport,obst
     if (externalPresentation) { cancelExternalPresentation('direct-input'); layout(); }
     cancelPair(); p.touch = null; p.pointerId = e.pointerId;
     try { p.el.setPointerCapture(e.pointerId); } catch (_) { p.pointerId = null; return; }
+    p.floorInputLift=floorWalk&&!decorativeStage(p)&&!isBeta(p);
     p.grabDX = e.clientX - p.x; p.grabDY = e.clientY - p.y;
     p.prevX = e.clientX; p.prevY = e.clientY; p.prevTime = performance.now();
     p.throwVX = p.throwVY = 0; p.airborne = false;
@@ -888,6 +902,7 @@ function nearestViewportOverlayPlacement({x,y,width,height,padding,viewport,obst
       return;
     }
     if (p.pointerId !== e.pointerId) return;
+    if(floorOwnedLift(p)&&!cancelled&&Number.isFinite(e.clientX)&&Number.isFinite(e.clientY))floorClickSuppression={pointerId:e.pointerId,x:e.clientX,y:e.clientY,until:performance.now()+600};
     releaseCapture(p);
     if (cancelled || paused()) { safeReset(p); return; }
     // A stationary hold must not reuse the velocity from an old move.
@@ -1109,6 +1124,12 @@ function nearestViewportOverlayPlacement({x,y,width,height,padding,viewport,obst
     listen(document,'visibilitychange',()=>cancelInlineAll('visibility'));
     listen(document,'keydown',e=>{if(e.key==='Escape')cancelInlineAll('escape');});
   }
+  if(floorWalk){listen(document,'pointerdown',()=>{floorClickSuppression=null;},{capture:true,passive:true});listen(document,'click',suppressFloorReleaseClick,{capture:true});}
+  if(floorWalk)listen(document,'animationend',event=>{
+    const study=document.getElementById('study');
+    if(destroyed||document.hidden||!study||study.hidden||event.target!==study||event.animationName!=='soft-enter')return;
+    invalidate();for(const actor of pets)render(actor);
+  },true);
   layout(); root.dataset.paused = String(paused()); started = true; wake();
   function playAction(action, target = 'chiikawa') {
     const p = pets.find(p => p.id === target);
