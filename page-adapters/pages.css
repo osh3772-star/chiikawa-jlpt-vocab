@@ -1,0 +1,22 @@
+/* Three documents, not hidden panels. Shared existing theme/actor artwork. */
+.cv-page-nav{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin:8px auto 20px;position:relative;z-index:100;max-width:760px}
+.cv-page-nav a,.cv-primary-link{display:inline-block;background:#fffdf8;border:2px solid #decdb2;border-radius:14px;padding:10px 16px;color:#584a3c;font-weight:700;text-decoration:none;box-shadow:0 3px 0 #d8cbb967}
+.cv-page-nav a[aria-current=page]{background:#f8e7ae;border-color:#cfab6b}
+.cv-page-nav a:focus-visible,.cv-primary-link:focus-visible{outline:3px solid #7756a7;outline-offset:3px}
+.cv-page-nav a:hover{background:#fff1cd}
+#navigation-status:empty{display:none}
+#navigation-status{max-width:760px;margin:8px auto;color:#793b22;background:#fff7df;padding:8px}
+body[data-page=home] main,body[data-page=settings] main{max-width:760px;margin:auto}
+body[data-page=study] .site-header{padding-bottom:6px}
+body[data-page=study] .site-header h1{font-size:clamp(24px,4vw,34px);margin-bottom:6px}
+body[data-page=study] .header-description{margin:4px auto}
+body[data-page=study] .cv-page-nav{margin-bottom:12px}
+body[data-page=study] .cv-study-pet-actions{display:flex;justify-content:center;margin:8px}
+.cv-study-extras{max-width:760px;margin:16px auto;display:flex;flex-wrap:wrap;justify-content:center;gap:12px}
+.cv-study-extras .cv-extra-static-panel{margin:0;padding:8px;border:0;background:transparent}
+body[data-page=settings] .cv-settings-intro{padding:18px 24px}
+body[data-page=settings].cv-character-only .cv-character-only-stage>.cv-page-nav{position:fixed;top:6px;left:12px;right:12px;margin:0;z-index:120;pointer-events:auto}
+body[data-page=settings].cv-character-only .cv-character-only-stage{padding-top:72px}
+@media(max-width:639px){.cv-page-nav{gap:6px}.cv-page-nav a{padding:8px 11px;font-size:14px}body[data-page=settings].cv-character-only .cv-character-only-stage{padding-top:88px}}
+
+@media(max-width:639px){body[data-page=study].cv-reserved-lane-candidate>.cv-content-viewport{padding-top:18px}}
