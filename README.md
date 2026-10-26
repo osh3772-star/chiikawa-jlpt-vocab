@@ -1,6 +1,6 @@
 # Chiikawa JLPT Vocabulary
 
-최신 재현 스냅샷: **로컬 MP3 · 뜻/히라가나/예문 표시 · 공부 캐릭터 직접 터치** 통합판.
+최신 재현 스냅샷: **로컬 MP3 · 단어 표시 유지 + 모바일 직접 입력 hotfix**. 연속 걷기는 포함하지 않습니다.
 정적 27파일이며 아래 고정 manifest로 검증합니다. 이 소스 백업 자체는 운영 배포를 수행하지 않습니다.
 
 A browser-based JLPT vocabulary app with 7,180 entries and six interactive character companions. Built with HTML, CSS, vanilla JavaScript and a Python standard-library build script.
@@ -115,9 +115,9 @@ Python 3 표준 라이브러리와 Node.js 18 이상이 필요합니다. 추가 
 ```sh
 python3 assemble_legacy.py
 python3 build_pages.py --output dist/separate-pages
-CV_SEPARATE_TEST_SITE="$PWD/dist/separate-pages" node --test tests/page-fixture-calibration.test.cjs tests/page-navigation.test.cjs tests/study-overlay-layout.test.mjs tests/page-bgm.test.cjs tests/mobile-input-regression.test.mjs
+CV_SEPARATE_TEST_SITE="$PWD/dist/separate-pages" node --test tests/page-fixture-calibration.test.cjs tests/page-navigation.test.cjs tests/study-overlay-layout.test.mjs tests/page-bgm.test.cjs tests/mobile-input-regression.test.mjs tests/mobile-input-v2.test.mjs
 python3 -m unittest discover -s tests -p 'test_separate_pages.py' -v
-python3 -c "from pathlib import Path; import hashlib; assert hashlib.sha256(Path('dist/separate-pages/manifest.json').read_bytes()).hexdigest() == '80077df4b088abfe022a91978dd0faac2ee150377e365bd7d3309a1515b18167'"
+python3 -c "from pathlib import Path; import hashlib; assert hashlib.sha256(Path('dist/separate-pages/manifest.json').read_bytes()).hexdigest() == '159160a4f3045bac2c1b31d9c920f2290c4f12cffbfe755a1d91a5e1901eb448'"
 ```
 
 - 고정 입력 `legacy-self-contained.html`: SHA-256 `777f3694738039dc1a244d5661136eef75c7778bbebcace02caa5115c6e4231c`.
@@ -153,7 +153,7 @@ Git blob `04e886844b6d160c136c366a747b52a98ad0ff65`입니다. 저장소의
 - `tests/study-overlay-layout.test.mjs`는 생성된 실제 runtime의 주 엔진 helper를 검사합니다. 내부 진단 폴더, 사용자 사진, 작업 경로, 별도 mock 패키지는 필요 없습니다.
 
 최신 고정 manifest SHA-256:
-`80077df4b088abfe022a91978dd0faac2ee150377e365bd7d3309a1515b18167`
+`159160a4f3045bac2c1b31d9c920f2290c4f12cffbfe755a1d91a5e1901eb448`
 
 기존 전체 단일 파일(full777f), 원본 소스·단어 데이터, 이전 3페이지 스냅샷은
 보존합니다. `legacy-self-contained.html`과 `dist/`는 공개 소스만으로 로컬 재생성하며,
@@ -166,7 +166,16 @@ Git blob `04e886844b6d160c136c366a747b52a98ad0ff65`입니다. 저장소의
 - `cv-bgm-preferences-v1`은 `{version:1,volume:0..1,repeat:'off'|'one'|'all'}`만 저장합니다. 자동재생은 OFF 고정이며 저장하지 않습니다. 음량/반복 저장이 막혀도 현재 페이지 재생은 사용할 수 있습니다.
 - 수동 이전/다음은 끝에서 순환하고 정지 상태면 선택만 바꿉니다. 자연 종료의 반복없음은 다음 곡/목록끝 정지, 한곡은 현재곡, 전체는 끝에서 첫곡입니다. 재생 오류를 자동으로 건너뛰지 않습니다. 늦은 Promise/event와 객체 URL 수명을 제한합니다.
 - 공부 화면의 뜻 표시 checkbox와 히라가나·예문·번역 묶음 checkbox는 기본 모두 켜짐입니다. `cv-study-visibility-v1`에 version/meaning/readingExample만 저장하며 원문·단어·진도·답변취소·학습백업 형식을 바꾸지 않습니다.
-- 공부 배우의 직접 터치 drag 경로를 추가하고 tap/중단/두 번째 손가락 처리를 구분합니다. 배우 바깥의 페이지 스크롤, 설정 페이지 dock의 기존 스크롤/long-press 경로는 유지합니다. 새 걷기 원화·확률 변경이 아닙니다.
+- 공부 배우의 직접 터치 drag 경로를 추가하고 tap/중단/두 번째 손가락 처리를 구분합니다. 배우 바깥의 페이지 스크롤, 설정/캐릭터만 보기에서도 배우 hitbox는 직접 끌기를 받으며 배우 바깥의 dock 스크롤은 유지합니다. 새 걷기 원화·확률 변경이 아닙니다.
 - 추가 소스는 `page-adapters/bgm-player.{js,css,html}`, `page-adapters/study-visibility.{js,css}`와 `study_overlay.py`의 좁은 입력 수정입니다.
-- 공개 한정 검사는 source-only 재현 Node66/Python7입니다. VM media·pointer 테스트는 실제 MP3 decode/청취나 실터치를 증명하지 않습니다. 실제 사용자 파일/사진/스크린샷은 테스트나 공개소스에 포함하지 않습니다.
+- 공개 한정 검사는 source-only 재현 Node84/Python7입니다. VM media·pointer 테스트는 실제 MP3 decode/청취나 실터치를 증명하지 않습니다. 실제 사용자 파일/사진/스크린샷은 테스트나 공개소스에 포함하지 않습니다.
 - 이전 overlay v3 source는 `e4bfb8c6be09d8aad65cacfe474ca4bb37bc7ec2`, 이전 3페이지 source는 `4f75de71c21dc49bdf29aae83f00482ec93ec6d9`에 보존됩니다. full777f·compact262·원본PNG13은 계속 같은 바이트로 재사용합니다.
+
+## 모바일 직접 입력 hotfix (연속 걷기와 분리)
+
+- 공부/설정/캐릭터만 보기의 배우 hitbox에 같은 직접 터치 끌기를 적용합니다. 자식 figure의 암묵 capture가 부모 배우로 이전될 때 버블링되는 자식 capture-loss는 부모가 같은 pointer를 소유하면 무시하지만, 실제 부모 capture 상실/취소는 계속 취소합니다. 페이지 전체를 스크롤 금지하지 않습니다.
+- 기존 고급 반응 dispatch가 명시적으로 false를 반환한 짧은 tap만, 안정된 학습 상태·편집 입력/IME 없음 조건에서 기존 generic 반응을 한 번 사용할 수 있습니다. 45ms 큐 처리 직전에도 조건을 다시 확인하고 안전하지 않으면 폐기하며 나중에 재생하지 않습니다. 기존 opt-in을 자동으로 켜거나 고급 원화 반응을 강요하지 않습니다.
+- 단어/학습 저장/MP3 수명/표시 설정과 원본 에셋은 그대로입니다. 새 연속 걷기 컨트롤러·UI·확률 변경은 없습니다.
+- `study_overlay.py` 한 제품 파일과 공개 mobile 회귀검사 두 파일이 갱신되었습니다. `test_separate_pages.py`의 고정 manifest SHA 한 줄은 이 hotfix의 실제 산출물을 검증하도록 갱신했고, 기존 27파일 검사와 다른 assertion은 제거/완화하지 않았습니다.
+- 공개 최소 입력만으로 full777f를 복원하고 27파일을 두 번 정확 재빌드하여 확인합니다. 위 공개 한정 검사는 Node84/Python7이며 전체 제품 suite나 실폰 검증을 대신하지 않습니다. VM pointer 검사만으로 실제 휴대전화의 터치/hit testing 성공을 확정하지 않습니다.
+- 이전 MP3 통합 소스는 `b495980638ca7eb16201aff766df29b57986f5e2`에 보존됩니다. 이 소스 스냅샷 자체는 운영 승격을 수행하지 않습니다. 큰 전체 HTML·PNG·음원·사용자 사진의 신규 업로드는 없습니다.

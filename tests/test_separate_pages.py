@@ -58,7 +58,7 @@ class SeparatePageBuildTests(unittest.TestCase):
                 self.assertEqual(parse_qs(url.query),{'v':[hashlib.sha256((self.site/url.path).read_bytes()).hexdigest()[:12]]})
     def test_frozen_integrated_release_has_exact_manifest_and_file_set(self):
         manifest=(self.site/'manifest.json').read_bytes()
-        self.assertEqual(hashlib.sha256(manifest).hexdigest(),'80077df4b088abfe022a91978dd0faac2ee150377e365bd7d3309a1515b18167')
+        self.assertEqual(hashlib.sha256(manifest).hexdigest(),'159160a4f3045bac2c1b31d9c920f2290c4f12cffbfe755a1d91a5e1901eb448')
         expected=set(json.loads(manifest)['files'])|{'manifest.json'}
         actual={str(p.relative_to(self.site)) for p in self.site.rglob('*') if p.is_file()}
         self.assertEqual(actual,expected);self.assertEqual(len(actual),27)
