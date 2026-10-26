@@ -454,9 +454,13 @@ function proposeWalkPath({position,bounds,viewport,obstacles,distance=24}){
     if(scope!==CW_SCOPE||actorId!=='chiikawa'||!viewportOverlay)return{safe:false,scope:scope??null,actorId:actorId??null};
     const p=pets.find(p=>p.id==='chiikawa'),own=!!continuousWalk&&continuousWalk.token===lease&&presentationRegistry.owns(lease);
     let study;try{study=readStudyState?.();}catch{}
-    const captured=pets.some(q=>q.pointerId!==null),physical=pets.some(q=>q.airborne||PHYSICAL.has(q.mode)),inputBusy=pets.some(q=>!!q.touch),composing=study?.composing!==false;
+    const focusedInput=!!document.activeElement?.closest?.('input:not([type=checkbox]):not([type=radio]):not([type=button]):not([type=range]),textarea,[contenteditable="true"]');
+    const captured=pets.some(q=>q.pointerId!==null),physical=pets.some(q=>q.airborne||PHYSICAL.has(q.mode)),inputBusy=focusedInput||pets.some(q=>!!q.touch),composing=study?.composing!==false;
     const mediaBusy=study?.audioPending!==false||document.getElementById('bgm-play')?.getAttribute('aria-pressed')==='true';
-    const studyBusy=study?.busy!==false||!['study','review'].includes(study?.phase)||!Number.isSafeInteger(study?.revision);
+    // Legacy busy deliberately means every non-home phase, including idle study.
+    // Only this explicit walking capability admits a quiescent study/review document.
+    // Never weaken the legacy readStudyState/manual-preview policy.
+    const studyBusy=!['study','review'].includes(study?.phase)||!Number.isSafeInteger(study?.revision)||!Number.isSafeInteger(study?.transactionDepth)||study.transactionDepth!==0;
     const visible=!!p&&requestedVisible.has(p.id)&&!p.el.hidden&&!p.assetUnavailable&&!p.scalePlacementUnavailable&&!p.overlayUnavailable&&p.img.naturalWidth>0;
     const g=p?continuousWalkGeometry(p):null;
     const path=own?continuousWalk.path:g?CWGeometry.proposeWalkPath({position:{x:p.x,y:p.y},...g}):null;
