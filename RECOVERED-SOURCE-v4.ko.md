@@ -12,3 +12,16 @@
 - 이 백업 브랜치의 docs/ 등 기존 산출물은 부모 기준에서 그대로 보존했으며 최신 서비스 산출물로 간주하지 않습니다.
 
 소스 백업 전용 브랜치입니다. main·docs·Pages 설정은 이 백업 작업으로 변경하지 않았습니다.
+
+## 로컬 검사 준비 순서
+
+```sh
+node --test tests/*.test.mjs
+python3 build_html.py
+python3 build_preview.py
+python3 -m unittest discover -s tests -p 'test_*.py' -v
+```
+
+`build_preview.py`는 기존 PNG로 격리된 DRAFT 검사 HTML을 준비합니다. 새 이미지 생성이나 해당 아트의 사용 승인을 뜻하지 않으며 `/docs` 앱에 실험실을 추가하지 않습니다.
+
+이번에 추가한 7개 계약 테스트는 운영 1fda 소스에서 90개 검사 통과·실패 및 skip 0을 확인했습니다. 제품 코드나 원본 이미지는 변경하지 않았습니다. 이 백업 브랜치의 검사 모음과 별도 전체 개발 검사 모음의 규모는 다를 수 있습니다.
