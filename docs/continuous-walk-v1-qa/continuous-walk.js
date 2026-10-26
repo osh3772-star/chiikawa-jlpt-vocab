@@ -204,12 +204,34 @@ const art={"schema": "chi-foot-v4-expanded-review", "characterId": "chiikawa", "
   const engine=()=>window[Symbol.for('jlpt.chiikawa-pets')];
   const bridge=createContinuousWalkEngineAdapter({getEngine:engine,readUI:()=>({enabled:enabled.checked,documentHidden:document.hidden,inputBusy:false,composing:false,mediaBusy:document.getElementById('bgm-play')?.getAttribute('aria-pressed')==='true'})});
   const controller=createContinuousWalkController({fixture:art,host:bridge,decode:decodeReviewedStep,onState:s=>{
-    start.disabled=!s.enabled||s.mode!=='off';stop.disabled=s.mode==='off';
+    start.disabled=!s.enabled||s.mode!=='off';stop.disabled=s.mode==='off';delete status.dataset.reason;
     status.textContent=!s.enabled?'꺼짐 · 자동으로 시작하지 않습니다.':s.mode==='loading'?'프레임 준비 중 · 정지할 수 있어요.':s.mode==='walking'?'연속 동작 시험 중 · 직접 잡거나 정지할 수 있어요.':'준비 / 멈춤 · 시작 버튼으로 다시 실행해 주세요.';
   }});
   const unbind=bindContinuousWalkCancellation({controller,window,document,controls:panel});
   enabled.addEventListener('change',()=>controller.setEnabled(enabled.checked));
-  start.addEventListener('click',async()=>{await Promise.resolve();if(!enabled.checked||controller.getState().mode!=='off')return;const ok=await controller.start();if(!ok&&controller.getState().mode==='off'&&enabled.checked)status.textContent='시작하지 않았어요. 치이카와 표시·일시정지·음악·다른 동작·빈 공간을 확인해 주세요.';});
+  const refusalLabels={
+    'actor-unavailable':'치이카와가 표시되지 않았거나 그림을 준비하지 못했어요. 캐릭터 설정을 확인해 주세요.',
+    'document-hidden':'페이지가 보이지 않아 멈췄어요.',
+    paused:'캐릭터 일시정지를 해제한 뒤 시작해 주세요.',
+    'reduced-motion':'기기의 동작 줄이기 설정을 존중해 연속 동작을 시작하지 않아요.',
+    'input-active':'잡기나 입력이 끝난 뒤 시작해 주세요.',composing:'글자 조합 입력이 끝난 뒤 시작해 주세요.',
+    'study-active':'학습 화면의 처리 중에는 시작하지 않아요. 처리가 끝난 뒤 다시 눌러 주세요.',
+    'audio-active':'음악 재생이나 준비가 끝난 뒤 시작해 주세요.',
+    'physical-motion':'배우가 착지하고 다른 움직임이 끝난 뒤 시작해 주세요.',
+    'motion-active':'다른 캐릭터 동작이 끝난 뒤 시작해 주세요.',
+    'outside-viewport':'전체 그림과 안전 여백이 화면 밖에 있어요. 치이카와를 화면 가장자리에서 안쪽으로 옮겨 주세요.',
+    'protected-space':'전체 그림이 글자·버튼·다른 캐릭터와 겹쳐요. 치이카와를 빈 곳으로 옮겨 주세요.',
+    'no-safe-path':'좌우로 움직일 빈 공간이 부족해요. 치이카와 주변에 여유 공간을 확보해 주세요.',
+    'geometry-unavailable':'현재 화면 배치를 안전하게 확인하지 못했어요. 화면 확대나 배치가 안정된 뒤 다시 시도해 주세요.',
+    'frame-unavailable':'동작 그림을 불러오지 못했어요. 새로고침 후 다시 시도해 주세요.',
+    'decode-or-host-error':'동작 그림을 준비하지 못했어요. 새로고침 후 다시 시도해 주세요.',
+    'unsupported-context':'이 동작은 공부 화면에서만 사용할 수 있어요.'
+  };
+  start.addEventListener('click',async()=>{await Promise.resolve();if(!enabled.checked||controller.getState().mode!=='off')return;delete status.dataset.reason;const ok=await controller.start();if(!ok&&controller.getState().mode==='off'&&enabled.checked){
+    let admission;try{admission=bridge.read(null);}catch{}
+    const reason=admission?.mediaBusy?'audio-active':admission?.inputBusy?'input-active':admission?.composing?'composing':admission?.reason||controller.getState().reason||'state-changed';
+    status.dataset.reason=reason;status.textContent='시작하지 않았어요. '+(refusalLabels[reason]||'시작하는 동안 상태가 바뀌었어요. 입력과 다른 동작이 끝난 뒤 다시 눌러 주세요.')+' ['+reason+']';
+  }});
   stop.addEventListener('click',()=>controller.stop('manual-stop'));
   panel.addEventListener('toggle',()=>{if(!panel.open)controller.stop('panel-closed');});
   const reset=()=>{controller.setEnabled(false);enabled.checked=false;};

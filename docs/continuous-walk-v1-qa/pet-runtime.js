@@ -451,7 +451,7 @@ function proposeWalkPath({position,bounds,viewport,obstacles,distance=24}){
     return{bounds,viewport:view,obstacles:blockers,epoch:cwGeometryEpoch};
   }
   function readContinuousWalkAdmission({scope,actorId,lease=null}={}){
-    if(scope!==CW_SCOPE||actorId!=='chiikawa'||!viewportOverlay)return{safe:false,scope:scope??null,actorId:actorId??null};
+    if(scope!==CW_SCOPE||actorId!=='chiikawa'||!viewportOverlay)return{safe:false,reason:'unsupported-context',scope:scope??null,actorId:actorId??null};
     const p=pets.find(p=>p.id==='chiikawa'),own=!!continuousWalk&&continuousWalk.token===lease&&presentationRegistry.owns(lease);
     let study;try{study=readStudyState?.();}catch{}
     const focusedInput=!!document.activeElement?.closest?.('input:not([type=checkbox]):not([type=radio]):not([type=button]):not([type=range]),textarea,[contenteditable="true"]');
@@ -466,7 +466,10 @@ function proposeWalkPath({position,bounds,viewport,obstacles,distance=24}){
     const path=own?continuousWalk.path:g?CWGeometry.proposeWalkPath({position:{x:p.x,y:p.y},...g}):null;
     const pathSafe=g&&path&&CWGeometry.sweptPaintSafe({...g,from:{x:p.x,y:p.y},to:{x:p.x,y:p.y}});
     const safe=!!pathSafe&&!destroyed&&visible&&!document.hidden&&!paused()&&!reduced&&!captured&&!physical&&!inputBusy&&!studyBusy&&!composing&&!mediaBusy&&!stageRect(p)&&!isBeta(p)&&!pair&&!pending&&!externalPresentation&&!transient&&(!presentationRegistry.get()||own)&&pets.every(q=>q.mode==='idle'&&!q.action)&&![...inlineResponses.values()].some(c=>c.getState().mode!=='off')&&CW_FRAMES.every(f=>!failed.has(f.source));
-    return{scope:CW_SCOPE,actorId:'chiikawa',safe,visible,paused:paused(),reduced,documentHidden:!!document.hidden,inputBusy,studyBusy,captured,physical,composing,mediaBusy,revision:study?.revision,geometryEpoch:g?.epoch??-1,key:JSON.stringify([transientEpoch,study?.revision,g?.epoch,p?.x,p?.y,[...requestedVisible],manualPaused,reduced]),path:path?.map(q=>({...q}))??null,speed:16};
+    // Explain the existing gate; do not relax geometry or alter actor placement to start.
+    const stationaryInside=g&&CWGeometry.sweptPaintSafe({...g,obstacles:[],from:{x:p.x,y:p.y},to:{x:p.x,y:p.y}});
+    const reason=safe?null:destroyed?'engine-unavailable':!visible?'actor-unavailable':document.hidden?'document-hidden':paused()?'paused':reduced?'reduced-motion':captured||inputBusy?'input-active':composing?'composing':studyBusy?'study-active':mediaBusy?'audio-active':physical?'physical-motion':stageRect(p)||isBeta(p)?'unsupported-context':pair||pending||externalPresentation||transient||presentationRegistry.get()&&!own||pets.some(q=>q.mode!=='idle'||q.action)||[...inlineResponses.values()].some(c=>c.getState().mode!=='off')?'motion-active':!CW_FRAMES.every(f=>!failed.has(f.source))?'frame-unavailable':!g?'geometry-unavailable':!stationaryInside?'outside-viewport':!pathSafe&&path?'protected-space':!CWGeometry.sweptPaintSafe({...g,from:{x:p.x,y:p.y},to:{x:p.x,y:p.y}})?'protected-space':!path?'no-safe-path':'state-changed';
+    return{scope:CW_SCOPE,actorId:'chiikawa',safe,reason,visible,paused:paused(),reduced,documentHidden:!!document.hidden,inputBusy,studyBusy,captured,physical,composing,mediaBusy,revision:study?.revision,geometryEpoch:g?.epoch??-1,key:JSON.stringify([transientEpoch,study?.revision,g?.epoch,p?.x,p?.y,[...requestedVisible],manualPaused,reduced]),path:path?.map(q=>({...q}))??null,speed:16};
   }
   function ownsContinuousWalk(token){return !destroyed&&!!continuousWalk&&continuousWalk.token===token&&presentationRegistry.owns(token);}
   function tryAcquireContinuousWalk(expected){
@@ -704,7 +707,7 @@ function nearestViewportOverlayPlacement({x,y,width,height,padding,viewport,obst
     refreshObstacles();syncStagePosition(p);
     syncScaleAvailability(p);syncOverlayPlacement(p);
     p.el.dataset.scaleUnavailable=String(!!p.scalePlacementUnavailable);
-    p.el.style.touchAction = viewportOverlay && !stageRect(p) ? 'none' : mobileStage(p) ? 'pan-x pan-y' : '';
+    p.el.style.touchAction = 'none';
     const dock = mobileStage(p) && mobileStageViewport ? mobileStageViewport.getBoundingClientRect() : null;
     p.el.dataset.assetUnavailable=String(!!p.assetUnavailable);const painted=onScreen(p);p.el.style.visibility=painted?'':'hidden';p.el.tabIndex=painted?0:-1;p.el.setAttribute('aria-hidden',String(!painted));
     if(!painted&&document.activeElement===p.el)p.el.blur?.();
@@ -739,13 +742,13 @@ function nearestViewportOverlayPlacement({x,y,width,height,padding,viewport,obst
   function pointerDown(p, e) {
     cancelContinuousWalk("pointer-input");
     cancelPairPresentation('pointer-input');
-    if (e.isPrimary === false) { for (const actor of pets) { actor.touch = null; if(viewportOverlay&&actor.pointerId!==null)safeReset(actor); } return; }
+    if (e.isPrimary === false) { for (const actor of pets) { actor.touch = null; if(actor.pointerId!==null)safeReset(actor); } return; }
     if(e.pointerType==='mouse' && (e.button!==0 || (e.buttons!==undefined && e.buttons!==1))) { p.touch=null; return; }
     if (e.button !== 0 || e.isPrimary === false || destroyed || p.pointerId !== null || p.touch || document.hidden) return;
     refreshObstacles();syncStagePosition(p);syncScaleAvailability(p);syncOverlayPlacement(p);if(!onScreen(p))return;
     inlineFor(p)?.cancel('pointer-intent');
     // Direct study drag after tap slop; legacy dock retains long-press/scroll.
-    if (e.pointerType === 'touch') { p.touch = { pointerId: e.pointerId, pointerType: 'touch', directDrag: viewportOverlay && !stageRect(p), clientX: e.clientX, clientY: e.clientY, at: performance.now() }; wake(); return; }
+    if (e.pointerType === 'touch') { p.touch = { pointerId: e.pointerId, pointerType: 'touch', directDrag: true, clientX: e.clientX, clientY: e.clientY, at: performance.now() }; wake(); return; }
     if(e.pointerType==='mouse' && (inlineFor(p)||decorativeStage(p))) {
       p.touch={pointerId:e.pointerId,pointerType:'mouse',clientX:e.clientX,clientY:e.clientY,at:performance.now()};wake();return;
     }
@@ -770,6 +773,11 @@ function nearestViewportOverlayPlacement({x,y,width,height,padding,viewport,obst
     scaleAnchors.delete(p.id);
     p.x = constrainX(p, e.clientX - p.grabDX); p.y = clamp(e.clientY - p.grabDY, 0, ground(p)); render(p);
   }
+  function deliberateFallbackSafe(){
+    try{const hasStudy=typeof window.__cvStudyRead==='function',study=hasStudy?window.__cvStudyRead():null,active=document.activeElement;
+      return !active?.isContentEditable&&!['INPUT','TEXTAREA','SELECT'].includes(active?.tagName)&&(!hasStudy||!!study&&['home','study','review'].includes(study.phase)&&study.transactionDepth===0&&study.composing===false&&study.audioPending!==true);
+    }catch(_){return false;}
+  }
   function pointerEnd(p, e, cancelled = false) {
     if (p.touch?.pointerId === e.pointerId) {
       const press = p.touch; p.touch = null;
@@ -779,7 +787,9 @@ function nearestViewportOverlayPlacement({x,y,width,height,padding,viewport,obst
         refreshObstacles(); syncStagePosition(p); syncScaleAvailability(p);
         if (onScreen(p) && p.pointerId === null && !PHYSICAL.has(p.mode)) {
           // Reuse opt-in responses only; no generic motion fallback or synthetic click.
-          try { onDeliberateInteraction?.(p.id,{kind:press.pointerType==='mouse'?'pointer-click':'pointer-tap',pointerType:press.pointerType==='mouse'?'mouse':'touch',repeat:false}); } catch (_) {}
+          try { const accepted=onDeliberateInteraction?.(p.id,{kind:press.pointerType==='mouse'?'pointer-click':'pointer-tap',pointerType:press.pointerType==='mouse'?'mouse':'touch',repeat:false});
+            if(accepted===false&&deliberateFallbackSafe())react('start',p.id,{deliberateFallback:true});
+          } catch (_) {}
         }
       }
       return;
@@ -851,7 +861,7 @@ function nearestViewportOverlayPlacement({x,y,width,height,padding,viewport,obst
     listen(el, 'focus', () => { (decorativeStage(p)??mobileStage(p))?.scrollIntoView?.({ block: 'nearest', inline: 'nearest' }); });
     listen(el, 'pointerdown', e => pointerDown(p, e)); listen(el, 'pointermove', e => pointerMove(p, e));
     listen(el, 'pointerup', e => pointerEnd(p, e));
-    listen(el, 'pointercancel', e => pointerEnd(p, e, true)); listen(el, 'lostpointercapture', e => pointerEnd(p, e, true));
+    listen(el, 'pointercancel', e => pointerEnd(p, e, true)); listen(el, 'lostpointercapture', e => { if(e.target!==el && p.pointerId===e.pointerId && el.hasPointerCapture?.(e.pointerId)===true)return; pointerEnd(p, e, true); });
     listen(el, 'keydown', e => {
       cancelContinuousWalk('keyboard-input');
       if (['Enter', ' ', 'Escape'].includes(e.key)) { p.touch = null; e.preventDefault(); e.stopPropagation();
@@ -886,6 +896,7 @@ function nearestViewportOverlayPlacement({x,y,width,height,padding,viewport,obst
   }
   function processEvent(now) {
     if (!pending) return;
+    if(pending.deliberateFallback&&!deliberateFallbackSafe()){pending=null;return;}
     if (now - pending.at > 1000) { pending = null; return; }
     // New owned clipping revokes queued intent even within the coalescing window.
     if(!pets.some(p=>onScreen(p)&&ownedAdmission(p)&&(pending.target==='all'||p.id===pending.target))&&pets.some(p=>!ownedAdmission(p)&&(pending.target==='all'||p.id===pending.target))){pending=null;return;}
@@ -916,7 +927,7 @@ function nearestViewportOverlayPlacement({x,y,width,height,padding,viewport,obst
     if (Number.isFinite(metadata.occurredAt) && Date.now() - metadata.occurredAt > 1000) return;
     // Coalesce same-turn correct + complete; latest event replaces, never a backlog.
     if (pending?.type === 'complete' && type === 'correct' && now - pending.at < 100) return;
-    pending = { type, target, at: now, ready: now + 45 };
+    pending = { type, target, at: now, ready: now + 45, deliberateFallback:metadata.deliberateFallback===true };
     wake();
   }
   function decide(p) {
@@ -968,7 +979,7 @@ function nearestViewportOverlayPlacement({x,y,width,height,padding,viewport,obst
   listen(document,'pointermove',e=>{for(const p of pets)if((p.touch?.pointerType==='mouse'||p.touch?.directDrag)&&p.touch.pointerId===e.pointerId)pointerMove(p,e);});
   listen(document,'pointerup',e=>{for(const p of pets)if((p.touch?.pointerType==='mouse'||p.touch?.directDrag)&&p.touch.pointerId===e.pointerId)p.touch=null;});
   listen(document,'pointercancel',e=>{for(const p of pets)if(p.touch?.pointerId===e.pointerId)p.touch=null;});
-  listen(document, 'pointerdown', e => { if (e.isPrimary === false || (e.pointerType==='mouse' && (e.button!==0 || (e.buttons!==undefined && e.buttons!==1)))) for (const p of pets) { p.touch = null; if(viewportOverlay&&e.isPrimary===false&&p.pointerId!==null)safeReset(p); } }, {capture:true,passive:true});
+  listen(document, 'pointerdown', e => { if (e.isPrimary === false || (e.pointerType==='mouse' && (e.button!==0 || (e.buttons!==undefined && e.buttons!==1)))) for (const p of pets) { p.touch = null; if(e.isPrimary===false&&p.pointerId!==null)safeReset(p); } }, {capture:true,passive:true});
   listen(window, 'scroll', () => { for (const p of pets) p.touch = null; invalidate(); for (const p of pets) if (stageRect(p) && PHYSICAL.has(p.mode)) safeReset(p); }, { passive: true, capture: true });
   listen(document, 'keydown', e => { if (e.key === 'Escape' && pets.some(p => PHYSICAL.has(p.mode))) { e.preventDefault(); resetAll(); } });
   listen(window, 'resize', () => { cancelExternalPresentation('resize'); layout(); });
