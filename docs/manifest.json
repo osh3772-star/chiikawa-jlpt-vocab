@@ -9,8 +9,8 @@
       "bytes": 0
     },
     "app.css": {
-      "sha256": "b572cc7c31e6f507f1458434d12514620cd5ac1a76db09d3a7bda92ba53d730c",
-      "bytes": 131299
+      "sha256": "2b2ac3c53fde252a23b3f3ac246294c049b48ffb3d2935104cd45388bd103e20",
+      "bytes": 133205
     },
     "assets/09526837455f4384430ef1e7f6c68b68b8e693da7fb57ce7185cba610e7303f3.png": {
       "sha256": "09526837455f4384430ef1e7f6c68b68b8e693da7fb57ce7185cba610e7303f3",
@@ -64,13 +64,17 @@
       "sha256": "fde3946e1ad5a74f1830657510b5c3efad3ca9892c3653cdd8addaa3a6d8311c",
       "bytes": 882622
     },
+    "bgm-player.js": {
+      "sha256": "6bc9a3fc1a3b12b0bdc793fb71201e995d12832b3d02b6013aa63547318b8ff4",
+      "bytes": 10355
+    },
     "character-settings.html": {
-      "sha256": "02f43bacb25bfb66c8f1ab4e79e69bc5128e06ba2d6e8b64c2257f1f9198248c",
-      "bytes": 2694
+      "sha256": "56993b73af506a7cef5b8c26595a01686ccf97108152c69c38311edd3dd8e0a1",
+      "bytes": 4697
     },
     "index.html": {
-      "sha256": "de0700be9140be077bfbea7c9977a2229c811a0bf8b7584551c9cde8cdab035f",
-      "bytes": 4180
+      "sha256": "579f570a3b83506b8d067c4a628dfbe1b5bad87cb210ba383fe92304f27b5597",
+      "bytes": 6183
     },
     "navigation.js": {
       "sha256": "77c191fe27d389cf344697f6f6defe33d6b40e3adc48aa3df7867b3348ef5216",
@@ -81,16 +85,24 @@
       "bytes": 2963577
     },
     "pet-runtime.js": {
-      "sha256": "903f2db71c386e4f14754b8034441ef282f4ad416993b548075dadc506dfa1db",
-      "bytes": 11436060
+      "sha256": "ca2c0aa41d54fb7779e6a3ba42c64028c253d71886f179177400e484314e9c77",
+      "bytes": 11436575
     },
     "study-runtime.js": {
-      "sha256": "b2bc99adf151bf193f2f542af9f78730cfbe347f81d1785f910e525361b2415a",
-      "bytes": 27511
+      "sha256": "c7467195823fe3e98a84f7de174ff4ccb34b62bc2dc1755e171dafa89bf8c93f",
+      "bytes": 27524
+    },
+    "study-visibility.css": {
+      "sha256": "6340976d753a990d5f582d950a75d4db060e950edfdf6ae1c2c55504fa42738f",
+      "bytes": 686
+    },
+    "study-visibility.js": {
+      "sha256": "d9f7946f20c275871c2ae22b63f106edbd68bcc9ef24e204a8753e8a1adcfc17",
+      "bytes": 3559
     },
     "study.html": {
-      "sha256": "de6a8fc77597c9be7867d8cb1a74277da9927d6271e3e1cd4d96a093b1d679db",
-      "bytes": 2977
+      "sha256": "17295b7e0e6497d787380f2b9f72bcd5176232aec284bc582e7ed93fd658c0ed",
+      "bytes": 5104
     },
     "vocabulary.js": {
       "sha256": "f4eeee42a1e2d51940ade6cfc651235b8f34879e4b95e068f6d7da9f696a94fe",

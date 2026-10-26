@@ -369,7 +369,7 @@ function createStudyState(onChange=()=>{}){
     el['undo-answer']?.addEventListener('click', () => studyGuard.run(()=>{if(!syncExternalState())undoAnswerImpl();else render('최신 기록으로 갱신되어 이전 답변 취소를 해제했습니다.');}));
     document.addEventListener('keydown', event => {
       if (!el.study || el.study.hidden || event.altKey || event.ctrlKey || event.metaKey || event.isComposing) return;
-      if (event.target.closest?.('select, input, textarea, [contenteditable="true"], .cv-pet, #study-backup')) return;
+      if (event.target.closest?.('select, input, textarea, [contenteditable="true"], .cv-pet, #study-backup, #bgm-player')) return;
       const action = { ArrowLeft: () => move(-1), ArrowRight: () => move(1),
         ArrowUp: () => mark('known'), ArrowDown: () => mark('unknown') }[event.key];
       if (action) { event.preventDefault(); if (!event.repeat) action(); }

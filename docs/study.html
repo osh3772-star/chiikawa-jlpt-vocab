@@ -1,7 +1,30 @@
 <!doctype html>
-<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>단어 공부 · JLPT 단어장</title><link rel="stylesheet" href="app.css?v=b572cc7c31e6"></head><body data-page="study">
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>단어 공부 · JLPT 단어장</title><link rel="stylesheet" href="app.css?v=2b2ac3c53fde"><link rel="stylesheet" href="study-visibility.css?v=6340976d753a"></head><body data-page="study">
   <div class="scenery" aria-hidden="true"><span class="sun"></span><span class="cloud cloud-one"></span><span class="cloud cloud-two"></span><span class="hill hill-one"></span><span class="hill hill-two"></span></div>
-<nav class="cv-page-nav" aria-label="페이지 이동"><a data-cv-link href="index.html">시작</a><a data-cv-link href="character-settings.html">캐릭터 설정</a><a data-cv-link href="study.html" aria-current="page">공부 이어하기</a></nav><p id="navigation-status" role="status" tabindex="-1"></p><header class="site-header"><p class="header-sticker" lang="ja">ひとつずつ、ゆっくり。</p><h1>단어 공부 · JLPT 단어장</h1><p class="header-description">내 속도로, 한 단어씩.</p><p id="storage-note">급수별 위치와 학습 기록은 이 브라우저에 자동 저장됩니다.</p></header><main>    <section id="study" aria-label="단어 학습 화면">
+<nav class="cv-page-nav" aria-label="페이지 이동"><a data-cv-link href="index.html">시작</a><a data-cv-link href="character-settings.html">캐릭터 설정</a><a data-cv-link href="study.html" aria-current="page">공부 이어하기</a></nav><p id="navigation-status" role="status" tabindex="-1"></p><header class="site-header"><p class="header-sticker" lang="ja">ひとつずつ、ゆっくり。</p><h1>단어 공부 · JLPT 단어장</h1><p class="header-description">내 속도로, 한 단어씩.</p><p id="storage-note">급수별 위치와 학습 기록은 이 브라우저에 자동 저장됩니다.</p></header><main><details id="bgm-player" class="cv-bgm-player">
+  <summary>♫ 내 MP3 플레이어 <span>파일 선택 · 재생</span></summary>
+  <div class="cv-bgm-content">
+    <p id="bgm-local-note">파일은 서버에 업로드하지 않습니다. 이 페이지에서만 재생되며, 페이지 이동·새로고침 후에는 다시 선택해 주세요. 자동재생은 꺼져 있습니다.</p>
+    <label for="bgm-files">MP3 파일 선택 (여러 곡 가능)</label>
+    <input id="bgm-files" type="file" accept=".mp3,audio/mpeg" multiple aria-describedby="bgm-local-note">
+    <label for="bgm-track">재생할 곡</label>
+    <select id="bgm-track" disabled><option value="">선택한 곡 없음</option></select>
+    <div class="cv-bgm-transport" role="group" aria-label="음악 재생 조작">
+      <button type="button" id="bgm-prev" disabled>이전곡</button>
+      <button type="button" id="bgm-play" aria-label="음악 재생" aria-pressed="false" disabled>재생</button>
+      <button type="button" id="bgm-stop" disabled>정지 (처음으로)</button>
+      <button type="button" id="bgm-next" disabled>다음곡</button>
+    </div>
+    <div class="cv-bgm-preferences">
+      <label for="bgm-volume">음량 <output id="bgm-volume-value" for="bgm-volume">50%</output><input id="bgm-volume" type="range" min="0" max="100" step="1" value="50"></label>
+      <label for="bgm-repeat">반복<select id="bgm-repeat"><option value="off">반복 안 함</option><option value="all">전체 반복</option><option value="one">한 곡 반복</option></select></label>
+      <button type="button" id="bgm-clear" disabled>파일 선택 해제</button>
+    </div>
+    <p id="bgm-status" role="status" aria-live="polite" aria-atomic="true">MP3 파일을 선택해 주세요.</p>
+    <p id="bgm-preferences-status">음량·반복 설정만 이 브라우저에 저장됩니다. 파일·곡 목록·재생 위치는 저장하지 않습니다.</p>
+  </div>
+</details>
+    <section id="study" aria-label="단어 학습 화면">
       <div class="study-toolbar">
       <button id="go-home" type="button">메인 화면으로</button>
       <label for="level">급수</label>
@@ -34,4 +57,4 @@
       </nav>
       <p id="message" role="status" aria-live="polite"></p>
     </section>
-</main><script src="navigation.js?v=77c191fe27d3"></script><script src="pet-data.js?v=047742ce0729"></script><script src="pet-runtime.js?v=903f2db71c38"></script><script src="vocabulary.js?v=f4eeee42a1e2"></script><script src="study-runtime.js?v=b2bc99adf151"></script></body></html>
+</main><script src="navigation.js?v=77c191fe27d3"></script><script src="pet-data.js?v=047742ce0729"></script><script src="pet-runtime.js?v=ca2c0aa41d54"></script><script src="vocabulary.js?v=f4eeee42a1e2"></script><script src="study-runtime.js?v=c7467195823f"></script><script src="bgm-player.js?v=6bc9a3fc1a3b"></script><script src="study-visibility.js?v=d9f7946f20c2"></script></body></html>

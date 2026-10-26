@@ -582,7 +582,7 @@ function nearestViewportOverlayPlacement({x,y,width,height,padding,viewport,obst
     refreshObstacles();syncStagePosition(p);
     syncScaleAvailability(p);syncOverlayPlacement(p);
     p.el.dataset.scaleUnavailable=String(!!p.scalePlacementUnavailable);
-    p.el.style.touchAction = mobileStage(p) ? 'pan-x pan-y' : '';
+    p.el.style.touchAction = viewportOverlay && !stageRect(p) ? 'none' : mobileStage(p) ? 'pan-x pan-y' : '';
     const dock = mobileStage(p) && mobileStageViewport ? mobileStageViewport.getBoundingClientRect() : null;
     p.el.dataset.assetUnavailable=String(!!p.assetUnavailable);const painted=onScreen(p);p.el.style.visibility=painted?'':'hidden';p.el.tabIndex=painted?0:-1;p.el.setAttribute('aria-hidden',String(!painted));
     if(!painted&&document.activeElement===p.el)p.el.blur?.();
@@ -616,13 +616,13 @@ function nearestViewportOverlayPlacement({x,y,width,height,padding,viewport,obst
   }
   function pointerDown(p, e) {
     cancelPairPresentation('pointer-input');
-    if (e.isPrimary === false) { for (const actor of pets) actor.touch = null; return; }
+    if (e.isPrimary === false) { for (const actor of pets) { actor.touch = null; if(viewportOverlay&&actor.pointerId!==null)safeReset(actor); } return; }
     if(e.pointerType==='mouse' && (e.button!==0 || (e.buttons!==undefined && e.buttons!==1))) { p.touch=null; return; }
     if (e.button !== 0 || e.isPrimary === false || destroyed || p.pointerId !== null || p.touch || document.hidden) return;
     refreshObstacles();syncStagePosition(p);syncScaleAvailability(p);syncOverlayPlacement(p);if(!onScreen(p))return;
     inlineFor(p)?.cancel('pointer-intent');
-    // Long press to drag on touch; vertical gestures remain browser scrolling.
-    if (e.pointerType === 'touch') { p.touch = { pointerId: e.pointerId, clientX: e.clientX, clientY: e.clientY, at: performance.now() }; wake(); return; }
+    // Direct study drag after tap slop; legacy dock retains long-press/scroll.
+    if (e.pointerType === 'touch') { p.touch = { pointerId: e.pointerId, pointerType: 'touch', directDrag: viewportOverlay && !stageRect(p), clientX: e.clientX, clientY: e.clientY, at: performance.now() }; wake(); return; }
     if(e.pointerType==='mouse' && (inlineFor(p)||decorativeStage(p))) {
       p.touch={pointerId:e.pointerId,pointerType:'mouse',clientX:e.clientX,clientY:e.clientY,at:performance.now()};wake();return;
     }
@@ -630,8 +630,8 @@ function nearestViewportOverlayPlacement({x,y,width,height,padding,viewport,obst
   }
   function pointerMove(p, e) {
     if (p.touch?.pointerId === e.pointerId) {
-      if(p.touch.pointerType==='mouse') {
-        if(e.buttons!==undefined && e.buttons!==1){p.touch=null;return;}
+      if(p.touch.pointerType==='mouse'||p.touch.directDrag) {
+        if(p.touch.pointerType==='mouse'&&e.buttons!==undefined && e.buttons!==1){p.touch=null;return;}
         if(Math.hypot(e.clientX-p.touch.clientX,e.clientY-p.touch.clientY)<=8)return;
         const press=p.touch;beginGrab(p,press);
       } else {
@@ -720,6 +720,7 @@ function nearestViewportOverlayPlacement({x,y,width,height,padding,viewport,obst
     el.tabIndex = 0; el.setAttribute('role', 'button');
     if (isBeta(info)) { el.dataset.quality = 'beta'; el.title = '치이카와 동작 베타 · 원화 외형/연결 미승인'; }
     el.setAttribute('aria-label', ((inlineResponseEnabled&&info.id==='chiikawa')||(paddedHachi&&info.id==='hachiware')||(usagiInlineEnabled&&info.id==='usagi')||(paddedMomonga&&info.id==='momonga')) ? `${info.label}: 짧은 터치 또는 Enter/Space로 제자리 작성 원화 반응 1회. 마우스로 끌기, Escape로 취소` : decorativeStage(info) ? `${info.label}: 짧은 터치 또는 Enter/Space로 관찰 자세 반응. 마우스로 끌기, Escape로 내려놓기` : `${info.label}: 마우스로 끌기, 터치는 길게 누르기. Enter로 인사, Escape로 내려놓기`);
+    if(viewportOverlay)el.setAttribute("aria-label",`${info.label}: 손가락이나 마우스로 끌기, 짧은 터치로 기존 반응, Escape로 내려놓기`);
     el.innerHTML = `<div class="cv-pet__figure"><img class="cv-pet__image" draggable="false" alt=""/><span class="cv-pet__name">${info.label}</span></div>`;
     const p = { ...info, el, img: el.querySelector('.cv-pet__image'), figure: el.querySelector('.cv-pet__figure'), pointerId: null, touch: null, x: 0, y: 0, width: 0, height: 0, dir: 1, mode: 'idle', frame: null, assetUnavailable:false, airborne: false, vx: 0, vy: 0, action: null };
     pets.push(p); root.appendChild(el); sizePet(p); idle(p);
@@ -837,10 +838,10 @@ function nearestViewportOverlayPlacement({x,y,width,height,padding,viewport,obst
   for (const type of ['start', 'correct', 'wrong', 'complete']) listen(document, `vocab:${type}`, e => { react(type, e.detail?.character ?? 'all', e.detail ?? {}); invalidate(); });
   for (const type of ['click', 'change', 'vocab:view']) listen(document, type, () => { invalidate(); });
   listen(document, 'toggle', invalidate, true); // details toggle does not bubble; refresh even without a click.
-  listen(document,'pointermove',e=>{for(const p of pets)if(p.touch?.pointerType==='mouse'&&p.touch.pointerId===e.pointerId)pointerMove(p,e);});
-  listen(document,'pointerup',e=>{for(const p of pets)if(p.touch?.pointerType==='mouse'&&p.touch.pointerId===e.pointerId)p.touch=null;});
+  listen(document,'pointermove',e=>{for(const p of pets)if((p.touch?.pointerType==='mouse'||p.touch?.directDrag)&&p.touch.pointerId===e.pointerId)pointerMove(p,e);});
+  listen(document,'pointerup',e=>{for(const p of pets)if((p.touch?.pointerType==='mouse'||p.touch?.directDrag)&&p.touch.pointerId===e.pointerId)p.touch=null;});
   listen(document,'pointercancel',e=>{for(const p of pets)if(p.touch?.pointerId===e.pointerId)p.touch=null;});
-  listen(document, 'pointerdown', e => { if (e.isPrimary === false || (e.pointerType==='mouse' && (e.button!==0 || (e.buttons!==undefined && e.buttons!==1)))) for (const p of pets) p.touch = null; }, {capture:true,passive:true});
+  listen(document, 'pointerdown', e => { if (e.isPrimary === false || (e.pointerType==='mouse' && (e.button!==0 || (e.buttons!==undefined && e.buttons!==1)))) for (const p of pets) { p.touch = null; if(viewportOverlay&&e.isPrimary===false&&p.pointerId!==null)safeReset(p); } }, {capture:true,passive:true});
   listen(window, 'scroll', () => { for (const p of pets) p.touch = null; invalidate(); for (const p of pets) if (stageRect(p) && PHYSICAL.has(p.mode)) safeReset(p); }, { passive: true, capture: true });
   listen(document, 'keydown', e => { if (e.key === 'Escape' && pets.some(p => PHYSICAL.has(p.mode))) { e.preventDefault(); resetAll(); } });
   listen(window, 'resize', () => { cancelExternalPresentation('resize'); layout(); });
