@@ -3,7 +3,7 @@
   const CWGeometry=(()=>{__WALK_GEOMETRY__;return{validRect,translateBounds,sweptPaintSafe,proposeWalkPath};})();
   const CWPlacement=(()=>{const {validRect,translateBounds,sweptPaintSafe}=CWGeometry;__WALK_PLACEMENT__;return nearestAvailableWalkPlacement;})();
   const CWFloorPlan=(()=>{const {validRect,translateBounds,sweptPaintSafe}=CWGeometry;__FLOOR_PLAN__;return proposeFloorWalk;})();
-  let continuousWalk=null,cwGeometryKey=null,cwGeometryEpoch=0,cwPlacementCache=null;
+  let continuousWalk=null,cwLastRelease=null,cwGeometryKey=null,cwGeometryEpoch=0,cwPlacementCache=null;
   function continuousWalkStyleSafe(){
     // Five known nodes only: animated ancestor transforms can change without a DOM mutation.
     let cwAuditSafe=false;
@@ -58,7 +58,7 @@
     const safe=!!pathSafe&&available;
     const stationaryInside=g&&CWGeometry.sweptPaintSafe({...g,obstacles:[],from:{x:p.x,y:p.y},to:{x:p.x,y:p.y}});
     const reason=safe?null:destroyed?'engine-unavailable':!visible?'actor-unavailable':document.hidden?'document-hidden':paused()?'paused':reduced?'reduced-motion':captured||inputBusy?'input-active':composing?'composing':studyBusy?'study-active':mediaBusy?'audio-active':physical?'physical-motion':stageRect(p)||isBeta(p)?'unsupported-context':pair||pending||externalPresentation||transient||presentationRegistry.get()&&!own||!floor&&pets.some(q=>q.mode!=='idle'||q.action)||[...inlineResponses.values()].some(c=>c.getState().mode!=='off')?'motion-active':!CW_FRAMES.every(f=>!failed.has(f.source))?'frame-unavailable':!g?'geometry-unavailable':(placement||floor)&&!own?'no-safe-placement':!stationaryInside?'outside-viewport':!CWGeometry.sweptPaintSafe({...g,from:{x:p.x,y:p.y},to:{x:p.x,y:p.y}})?'protected-space':!path?'no-safe-path':'state-changed';
-    return{scope,actorId:'chiikawa',safe,reason,visible,paused:paused(),reduced,documentHidden:!!document.hidden,inputBusy,studyBusy,captured,physical,composing,mediaBusy,revision:study?.revision,geometryEpoch:g?.epoch??-1,key:JSON.stringify([scope,transientEpoch,study?.revision,g?.epoch,p?.x,p?.y,[...requestedVisible],manualPaused,reduced,path]),path:path?.map(q=>({...q}))??null,speed:16,requiresExplicitPlacement:!!plan?.needsRelocation};
+    return{scope,actorId:'chiikawa',safe,reason,leaseReleaseReason:lease&&cwLastRelease?.token===lease&&cwLastRelease.scope===scope?cwLastRelease.reason:null,visible,paused:paused(),reduced,documentHidden:!!document.hidden,inputBusy,studyBusy,captured,physical,composing,mediaBusy,revision:study?.revision,geometryEpoch:g?.epoch??-1,key:JSON.stringify([scope,transientEpoch,study?.revision,g?.epoch,p?.x,p?.y,[...requestedVisible],manualPaused,reduced,path]),path:path?.map(q=>({...q}))??null,speed:16,requiresExplicitPlacement:!!plan?.needsRelocation};
   }
   function ownsContinuousWalk(token){return !destroyed&&!!continuousWalk&&continuousWalk.token===token&&presentationRegistry.owns(token);}
   function tryAcquireContinuousWalk(expected){
@@ -67,6 +67,7 @@
     const current=readContinuousWalkAdmission({scope:expected?.scope,actorId:expected?.actorId});
     if(!current.safe||current.key!==expected?.key||current.revision!==expected?.revision||current.geometryEpoch!==expected?.geometryEpoch)return null;
     const p=pets.find(p=>p.id==='chiikawa'),token=presentationRegistry.acquire('single',['chiikawa']);if(!token)return null;
+    cwLastRelease=null;
     const fields=(style,keys)=>Object.fromEntries(keys.map(k=>[k,style[k]||'']));
     continuousWalk={token,scope:current.scope,origin:current.scope===CW_PLACEMENT_SCOPE?{x:p.x,y:p.y}:null,path:current.path.map(q=>({...q})),revision:current.revision,geometryEpoch:current.geometryEpoch,frame:null,rootStyle:fields(p.el.style,['width','height','overflow']),figureStyle:fields(p.figure.style,['position','left','top','width','height'])};
     if(current.scope===CW_PLACEMENT_SCOPE||current.scope===CW_FLOOR_SCOPE){p.x=current.path[0].x;p.y=current.path[0].y;if(current.scope===CW_FLOOR_SCOPE){p.action=null;p.mode='idle';p.airborne=false;p.vx=p.vy=0;}}
@@ -78,7 +79,7 @@
   }
   function releaseContinuousWalk(token,reason='stop'){
     if(!continuousWalk||continuousWalk.token!==token)return false;
-    const old=continuousWalk;continuousWalk=null;old.observer?.disconnect();presentationRegistry.release(token);
+    const old=continuousWalk;cwLastRelease={token,scope:old.scope,reason:typeof reason==='string'?reason:'released'};continuousWalk=null;old.observer?.disconnect();presentationRegistry.release(token);
     const p=pets.find(p=>p.id==='chiikawa');if(p){
       Object.assign(p.el.style,old.rootStyle);Object.assign(p.figure.style,old.figureStyle);delete p.el.dataset.continuousWalk;pose(p);
       const inputOwnsPosition=['pointerdown','pointer-input','direct-input','keydown','keyboard-input','beforeinput','compositionstart','other-action'].includes(reason);

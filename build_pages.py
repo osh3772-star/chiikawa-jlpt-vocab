@@ -37,6 +37,10 @@ def build(output):
     integration=adapt_engine(integration)
     from floor_layout import adapt_floor_layout
     integration=adapt_floor_layout(integration)
+    from floor_drag import adapt_floor_drag
+    integration=adapt_floor_drag(integration)
+    from floor_animation import adapt_floor_animation
+    integration=adapt_floor_animation(integration)
     from continuous_walk import adapt_continuous_walk
     integration=adapt_continuous_walk(integration)
     # Only document-head styles belong to the parent page. The body contains a

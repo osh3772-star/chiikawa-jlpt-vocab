@@ -62,3 +62,6 @@ body[data-page=settings].cv-floor-layout.cv-character-only .cv-character-only-st
 @media(max-width:639px){
  body[data-page=settings].cv-floor-layout .cv-mobile-pet-dock>.cv-mobile-pet-slot{height:184px}
 }
+
+/* A captured direct gesture can be lifted across the word area; settled actors stay on the floor. */
+body.cv-floor-layout .cv-pet-layer[data-floor-lift="true"]{z-index:140}
