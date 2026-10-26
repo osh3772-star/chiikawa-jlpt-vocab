@@ -1,0 +1,100 @@
+{
+  "legacySha256": "777f3694738039dc1a244d5661136eef75c7778bbebcace02caa5115c6e4231c",
+  "vocabularySha256": "dae7ff69010f600cfe577c9fb67ec81830259dc3a76501a8c0e70f998147a1bd",
+  "wordCount": 7180,
+  "publicPNGCount": 13,
+  "files": {
+    ".nojekyll": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "app.css": {
+      "sha256": "a309b22a29cd28f35fbb24ce00bd4ac92419d40edde9f8be48add38dbf6ccb8a",
+      "bytes": 130796
+    },
+    "assets/09526837455f4384430ef1e7f6c68b68b8e693da7fb57ce7185cba610e7303f3.png": {
+      "sha256": "09526837455f4384430ef1e7f6c68b68b8e693da7fb57ce7185cba610e7303f3",
+      "bytes": 472727
+    },
+    "assets/0d48828ca2adbfe124489be261c2f9a78ad29ab037e0829af83fdf63e017dc48.png": {
+      "sha256": "0d48828ca2adbfe124489be261c2f9a78ad29ab037e0829af83fdf63e017dc48",
+      "bytes": 471551
+    },
+    "assets/1c90f622c51589025695a0fec55568719627cc2030582e06bb9617b89835f32d.png": {
+      "sha256": "1c90f622c51589025695a0fec55568719627cc2030582e06bb9617b89835f32d",
+      "bytes": 468891
+    },
+    "assets/228915d0fde57acd3fce9aa06a303c4989bce72d107408984fe18e30325948ad.png": {
+      "sha256": "228915d0fde57acd3fce9aa06a303c4989bce72d107408984fe18e30325948ad",
+      "bytes": 468938
+    },
+    "assets/40f956e223a22ed1eb978ee5163d46095d8e765bc561f5c162d364b87f8bbdf7.png": {
+      "sha256": "40f956e223a22ed1eb978ee5163d46095d8e765bc561f5c162d364b87f8bbdf7",
+      "bytes": 468720
+    },
+    "assets/4410d59938f0ef46dc70063a43fa42b3764cebbcf91241a737f8f373b8cb1c7a.png": {
+      "sha256": "4410d59938f0ef46dc70063a43fa42b3764cebbcf91241a737f8f373b8cb1c7a",
+      "bytes": 469299
+    },
+    "assets/57796e78b711e408945d06126d687ee2944d90e744e520a93755f3d570adc065.png": {
+      "sha256": "57796e78b711e408945d06126d687ee2944d90e744e520a93755f3d570adc065",
+      "bytes": 469287
+    },
+    "assets/590155819ebae2b41dc2b90b2eb1eeac182117da8eaeee7a8dfe249e86f4c181.png": {
+      "sha256": "590155819ebae2b41dc2b90b2eb1eeac182117da8eaeee7a8dfe249e86f4c181",
+      "bytes": 473050
+    },
+    "assets/656290e36fb9c214ea07a34c0b8d4ca66a5367ca130f66ab6ed177b7e48c637c.png": {
+      "sha256": "656290e36fb9c214ea07a34c0b8d4ca66a5367ca130f66ab6ed177b7e48c637c",
+      "bytes": 469320
+    },
+    "assets/874a369c3c6ae2b1331ce66f56367c7194a233c30016f0d4b0d85c0169af4a95.png": {
+      "sha256": "874a369c3c6ae2b1331ce66f56367c7194a233c30016f0d4b0d85c0169af4a95",
+      "bytes": 469232
+    },
+    "assets/a31368e4fac8a11ec638e3e5c864cd2d36c4c54fd0c545c239ab284b256fd7d3.png": {
+      "sha256": "a31368e4fac8a11ec638e3e5c864cd2d36c4c54fd0c545c239ab284b256fd7d3",
+      "bytes": 475403
+    },
+    "assets/f89be8a1dca9efd10c998b901a995575f59fd98426944daca1ff563be33e2013.png": {
+      "sha256": "f89be8a1dca9efd10c998b901a995575f59fd98426944daca1ff563be33e2013",
+      "bytes": 468738
+    },
+    "assets/fde3946e1ad5a74f1830657510b5c3efad3ca9892c3653cdd8addaa3a6d8311c.png": {
+      "sha256": "fde3946e1ad5a74f1830657510b5c3efad3ca9892c3653cdd8addaa3a6d8311c",
+      "bytes": 882622
+    },
+    "character-settings.html": {
+      "sha256": "196be7dfe17435bed396a792579fc3d524f1f57475cc778b3d96ed0bf149a369",
+      "bytes": 2634
+    },
+    "index.html": {
+      "sha256": "814130aaadc5e350d440f48e2c3f9c2b2966a4f56431b9005e151a8e28a15b75",
+      "bytes": 4120
+    },
+    "navigation.js": {
+      "sha256": "77c191fe27d389cf344697f6f6defe33d6b40e3adc48aa3df7867b3348ef5216",
+      "bytes": 5707
+    },
+    "pet-data.js": {
+      "sha256": "047742ce0729e790255bd3382fe69bae78cbb9eaa664b891bbcd751bc2dc0199",
+      "bytes": 2963577
+    },
+    "pet-runtime.js": {
+      "sha256": "596f9fb69036cbecf60689cd64f43e673b76e2c573004aea96916b76a12798a9",
+      "bytes": 11431429
+    },
+    "study-runtime.js": {
+      "sha256": "b2bc99adf151bf193f2f542af9f78730cfbe347f81d1785f910e525361b2415a",
+      "bytes": 27511
+    },
+    "study.html": {
+      "sha256": "7f88564cbe42ba4f9294b918dd2fe067a4a46a2aefef9da3dde6b7d649c34288",
+      "bytes": 2887
+    },
+    "vocabulary.js": {
+      "sha256": "f4eeee42a1e2d51940ade6cfc651235b8f34879e4b95e068f6d7da9f696a94fe",
+      "bytes": 1395440
+    }
+  }
+}
