@@ -91,7 +91,7 @@ th, td { padding: 10px 8px; border-bottom: 1px dashed #e8ddcc; overflow-wrap: an
 td:first-child { white-space: nowrap; font-size: .75rem; }
 td button { min-height: 36px; padding: 4px 10px; font-size: .88rem; border-radius: 9px; background: #fff5e0; }
 #study { max-width: 860px; margin-inline: auto; }
-body:has(#study:not([hidden])) { padding-top: 24px; }
+body:not(.cv-floor-layout):has(#study:not([hidden])) { padding-top: 24px; }
 body:has(#study:not([hidden])) .site-header { text-align: left; max-width: 860px; margin-bottom: 22px; }
 body:has(#study:not([hidden])) .site-header h1 { font-size: 1.4rem; margin-bottom: 4px; }
 body:has(#study:not([hidden])) .header-sticker,
