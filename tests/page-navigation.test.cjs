@@ -1,6 +1,6 @@
 const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto'),vm=require('node:vm');
 const {boot,createDocument}=require('./page-mock-dom.cjs');
-const root=path.resolve(__dirname,'..'),site=process.env.CV_SEPARATE_TEST_SITE||path.resolve(root,'../site'),baseline=path.join(root,'legacy-self-contained.html');
+const root=path.resolve(__dirname,'..'),site=process.env.CV_SEPARATE_TEST_SITE||path.resolve(root,'dist/separate-pages'),baseline=path.join(root,'legacy-self-contained.html');
 const K='jlpt-local-vocabulary-v1',H='cv-page-handoff-v1',levels=['N5','N4','N3','N2','N1'];
 const file=n=>path.join(site,n+'.html'),studyOnly={skipScript:src=>['pet-data.js','pet-runtime.js'].includes(src)};
 const stored=(level='N4')=>({level,positions:{N5:17,N4:23,N3:31,N2:47,N1:59},answers:{1:'unknown',2:'unknown',301:'known',7180:'unknown'}});
@@ -15,7 +15,7 @@ const id=b=>/원본 ID (\d+)/.exec(b.ids.position.textContent)?.[1];
 test('three genuinely distinct HTML entries: matching roots only, unique DOM IDs/scripts, same-directory real links/resources',()=>{
  const hashes=new Set();for(const [name,page]of [['index','home'],['character-settings','settings'],['study','study']]){
   const html=fs.readFileSync(file(name),'utf8');hashes.add(crypto.createHash('sha256').update(html).digest('hex'));const d=createDocument(html);assert.equal(d.body.dataset.page,page);const ids=d.querySelectorAll('[id]').map(n=>n.id);assert.equal(ids.length,new Set(ids).size,name+' duplicate actual DOM IDs');
-  const scripts=d.querySelectorAll('script').map(n=>n.getAttribute('src'));assert.equal(scripts.length,new Set(scripts).size);assert.equal(scripts.filter(s=>s==='navigation.js').length,1);assert.equal(scripts.filter(s=>s==='study-runtime.js').length,page==='settings'?0:1);assert.equal(scripts.filter(s=>s==='pet-runtime.js').length,page==='home'?0:1);
+  const scripts=d.querySelectorAll('script').map(n=>new URL(n.getAttribute('src'),'https://fixture.invalid/').pathname.slice(1));assert.equal(scripts.length,new Set(scripts).size);assert.equal(scripts.filter(s=>s==='navigation.js').length,1);assert.equal(scripts.filter(s=>s==='study-runtime.js').length,page==='settings'?0:1);assert.equal(scripts.filter(s=>s==='pet-runtime.js').length,page==='home'?0:1);
   assert.equal(!!d.getElementById('home'),page==='home');assert.equal(!!d.getElementById('study'),page==='study');assert.equal(!!d.getElementById('study-backup'),page==='home');assert.equal(!!d.getElementById('background-choice'),page==='settings');
   for(const n of d.querySelectorAll('a,script,link')){const ref=n.getAttribute('src')||n.getAttribute('href');if(!ref)continue;assert.ok(!ref.startsWith('#'),ref);const u=new URL(ref,'https://example.test/nested/'+name+'.html');assert.equal(u.origin,'https://example.test');assert.equal(path.posix.dirname(u.pathname),'/nested');assert.ok(fs.existsSync(path.join(site,path.basename(u.pathname))),ref);}
  }assert.equal(hashes.size,3);assert.doesNotMatch(fs.readFileSync(path.join(site,'navigation.js'),'utf8'),/addEventListener\(['"]hashchange|location\.hash\s*=/);

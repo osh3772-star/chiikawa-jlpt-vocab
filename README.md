@@ -9,7 +9,7 @@ A browser-based JLPT vocabulary app with 7,180 entries and six interactive chara
 - Review only unknown words, with filters by JLPT level.
 - Progress and ratings saved in the current browser's local storage.
 - Six companions with individual poses, autonomous actions, dragging, falling and learning reactions.
-- Responsive desktop and mobile layouts; individually selected characters stay accessible in a horizontal mobile dock.
+- Responsive desktop and mobile layouts. Character settings retain their dock; the study page uses interactive viewport actors without a character-selection dock or reserved lane.
 
 ## Run locally
 
@@ -90,7 +90,7 @@ python3 -m http.server --directory dist/separate-pages 8000
 - `character-settings.html`: 캐릭터 선택, 크기, 배경, 동작 옵션과 기존 미리보기.
 - `study.html`: 학습 카드/평가/취소, 최소 이동 링크와 캐릭터. 설정 폼은 실제 문서에 없습니다.
 - 같은 origin의 기존 localStorage 키와 학습 백업 형식을 그대로 사용합니다.
-- `page-adapters/`는 페이지 경계/세션 전송/레이아웃만 담당합니다. 기존 학습·캐릭터 엔진을 재사용하며 확률, 원화, 단어를 변경하지 않습니다.
+- `page-adapters/`와 `study_overlay.py`는 페이지 경계/세션 전송/공부 화면 배치를 담당합니다. 기존 학습·캐릭터 엔진과 배우 입력을 재사용하며 확률, 원화, 단어를 변경하지 않습니다.
 - `python3 assemble_legacy.py`가 기존 공개 compact HTML과 PNG 13개의 바이트를 검증하여 `legacy-self-contained.html`을 복원합니다. 이 파일은 분리 직전 compact 전체 단어장(full777f)의 바이트 고정 백업이자 새 패키지의 기준 입력입니다. 기존 `build_html.py`와 원본 소스·전체 오프라인 `단어장.html`도 보존되어 있습니다. 새 UI 수정은 `build_pages.py`/`page-adapters/`에 적용합니다.
 - 세 페이지는 HTTP(S) 동일 origin용입니다. `file://` 사용 시 브라우저별 저장소 격리가 다르므로 오프라인은 기존 `단어장.html`/`legacy-self-contained.html` 단일 파일을 사용하세요.
 - `dist/separate-pages/manifest.json`은 생성된 나머지 23파일의 SHA-256을 기록합니다. 공개된 PNG 13개는 원본 바이트 그대로 재사용합니다. 배포 명령·CDN·새 의존성은 추가하지 않습니다.
@@ -112,13 +112,13 @@ Python 3 표준 라이브러리와 Node.js 18 이상이 필요합니다. 추가 
 ```sh
 python3 assemble_legacy.py
 python3 build_pages.py --output dist/separate-pages
-CV_SEPARATE_TEST_SITE="$PWD/dist/separate-pages" node --test tests/page-fixture-calibration.test.cjs tests/page-navigation.test.cjs
+CV_SEPARATE_TEST_SITE="$PWD/dist/separate-pages" node --test tests/page-fixture-calibration.test.cjs tests/page-navigation.test.cjs tests/study-overlay-layout.test.mjs
 python3 -m unittest discover -s tests -p 'test_separate_pages.py' -v
-python3 -c "from pathlib import Path; import hashlib; assert hashlib.sha256(Path('dist/separate-pages/manifest.json').read_bytes()).hexdigest() == '80b522fa18df0b22551d46dcc5ffa266bef33c498b685581c5579d09a330e8c0'"
+python3 -c "from pathlib import Path; import hashlib; assert hashlib.sha256(Path('dist/separate-pages/manifest.json').read_bytes()).hexdigest() == '0b5bbfbfef25a4908a9d80fab330f42096c6e62f32284efae663c47b5ace847d'"
 ```
 
 - 고정 입력 `legacy-self-contained.html`: SHA-256 `777f3694738039dc1a244d5661136eef75c7778bbebcace02caa5115c6e4231c`.
-- 재현 대상: 운영 커밋 `597fb7f34eccc6ed652adc6400832c5e71681510`의 3 HTML과 공통 자원.
+- 최신 재현 대상: 아래 manifest 해시로 고정한 **공부 화면 overlay v3**의 3 HTML과 공통 자원. 이전 3페이지 운영 `597fb7f34eccc6ed652adc6400832c5e71681510` 재현 소스는 백업 커밋 `4f75de71c21dc49bdf29aae83f00482ec93ec6d9`에 그대로 보존되어 있습니다. 이 소스 스냅샷 자체는 운영 배포나 브라우저 검수 결과를 뜻하지 않습니다.
 - 공개 산출물은 24파일(빈 `.nojekyll`과 해시 manifest 포함)입니다. PNG 13개를 변경 없이 재사용합니다.
 - `build_pages.py` 기본 출력 위치는 저장소의 형제 `site/`입니다. 위 명령은 명시적으로 저장소 내부 `dist/separate-pages/`를 사용합니다. Node 검사의 환경변수도 같은 위치를 지정하므로 다른 작업 폴더에 의존하지 않습니다.
 - 기존 `build_html.py`는 원본 이미지가 포함된 독립 오프라인 `단어장.html`을 계속 생성합니다. 이 출력과 위 고정 compact 입력은 서로 다른 파일이며 덮어쓰지 않습니다.
@@ -138,3 +138,20 @@ Git blob `04e886844b6d160c136c366a747b52a98ad0ff65`입니다. 저장소의
 다르면 덮어쓰지 않고 실패합니다. `python3 assemble_legacy.py --check`는
 출력 파일을 만들지 않고 모든 입력과 복원 결과를 검증합니다.
 복원과 페이지 빌드 모두 저장소 안의 공개 파일만 사용하며 네트워크는 필요 없습니다.
+
+## 공부 화면 overlay v3 소스 스냅샷
+
+- 공부 화면의 캐릭터 선택 dock·빈 예약 공간을 제거합니다. 설정 페이지에는 기존 선택/크기/배경/동작 설정과 미리보기를 유지합니다.
+- 공부 화면의 기존 캐릭터 배우가 viewport에서 기존 잡기/놓기 등 입력을 받습니다. 실제 글줄과 버튼 등 조작부의 사각형을 피하고, 안전한 공간이 없으면 겹침을 강행하지 않습니다. 빈 투명 overlay로 입력을 가로막지 않습니다.
+- 캐릭터 선택·크기·학습 localStorage 키, 단어 7,180개, 원본 이미지 payload와 PNG 13개는 그대로입니다. 배우 동작 확률이나 원화/이미지 인코딩은 바꾸지 않습니다.
+- 부모 CSS는 원본 HTML의 `<head>`에서만 추출하여 iframe `srcdoc` 안의 CSS가 공부 화면 스크롤을 잠그지 않게 합니다. 설정 페이지의 내부 스크롤과 캐릭터 전용 보기의 스크롤 규칙은 따로 유지합니다.
+- 각 HTML의 CSS/실행 JS 참조는 상대 경로와 해당 파일 SHA-256 앞 12자리 `?v=`를 사용합니다. 외부 CDN·네트워크 빌드 의존성은 없습니다.
+- 공개 한정 검사는 Node 40개와 Python 6개이며, 단어/원본 이미지 보존·학습 이동/저장·설정 왕복·레이아웃 helper·CSS 추출·asset hash query·24파일 고정 manifest를 검사합니다. 제어된 DOM/좌표 검사는 실제 브라우저 레이아웃·스크롤/터치 검사를 대체하지 않습니다. 전체 기존 회귀 suite를 재실행했다는 뜻도 아닙니다.
+- `tests/study-overlay-layout.test.mjs`는 생성된 실제 runtime의 주 엔진 helper를 검사합니다. 내부 진단 폴더, 사용자 사진, 작업 경로, 별도 mock 패키지는 필요 없습니다.
+
+최신 고정 manifest SHA-256:
+`0b5bbfbfef25a4908a9d80fab330f42096c6e62f32284efae663c47b5ace847d`
+
+기존 전체 단일 파일(full777f), 원본 소스·단어 데이터, 이전 3페이지 스냅샷은
+보존합니다. `legacy-self-contained.html`과 `dist/`는 공개 소스만으로 로컬 재생성하며,
+원본 PNG를 다시 인코딩하거나 생성된 대형 HTML을 중복 업로드할 필요가 없습니다.
