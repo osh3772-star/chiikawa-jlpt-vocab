@@ -1,12 +1,91 @@
+/** Existing user-provisional Kani drawings on the normal actor state machine.
+ * Missing press/release/fall/landing artwork stays a static physical fallback.
+ * No walk probability, root motion, synthetic inbetweens, or extra RAF is added.
+ */
 export function createKaniPresentation({frames,read,decode,paint,restore,now}){
- let generation=0,mode='off',key=null,owned=null,start=0,index=-1;
- const rates={idle:5,read:6,walk:9,grabbed:10};
- function safe(c){return c.visible&&!c.hidden&&!c.paused&&!c.reduced&&!c.unavailable&&c.spaceSafe;}
- function valid(){const c=read();return safe(c)&&(key==='grabbed'?c.captured&&c.pointerId===owned.pointerId&&c.captureGeneration===owned.captureGeneration:!c.captured&&!c.physical);}
- function cancel(){generation++;mode='off';key=null;owned=null;index=-1;restore();}
- async function begin(state){cancel();if(!Object.hasOwn(rates,state)||!Array.isArray(frames[state]))return false;key=state;owned=read();if(!valid()){cancel();return false;}const token=generation;mode='loading';try{await Promise.all(frames[state].map(decode));if(token!==generation)return false;if(!valid()){cancel();return false;}start=now();index=0;mode='playing';paint(frames[state][0],state,0);return true;}catch(_){if(token===generation)cancel();return false;}}
- function tick(t){if(mode==='off')return;if(!valid()){cancel();return;}if(mode!=='playing')return;const elapsed=t-start;if(!Number.isFinite(elapsed)||elapsed<0){cancel();return;}const n=frames[key].length,next=Math.min(n-1,Math.floor(elapsed*rates[key]/1000));if(next!==index){index=next;paint(frames[key][index],key,index);}if(elapsed>=n*1000/rates[key])mode='hold';}
- return{begin:()=>begin('grabbed'),preview:state=>state==='grabbed'?Promise.resolve(false):begin(state),tick,cancel,destroy:cancel,getState:()=>({mode,key,index})};
+ const rates={idle:5,read:6,walk:9,grabbed:10},counts={idle:6,read:8,walk:8,grabbed:6};
+ const decoded=new Map();
+ let generation=0,active=null,preview=null,previewSerial=0,disposed=false,mode='off',reason=null,failedSignature=null;
+ const safe=c=>c?.visible===true&&!c.hidden&&!c.paused&&!c.reduced&&!c.unavailable&&c.spaceSafe===true;
+ const valid=key=>Array.isArray(frames[key])&&frames[key].length===counts[key]&&frames[key].every(src=>typeof src==='string'&&src.length>0)&&new Set(frames[key]).size===counts[key];
+ function context(){try{return read()??{};}catch{return {};}}
+ function desired(c){
+  if(!safe(c))return null;
+  if(c.captured){
+   if(!['grab-onset','hold'].includes(c.mode)||c.pointerId==null||!Number.isSafeInteger(c.captureGeneration))return null;
+   return{key:'grabbed',loop:true,signature:`capture:${c.pointerId}:${c.captureGeneration}`,kind:'interaction'};
+  }
+  if(c.physical||c.pressing||c.mode&&c.mode!=='idle')return null;
+  return preview?{key:preview.key,loop:false,signature:`preview:${preview.serial}`,kind:'preview'}:{key:'idle',loop:true,signature:'idle',kind:'interaction'};
+ }
+ function clear(why){
+  generation++;const had=!!active;active=null;mode='off';reason=why;
+  if(had)restore();
+ }
+ function load(src){
+  if(!decoded.has(src)){
+   const promise=Promise.resolve().then(()=>decode(src)).catch(error=>{decoded.delete(src);throw error;});decoded.set(src,promise);
+  }
+  return decoded.get(src);
+ }
+ async function activate(wanted){
+  clear('state-change');
+  if(disposed||!valid(wanted.key)) {failedSignature=wanted.signature;reason='missing-or-invalid-frames';return false;}
+  const token=generation;active={...wanted,index:-1,elapsed:0,lastTime:0};mode='loading';reason=null;
+  try{
+   await Promise.all(frames[wanted.key].map(load));
+   if(disposed||token!==generation)return false;
+   const fresh=desired(context());
+   if(!fresh||fresh.signature!==wanted.signature){clear('state-changed-during-decode');return false;}
+   const t=now();if(!Number.isFinite(t))throw Error('invalid-clock');
+   active.lastTime=t;active.index=0;mode='playing';paint(frames[wanted.key][0],wanted.key,0,wanted.kind);return true;
+  }catch(_){if(token===generation){failedSignature=wanted.signature;clear('decode-or-paint-error');}return false;}
+ }
+ function sync(t){
+  if(disposed)return false;
+  const c=context(),wanted=desired(c);
+  if(!wanted){
+   preview=null;failedSignature=null;
+   clear(!safe(c)?'context-unavailable':c.pressing?'press-pending':`missing-sequence:${c.mode||'physical'}`);return false;
+  }
+  if(active?.signature!==wanted.signature){
+   if(failedSignature===wanted.signature)return false;
+   // Each transition owns its decode completion; an old capture never repaints.
+   void activate(wanted);return false;
+  }
+  if(mode!=='playing')return false;
+  const delta=t-active.lastTime;
+  if(!Number.isFinite(t)||!Number.isFinite(delta)||delta<0){failedSignature=wanted.signature;clear('invalid-clock');return false;}
+  active.lastTime=t;
+  // Match the existing physical engine's bounded step; no delayed catch-up.
+  active.elapsed+=Math.min(delta,40);
+  const n=frames[active.key].length,slot=Math.floor(active.elapsed*rates[active.key]/1000);
+  if(!active.loop&&slot>=n){preview=null;clear('preview-complete');return false;}
+  const index=active.loop?slot%n:Math.min(n-1,slot);
+  if(index!==active.index){
+   active.index=index;
+   try{paint(frames[active.key][index],active.key,index,active.kind);}
+   catch(_){failedSignature=wanted.signature;clear('paint-error');return false;}
+  }
+  return true;
+ }
+ return{
+  begin(){
+   if(disposed)return Promise.resolve(false);
+   preview=null;const wanted=desired(context());
+   if(wanted?.key!=='grabbed')return Promise.resolve(false);
+   failedSignature=null;return activate(wanted);
+  },
+  preview(state){
+   const c=context();
+   if(disposed||!Object.hasOwn(rates,state)||state==='grabbed'||!valid(state)||!safe(c)||c.captured||c.physical||c.pressing||c.mode&&c.mode!=='idle')return Promise.resolve(false);
+   preview={key:state,serial:++previewSerial};failedSignature=null;return activate(desired(c));
+  },
+  tick:(t=now())=>sync(t),
+  cancel(why='cancelled'){preview=null;failedSignature=null;clear(why);},
+  destroy(){if(disposed)return;disposed=true;preview=null;clear('destroyed');decoded.clear();},
+  getState:()=>({mode,key:active?.key??null,index:active?.index??-1,kind:active?.kind??null,reason,disposed,decodedCount:decoded.size})
+ };
 }
 
 /** AUTHORED_UI held-capture visual candidate. Same three poses; no canonical-motion claim. */
@@ -432,12 +511,13 @@ export function mountKaniPet(options = {}) {
     }else if(scaleExempt(p))p.scalePlacementUnavailable=false;
   }
   function render(p) {
-    if(p.kaniFrame){display(p,`${p.kaniFrame.state}_${p.kaniFrame.index+1}`,p.kaniFrame.src,'kani-authored-preview');p.el.dataset.kaniFrame=`${p.kaniFrame.state}:${p.kaniFrame.index}`;}
+    const playback=p.captureVisual?.getState();p.el.dataset.kaniPlayback=playback?.mode??'off';p.el.dataset.kaniPlaybackReason=playback?.reason??'';
+    if(p.kaniFrame){display(p,`${p.kaniFrame.state}_${p.kaniFrame.index+1}`,p.kaniFrame.src,p.kaniFrame.kind==='preview'?'kani-authored-preview':'kani-authored-interaction');p.el.dataset.kaniFrame=`${p.kaniFrame.state}:${p.kaniFrame.index}`;}
     if(p.capturePose&&p.pointerId!==null){display(p,`capture-authored-${p.capturePose.poseId}`,CAPTURE_ASSET.source,'capture-authored-ui');Object.assign(p.img.style,capturePaintStyle(p.capturePose,p.width));}
     refreshObstacles();syncStagePosition(p);
     syncScaleAvailability(p);
     p.el.dataset.scaleUnavailable=String(!!p.scalePlacementUnavailable);
-    p.el.style.touchAction = mobileStage(p) ? 'pan-x pan-y' : '';
+    p.el.style.touchAction = 'none';
     const dock = mobileStage(p) && mobileStageViewport ? mobileStageViewport.getBoundingClientRect() : null;
     p.el.dataset.assetUnavailable=String(!!p.assetUnavailable);const painted=onScreen(p);p.el.style.visibility=painted?'':'hidden';p.el.tabIndex=painted?0:-1;p.el.setAttribute('aria-hidden',String(!painted));
     if(!painted&&document.activeElement===p.el)p.el.blur?.();
@@ -453,10 +533,10 @@ export function mountKaniPet(options = {}) {
   function captureVisualFor(p){
     if(p.captureVisual)return p.captureVisual;
     return p.captureVisual=createKaniPresentation({frames:kaniFrames,
-      read:()=>{refreshObstacles();const hit=paintRect(p);return {visible:requestedVisible.has(p.id)&&!p.el.hidden&&onScreen(p),hidden:document.hidden,paused:manualPaused,reduced,unavailable:p.assetUnavailable,captured:p.pointerId!==null&&p.el.hasPointerCapture?.(p.pointerId)===true,pointerId:p.pointerId,captureGeneration:p.captureGeneration??0,physical:PHYSICAL.has(p.mode),spaceSafe:!obstacles.some(r=>hit.left<r.right+4&&hit.right>r.left-4&&hit.top<r.bottom+4&&hit.bottom>r.top-4)};},
+      read:()=>{refreshObstacles();const hit=paintRect(p);return {visible:requestedVisible.has(p.id)&&!p.el.hidden&&onScreen(p),hidden:document.hidden,paused:manualPaused,reduced,unavailable:p.assetUnavailable,captured:p.pointerId!==null&&p.el.hasPointerCapture?.(p.pointerId)===true,pointerId:p.pointerId,captureGeneration:p.captureGeneration??0,mode:p.mode,pressing:!!p.touch,physical:PHYSICAL.has(p.mode),spaceSafe:!obstacles.some(r=>hit.left<r.right+4&&hit.right>r.left-4&&hit.top<r.bottom+4&&hit.bottom>r.top-4)};},
       decode:src=>new Promise((resolve,reject)=>{const img=new Image();img.src=src;img.decode().then(()=>{if(img.naturalWidth!==512||img.naturalHeight!==512)throw Error('kani-size');resolve();}).catch(reject);}),
-      paint:(src,state,index)=>{p.kaniFrame={src,state,index};render(p);wake();},
-      restore:()=>{p.kaniFrame=null;delete p.el.dataset.kaniFrame;pose(p,'idle');},now:()=>performance.now()});
+      paint:(src,state,index,kind)=>{p.kaniFrame={src,state,index,kind};render(p);wake();},
+      restore:()=>{p.kaniFrame=null;delete p.el.dataset.kaniFrame;pose(p,p.action?.fallback??'idle');},now:()=>performance.now()});
   }
   function beginGrab(p, e) {
     if (externalPresentation) { cancelExternalPresentation('direct-input'); layout(); }
@@ -470,17 +550,18 @@ export function mountKaniPet(options = {}) {
   }
   function pointerDown(p, e) {
     cancelPairPresentation('pointer-input');
-    if (e.button !== 0 || e.isPrimary === false || destroyed || p.pointerId !== null || document.hidden) return;
+    if (e.button !== 0 || e.isPrimary === false || destroyed || p.pointerId !== null || p.touch || document.hidden) return;
     refreshObstacles();syncStagePosition(p);syncScaleAvailability(p);if(!onScreen(p))return;
     inlineFor(p)?.cancel('pointer-intent');
-    // Long press to drag on touch; vertical gestures remain browser scrolling.
-    if (e.pointerType === 'touch') { p.touch = { pointerId: e.pointerId, clientX: e.clientX, clientY: e.clientY, at: performance.now() }; wake(); return; }
+    // The bounded input stage shares the ordinary actor's tap/drag intent path.
+    if (e.pointerType === 'touch' || e.pointerType === 'mouse') { p.touch = { pointerId:e.pointerId,pointerType:e.pointerType,directDrag:true,clientX:e.clientX,clientY:e.clientY,at:performance.now() }; wake(); return; }
     if (e.cancelable) e.preventDefault(); beginGrab(p, e);
   }
   function pointerMove(p, e) {
     if (p.touch?.pointerId === e.pointerId) {
-      if (Math.hypot(e.clientX - p.touch.clientX, e.clientY - p.touch.clientY) > 8) p.touch = null;
-      return;
+      if(p.touch.pointerType==='mouse'&&e.buttons!==undefined&&e.buttons!==1){p.touch=null;return;}
+      if(Math.hypot(e.clientX-p.touch.clientX,e.clientY-p.touch.clientY)<=8)return;
+      beginGrab(p,p.touch);
     }
     if (p.pointerId !== e.pointerId) return;
     if (e.cancelable) e.preventDefault();
@@ -491,7 +572,13 @@ export function mountKaniPet(options = {}) {
     p.x = constrainX(p, e.clientX - p.grabDX); p.y = clamp(e.clientY - p.grabDY, 0, ground(p)); render(p);
   }
   function pointerEnd(p, e, cancelled = false) {
-    if (p.touch?.pointerId === e.pointerId) p.touch = null;
+    if (p.touch?.pointerId === e.pointerId) {
+      const press=p.touch;p.touch=null;
+      if(!cancelled&&!destroyed&&!document.hidden&&e.isPrimary!==false&&performance.now()-press.at<220&&Math.hypot(e.clientX-press.clientX,e.clientY-press.clientY)<=8){
+        try{onDeliberateInteraction?.(p.id,{kind:press.pointerType==='touch'?'pointer-tap':'pointer-click',pointerType:press.pointerType,repeat:false});}catch(_){}
+      }
+      return;
+    }
     if (p.pointerId !== e.pointerId) return;
     releaseCapture(p);
     if (cancelled || paused()) { safeReset(p); return; }
@@ -558,7 +645,7 @@ export function mountKaniPet(options = {}) {
     listen(el, 'focus', () => { (decorativeStage(p)??mobileStage(p))?.scrollIntoView?.({ block: 'nearest', inline: 'nearest' }); });
     listen(el, 'pointerdown', e => pointerDown(p, e)); listen(el, 'pointermove', e => pointerMove(p, e));
     listen(el, 'pointerup', e => pointerEnd(p, e));
-    listen(el, 'pointercancel', e => pointerEnd(p, e, true)); listen(el, 'lostpointercapture', e => pointerEnd(p, e, true));
+    listen(el, 'pointercancel', e => pointerEnd(p, e, true)); listen(el, 'lostpointercapture', e => { if(e.target!==el&&p.pointerId===e.pointerId&&el.hasPointerCapture?.(e.pointerId)===true)return;pointerEnd(p,e,true); });
     listen(el, 'keydown', e => {
       if (['Enter', ' ', 'Escape'].includes(e.key)) { e.preventDefault(); e.stopPropagation();
         if (e.key === 'Escape') { cancelPair(); safeReset(p); } else { refreshObstacles();syncStagePosition(p);syncScaleAvailability(p);if(!onScreen(p))return;let handled=false;try{handled=onDeliberateInteraction?.(p.id, {kind:'keyboard',key:e.key,repeat:e.repeat===true})===true;}catch(_){} if (!handled) react('start', p.id); }
@@ -658,7 +745,7 @@ export function mountKaniPet(options = {}) {
         if (p.touch && now - p.touch.at >= 220) beginGrab(p, p.touch);
         if (p.airborne) { p.vy += 1900 * dt; p.y = Math.max(0, p.y + p.vy * dt); p.x = constrainX(p, p.x + p.vx * dt); if (p.y >= ground(p)) land(p); }
         advance(p, dt);
-        p.captureVisual?.tick(now);
+        captureVisualFor(p).tick(now);
         if (!p.action && p.pointerId === null && !paused() && !(inlineFor(p)&&inlineFor(p).getState().mode!=='off')) { p.wait -= dt; if (p.wait <= 0) decide(p); }
         render(p);
       }
@@ -669,6 +756,9 @@ export function mountKaniPet(options = {}) {
   for (const type of ['start', 'correct', 'wrong', 'complete']) listen(document, `vocab:${type}`, e => { react(type, e.detail?.character ?? 'all', e.detail ?? {}); invalidate(); });
   for (const type of ['click', 'change', 'vocab:view']) listen(document, type, () => { invalidate(); });
   listen(document, 'toggle', invalidate, true); // details toggle does not bubble; refresh even without a click.
+  listen(document,'pointermove',e=>{for(const p of pets)if(p.touch?.directDrag&&p.touch.pointerId===e.pointerId)pointerMove(p,e);});
+  listen(document,'pointerup',e=>{for(const p of pets)if(p.touch?.pointerId===e.pointerId)pointerEnd(p,e);});
+  listen(document,'pointercancel',e=>{for(const p of pets)if(p.touch?.pointerId===e.pointerId)pointerEnd(p,e,true);});
   listen(window, 'scroll', () => { invalidate(); for (const p of pets) if (stageRect(p) && PHYSICAL.has(p.mode)) safeReset(p); }, { passive: true, capture: true });
   listen(document, 'keydown', e => { if (e.key === 'Escape' && pets.some(p => PHYSICAL.has(p.mode))) { e.preventDefault(); resetAll(); } });
   listen(window, 'resize', () => { cancelExternalPresentation('resize'); layout(); });

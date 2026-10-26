@@ -41,6 +41,8 @@ def build(output):
     integration=adapt_floor_drag(integration)
     from floor_animation import adapt_floor_animation
     integration=adapt_floor_animation(integration)
+    from interaction_sequences import adapt_kani_interactions
+    integration=adapt_kani_interactions(integration, ROOT)
     from continuous_walk import adapt_continuous_walk
     integration=adapt_continuous_walk(integration)
     # Only document-head styles belong to the parent page. The body contains a

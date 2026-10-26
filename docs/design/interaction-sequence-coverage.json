@@ -1,0 +1,354 @@
+{
+  "sourceBackup": "dc7bf195af94b102bd2b0d464e8312b2c7469c01",
+  "productionCommit": "9bed5da363665b8d992dfb99f21b4de015929163",
+  "kani": {
+    "approval": "USER_PROVISIONAL_KNOWN_SEAMS",
+    "naturalWalkingApproved": false,
+    "states": {
+      "idle": {
+        "count": 6,
+        "uniqueSourceRasters": 6,
+        "uniqueProductionRasters": 6,
+        "fps": 5,
+        "enabledInOrdinaryInput": true,
+        "frames": [
+          {
+            "index": 0,
+            "sourcePath": "chiikawa-pets/assets/kani-provisional/idle/idle_01.png",
+            "sourcePNG": "23e2443779d86add05cd25a39b4bc8b4976ba7c6e3488a1287777240e0376734",
+            "sourceRGBA": "11a27e2511edb18cdb7bed783b57b31e1a43b272c9425be5398aced74abbee96",
+            "productionPNG": "bbff8c0b81a2cdc8affbfc85e3ce231c8299814139e871df4fb5dc65a9503d49",
+            "productionRGBA": "f76a4ccdc6ea2d4b0e8cc0af3f3ba90a970e4c327058d7a904408a77af640647"
+          },
+          {
+            "index": 1,
+            "sourcePath": "chiikawa-pets/assets/kani-provisional/idle/idle_02.png",
+            "sourcePNG": "765c4ff26465e0fc78fcaffc0d09572b6a7972783605792dceaf15e8162e8be6",
+            "sourceRGBA": "d5c4e653198d8a0b5749297666906ea6e220bf3e01d1e7d57ee93b3cec9dab99",
+            "productionPNG": "ab957619f38d06f0d735ed5a52e3fb6f2ddeadf58889c9d0e813d5e0c5a2b025",
+            "productionRGBA": "a9169898d7b2be5f38d4f026f3587e5e0d05e80ecd5ef0f89d89fa5dc526013d"
+          },
+          {
+            "index": 2,
+            "sourcePath": "chiikawa-pets/assets/kani-provisional/idle/idle_03.png",
+            "sourcePNG": "045dd3d23706743ca79faff7f3ec05b40a29b0fe8196981344754c5bfce5105d",
+            "sourceRGBA": "bc7556b083c79c7afb6bef05880ea3246c0e34fc85ee13917a50b2c5b1db6d1c",
+            "productionPNG": "2ec1d8885ea683fd2fdee9877c15e7ff15d7d6488af3ac2f364f262d9e157824",
+            "productionRGBA": "574412acad0ae526ca797d3c6b196ac3ba652cfac4459e93623ce42a28701f1e"
+          },
+          {
+            "index": 3,
+            "sourcePath": "chiikawa-pets/assets/kani-provisional/idle/idle_04.png",
+            "sourcePNG": "38e4cb6135cfa6b91c13ed5db616d1a5f6b8d9a0deb2ffaedcabc5fff01791f4",
+            "sourceRGBA": "41c9f8a1a5aa33a2635a8c2b920a2195d5683b513f6a02e38e6ff37a23041972",
+            "productionPNG": "cd3673446d07b2008b4bb2711840784d272e90493cf58c53ec6f65028856f61b",
+            "productionRGBA": "8f82334e3ed5723d4720502cd4ac9fa2ac635057dd6725784d03bf514f226431"
+          },
+          {
+            "index": 4,
+            "sourcePath": "chiikawa-pets/assets/kani-provisional/idle/idle_05.png",
+            "sourcePNG": "53eb2ee5629d82166ba7007018afe1f2d00b8133a8da79f242b48bfac5ef117f",
+            "sourceRGBA": "2e585f01f3058d06ac96566666898fc3ae5febae2b9ca10a430e7db0dd901f29",
+            "productionPNG": "cd9d4a75dc2579e93adae30ec0678913d8c8300a793e35164df6ec4ab813bdcc",
+            "productionRGBA": "553bf3803df0c16d11009dff83399c244d66f9f2a81d796f38fff16a75a75f2a"
+          },
+          {
+            "index": 5,
+            "sourcePath": "chiikawa-pets/assets/kani-provisional/idle/idle_06.png",
+            "sourcePNG": "f82381a364375758586b10ae730ebedad091f21c097f87a69bf430a548824330",
+            "sourceRGBA": "b1341c9c6adfe24139f1fffc9dae1078cab69906d1d9c7e26a335b7b89b15505",
+            "productionPNG": "bb91d4d889063a74aca107619af61231d2627dc227bcb2a613de62f197a4baff",
+            "productionRGBA": "652f82f51d8e2128133a992ddb3ad23c1e8f46a746d3d36c58898c6d720a09e4"
+          }
+        ]
+      },
+      "read": {
+        "count": 8,
+        "uniqueSourceRasters": 8,
+        "uniqueProductionRasters": 8,
+        "fps": 6,
+        "enabledInOrdinaryInput": true,
+        "frames": [
+          {
+            "index": 0,
+            "sourcePath": "chiikawa-pets/assets/kani-provisional/read/read_01.png",
+            "sourcePNG": "3108d3f0817fa9c080224e15dfedace6311a004006767cbb49ff9d4515d42dc1",
+            "sourceRGBA": "1e4a431b131aed890049a1337578e0ad04b65c6e9639d1b7a7606beeff3fa84b",
+            "productionPNG": "7265e89fcba1ddf96290001909361804af062865cc18ad2fac10de58219bc9a2",
+            "productionRGBA": "63b542d5bb85aa83b11f729f233dd71eb58cef29a531378258e9232871c76b61"
+          },
+          {
+            "index": 1,
+            "sourcePath": "chiikawa-pets/assets/kani-provisional/read/read_02.png",
+            "sourcePNG": "b70ba8d20bb9c24e27252f0011527fb668beedfe3ecdf84f481a73e3b17c614d",
+            "sourceRGBA": "f707e0a728096b4827dd3b7dd95cd004993b67062b5b5e9d8127666b46fa9efe",
+            "productionPNG": "03baf0763de7d44afa4e487f7f1f0f6819810c19697027261f2ddd432850f741",
+            "productionRGBA": "796f416786131142e39d77ae4f31fff15a6dcd788b4780503c0a6a96569ab99a"
+          },
+          {
+            "index": 2,
+            "sourcePath": "chiikawa-pets/assets/kani-provisional/read/read_03.png",
+            "sourcePNG": "e4ade291a8d12a652fe8b39c690613100490533d598ce2b9b53cf0ffc94dcad6",
+            "sourceRGBA": "ce5053d57835cff1898f9dec4a36d97c31570c77225ea6153beaf6b0ba7cfd1d",
+            "productionPNG": "db558b226842f10dcb5110e8ac6e473bf500233c8c516577dbf4bac3533d8187",
+            "productionRGBA": "3971a4831955e618dcef2536dd46f91a1b80143fff573449b03302d85f358702"
+          },
+          {
+            "index": 3,
+            "sourcePath": "chiikawa-pets/assets/kani-provisional/read/read_04.png",
+            "sourcePNG": "7a4047c3cdb4aed4d3a81a1a7165c5e9f928225345915bd4c7f21ac6a5123e3d",
+            "sourceRGBA": "49db9b181f56cb2fe9e9cb8e9f832d3c140843e48979089907f3deb5475122ea",
+            "productionPNG": "15ca3d7791979d221ecfc3e2083fbe2e6f56a6edad34030429a546577c9ec056",
+            "productionRGBA": "73e795d717969b7f0494da61a04b4c3376735cbfc91217061f0ed61a9054fc27"
+          },
+          {
+            "index": 4,
+            "sourcePath": "chiikawa-pets/assets/kani-provisional/read/read_05.png",
+            "sourcePNG": "fd42817b50340ba511728467800b91eaa4b8f2d15bfa5059917a33f4e068515a",
+            "sourceRGBA": "1ea0339940ae8e9f2f17f3f089bd2943063b850d955410fa7216c8062fbae4bc",
+            "productionPNG": "e73ec892a59661aea226e0ef802599aa264731f49b61c51bf4cbb516bd526fde",
+            "productionRGBA": "95d0edb7c91ef53e08408a29b1a00e36907864183717d236fa9bf01bf7db6c31"
+          },
+          {
+            "index": 5,
+            "sourcePath": "chiikawa-pets/assets/kani-provisional/read/read_06.png",
+            "sourcePNG": "d84b772ff00cdbe80f3dea456ea072a9d17c123c7567acb5832b847730c0c632",
+            "sourceRGBA": "e714cabc48dcfde80da470d5d8248b1d66bf8d105163994e771ce8901f54c77e",
+            "productionPNG": "1e3f1075aa8b6657b5c4ea174235362948769422d51020cab5cd5bdd09f9c8ef",
+            "productionRGBA": "39ea9a1a6396a4a35651918c3d1076fd6d28c878379dae59e900fe63576f3725"
+          },
+          {
+            "index": 6,
+            "sourcePath": "chiikawa-pets/assets/kani-provisional/read/read_07.png",
+            "sourcePNG": "c9f66f503ce94fa6a449c665b3b9e09fa8e07f9215d68a84fd18a8572b9a3e28",
+            "sourceRGBA": "1cef163088d1c8d6981dc4f06aba917fb81167ff06d1f755ad46f7627ab7b992",
+            "productionPNG": "3e1777a944323247636c10b9b4328c8fddec2c1658e45e9624cdc9bbff73e507",
+            "productionRGBA": "7f90e92858cbc08e3874b37bc3224a64df93849e949e758b273bfdf0c6fbc2b7"
+          },
+          {
+            "index": 7,
+            "sourcePath": "chiikawa-pets/assets/kani-provisional/read/read_08.png",
+            "sourcePNG": "045fe190fe75904b2d3e58197f4c87f91a7a90782617ca82636bea6544ff1358",
+            "sourceRGBA": "66025418867393609270b4e61d1f28afb62bd65b7384fb0298e42a5fb1f73672",
+            "productionPNG": "7b55697d2f790db714ed107fa5bbc9219bae701c62572dec52d12e871095e2c9",
+            "productionRGBA": "c205f670b86c9e893ea6e1b6b5072a77eb6d990dc720734dccfbb4f05b3bb6a8"
+          }
+        ]
+      },
+      "walk": {
+        "count": 8,
+        "uniqueSourceRasters": 8,
+        "uniqueProductionRasters": 8,
+        "fps": 9,
+        "enabledInOrdinaryInput": false,
+        "frames": [
+          {
+            "index": 0,
+            "sourcePath": "chiikawa-pets/assets/kani-provisional/walk/walk_01.png",
+            "sourcePNG": "c984c2283d9deb313d88b74071e5e49f453f99e70d7cef8a3288b6c26a5d37fb",
+            "sourceRGBA": "459375fbe85f3dbeda0b842dee03f5167b1a1223c51c7f617d7ec43df1d0904d",
+            "productionPNG": "c35a76c52a1d5e45adf711ee82e757a93a551d405a13f178bbb6983aa344f2d2",
+            "productionRGBA": "bbcababa55c3ed373f1131d3fa0699b3973274bc7cab91e839b31cc1e9499114"
+          },
+          {
+            "index": 1,
+            "sourcePath": "chiikawa-pets/assets/kani-provisional/walk/walk_02.png",
+            "sourcePNG": "d9ba9dd72777e75ede85b2a85a3187df634e951829b4c7f74182568480da43ef",
+            "sourceRGBA": "296d4bda398adcab5d5a146af8dbcc7939c5344c6a73b4b17c6541aba24d6ad0",
+            "productionPNG": "8f0c0bae7852a0e07defadcaedd673387dc66e65ecd95d63cd7db35edaa062e8",
+            "productionRGBA": "09753c4b20e71c12cac916c4a29588bc1f6a9843952acd02c8a02bc8e97eb8c3"
+          },
+          {
+            "index": 2,
+            "sourcePath": "chiikawa-pets/assets/kani-provisional/walk/walk_03.png",
+            "sourcePNG": "cdfec0e0108d6361e20f08849ea7982dc8e702eaa475f3b2177b4ec00cb90712",
+            "sourceRGBA": "b3e1bf88dd43d9738a898886849f2922ef80fa95a06162362ec17f93c6cb4d2f",
+            "productionPNG": "d135c7a6a00ef6aa562ae714c7fee3a06bbe7d438b54f897f5cfc8a051220c9f",
+            "productionRGBA": "54daed3af6c0034b93a1a885bded9ba1f06d55b43017d1ac940001b0988fafe1"
+          },
+          {
+            "index": 3,
+            "sourcePath": "chiikawa-pets/assets/kani-provisional/walk/walk_04.png",
+            "sourcePNG": "65871370060d01dd0b8c4664f1670433be32bacace6a5585fb915df1092d7561",
+            "sourceRGBA": "b8827d4bb462ccc23243a8570b50e9cdda4eaf06ebc248be93502bda54d9fd8a",
+            "productionPNG": "a83c1dce6cc12dca3afdc8fb05dc5fb97d066a66e6048520f2af480f2cb1efce",
+            "productionRGBA": "faf1166cac3339d7855c6a47c027d053e8f83754e56c4cb045ad1903c13603d5"
+          },
+          {
+            "index": 4,
+            "sourcePath": "chiikawa-pets/assets/kani-provisional/walk/walk_05.png",
+            "sourcePNG": "23c218e3958d9a2b10c8d02fc5020fe08ef8ecf8aaf408a4e379c1ee9ab56101",
+            "sourceRGBA": "251c0ff5d413818c749f209b7fdbe4effbc9060d7be184c6ec74881ce20d0d7d",
+            "productionPNG": "765a5f8fafd0ba26edb28996056a5ef4bb4ab2a1950351c6fbdb062d9f6555e2",
+            "productionRGBA": "a800f03674c975ef7ae59e152c4e841d29caa18e09f6df79535d07206edbdd53"
+          },
+          {
+            "index": 5,
+            "sourcePath": "chiikawa-pets/assets/kani-provisional/walk/walk_06.png",
+            "sourcePNG": "e22fa48571a40f814b3b4c52969be874f279041cc28d6eb70240fff321371859",
+            "sourceRGBA": "a1e43c0c2062f880673c41a591dc46107527aaca68eb1a68412c2e66a780032c",
+            "productionPNG": "81a63cbfabaacab506e1962c4b7d75c55429b3b2540185e12d1032746a61e78a",
+            "productionRGBA": "e465f9223255c1ccd2545b86935657e4ed5dc08bce81bb109b91e3d4dcb77ba7"
+          },
+          {
+            "index": 6,
+            "sourcePath": "chiikawa-pets/assets/kani-provisional/walk/walk_07.png",
+            "sourcePNG": "3e998a87dd97249c7cd2a748e992a98e87acb5508d2cc0d7df90857027168145",
+            "sourceRGBA": "aeba43253bac2a6723af2058e084267e2193f11527c1c80d3d719ec54160df82",
+            "productionPNG": "7dbba4c6c6010d3214b24eef995e3d2fd4d8ccabe4e3ae45ee267f374fe56772",
+            "productionRGBA": "78b4714d858dfc30390a669e85079146bf774e5ca46d7a665d19263e7e3312f3"
+          },
+          {
+            "index": 7,
+            "sourcePath": "chiikawa-pets/assets/kani-provisional/walk/walk_08.png",
+            "sourcePNG": "628cfcb4256a910acc3c0724f7db056ffa6fd3287b6ab6e6d58428b9c554d35f",
+            "sourceRGBA": "64b56fd007e223aae4938e9a32037720dd43e4d35654905e5bf4f8747ad4164f",
+            "productionPNG": "26d19d3d64c5016b79c920f0ca5035864d1a038e8886ffc4a0af9cb6d32391bc",
+            "productionRGBA": "13c3d3d988b45e11d1e1f237fe7ab212a02f9ef7e9ad55a687198b4ae1cf18fd"
+          }
+        ]
+      },
+      "grabbed": {
+        "count": 6,
+        "uniqueSourceRasters": 6,
+        "uniqueProductionRasters": 6,
+        "fps": 10,
+        "enabledInOrdinaryInput": true,
+        "frames": [
+          {
+            "index": 0,
+            "sourcePath": "chiikawa-pets/assets/kani-provisional/grabbed/grabbed_01.png",
+            "sourcePNG": "90a7f05106acb368ee4084c77400fde05b85c6c59c488682d8eaeecbb82bf27f",
+            "sourceRGBA": "a5b0adcf43d7f1b2d39d1d57ef7d75ade55a134199e474792830bb3fd7de2fa0",
+            "productionPNG": "5f7722dd3589625a7808f2a25a60c2643a4269dd8388c9b83b9fd10702b3ccd5",
+            "productionRGBA": "94cb468a6a762fabda86a4f889ae0686d0d29cfc70168e51ac7b745667eef60f"
+          },
+          {
+            "index": 1,
+            "sourcePath": "chiikawa-pets/assets/kani-provisional/grabbed/grabbed_02.png",
+            "sourcePNG": "fcb4eed88890d2035de9bd0603e32a224e1747646518d1a633dabad03cb9f17c",
+            "sourceRGBA": "72f6890e8c1db8156646973c6a8b4e7d98a645e27dbc69320d0f34b72c18ccfb",
+            "productionPNG": "f7abca9a00e42e17963837b20ed48360fa41779dd98f670c4b1bc7b8281c5bb1",
+            "productionRGBA": "84d581e4499599f22c7e425932686b38469bd80e046ab46d140ef87cbf316d06"
+          },
+          {
+            "index": 2,
+            "sourcePath": "chiikawa-pets/assets/kani-provisional/grabbed/grabbed_03.png",
+            "sourcePNG": "8c55ff68b112fbdac5e054f92257aa8404f163115809aa8833faef9a267ba0b4",
+            "sourceRGBA": "9b70d04c9ab0ab4c3891bdcb8c18511232a59371f805d4dc1a6c915817965983",
+            "productionPNG": "87aeae46e6a0185f2d858f4d966f1863ef026ee72a8755e2c727882a510e16c0",
+            "productionRGBA": "e3562ce9fd60a2a02a4654eaf5efac646abc85f0010b32cfc968e3e7f8a6bf47"
+          },
+          {
+            "index": 3,
+            "sourcePath": "chiikawa-pets/assets/kani-provisional/grabbed/grabbed_04.png",
+            "sourcePNG": "3d49ebca308f8de8f18dcc778d5ecd4d24c7819367c473ad5b06b4410ed65703",
+            "sourceRGBA": "744becd6a32c9ad88f75fdffdbf3544a4a970ef4ee3f9d3aa7abd24ec0623b07",
+            "productionPNG": "e7ea9fe7fe8bd63b69db7de0ca5519870653f2965df033f80557da12aff9ce61",
+            "productionRGBA": "32a7c5c4f52fe9d5708caab1b3ee5b4d7ed0e14ef9efbf856738be0454525fb9"
+          },
+          {
+            "index": 4,
+            "sourcePath": "chiikawa-pets/assets/kani-provisional/grabbed/grabbed_05.png",
+            "sourcePNG": "d1133d252c2850c977f7778e24b6efcac61ea2ae9da7419692efef2e891b3e7b",
+            "sourceRGBA": "52b3a766ac64d7a7bdf15a185e41de9fbc84da8ec16b2ca7f40f68baaff50a94",
+            "productionPNG": "249f64d02d4b5657a04c29002595c7d3b085b430fac60dc3ca9cca35cd7ffd46",
+            "productionRGBA": "0d3a6fc09961abc3fcd1780f1cb8a0a8c7123ab8fc3eaae5c9dcf7d72fd414b4"
+          },
+          {
+            "index": 5,
+            "sourcePath": "chiikawa-pets/assets/kani-provisional/grabbed/grabbed_06.png",
+            "sourcePNG": "7cc23d0c8797ea09497af0980a7db77111c0a6b3dc9b695d3741a9c2409b94de",
+            "sourceRGBA": "c30551d79f7c3435ade97e15fcb90c65ca9e31a257c63ee516522f62cee93f2f",
+            "productionPNG": "766b28eda52827ae4152cc80d504a68495cae0ba3d2813a6758144d5424fa02f",
+            "productionRGBA": "809f712740d2f4593546c310ada176565932e6b2e60cc3f6fdb01dac88bcaf38"
+          }
+        ]
+      }
+    },
+    "missingSequences": [
+      "press",
+      "release",
+      "fall",
+      "landing",
+      "recover"
+    ],
+    "note": "Source PNG and existing compact production PNG byte identities are tracked separately; this change preserves the production payload exactly. Distinct rasters alone do not prove motion quality."
+  },
+  "sixActors": {
+    "completeApprovedInteractionSet": false,
+    "missingSequences": [
+      "press",
+      "release",
+      "fall",
+      "landing",
+      "idle loops for base six"
+    ],
+    "chiikawaCapture": {
+      "classification": "existing enabled authored UI; three poses A/open/B/open, not complete interaction artwork",
+      "poses": 3,
+      "sheetSHA256": "d38ead18705743d3bcb44f0ab666db962940c7a9e49a8b356e6d4dc21caaee02"
+    },
+    "manualWalkCandidate": "12 reviewed-foot slots; separate manual controller, no approved autonomous animationManifest",
+    "draftBeta": "existing draft grab/landing/walk sheets remain gated; not used here",
+    "otherPartialAssets": "Shisa static1/2/3 variants; Usagi/Rakko/Momonga limited source-derived fragments and single-image authored motion. None supplies the missing complete physical-state drawing set."
+  },
+  "excluded": "New 32-frame generated preview and Library transfer failures are not inputs.",
+  "otherExistingRegistrations": [
+    {
+      "path": "chiikawa-pets/reviewed-foot-assets/manifest.json",
+      "slots": 12,
+      "declaredUniqueDrawings": null,
+      "distinctRegisteredReferences": 12,
+      "testingAuthorized": true,
+      "productionApproved": false,
+      "enabledByDefault": false,
+      "usedInNewOrdinaryInteraction": false,
+      "note": "Existing finite/manual candidate or partial fragment; not a complete physical-state sequence set."
+    },
+    {
+      "path": "chiikawa-pets/limited-previews/carry-cycle.json",
+      "slots": 12,
+      "declaredUniqueDrawings": 11,
+      "distinctRegisteredReferences": 11,
+      "testingAuthorized": true,
+      "productionApproved": false,
+      "enabledByDefault": false,
+      "usedInNewOrdinaryInteraction": false,
+      "note": "Existing finite/manual candidate or partial fragment; not a complete physical-state sequence set."
+    },
+    {
+      "path": "chiikawa-pets/limited-previews/smooth-carry.json",
+      "slots": 7,
+      "declaredUniqueDrawings": null,
+      "distinctRegisteredReferences": 7,
+      "testingAuthorized": true,
+      "productionApproved": false,
+      "enabledByDefault": false,
+      "usedInNewOrdinaryInteraction": false,
+      "note": "Existing finite/manual candidate or partial fragment; not a complete physical-state sequence set."
+    },
+    {
+      "path": "chiikawa-pets/limited-previews/hachi-fullbody.json",
+      "slots": 16,
+      "declaredUniqueDrawings": 14,
+      "distinctRegisteredReferences": 14,
+      "testingAuthorized": true,
+      "productionApproved": false,
+      "enabledByDefault": false,
+      "usedInNewOrdinaryInteraction": false,
+      "note": "Existing finite/manual candidate or partial fragment; not a complete physical-state sequence set."
+    },
+    {
+      "path": "chiikawa-pets/limited-previews/chiikawa-ep2-a.json",
+      "slots": 4,
+      "declaredUniqueDrawings": null,
+      "distinctRegisteredReferences": 4,
+      "testingAuthorized": true,
+      "productionApproved": false,
+      "enabledByDefault": false,
+      "usedInNewOrdinaryInteraction": false,
+      "note": "Existing finite/manual candidate or partial fragment; not a complete physical-state sequence set."
+    }
+  ]
+}
