@@ -1,0 +1,80 @@
+{
+  "schema": "usagi-interaction-authored-candidate/v1",
+  "character": "usagi",
+  "classification": "AUTHORED_CANDIDATE_NOT_PRODUCTION",
+  "selectedKeyCount": 6,
+  "naturalnessVerified": false,
+  "videoReferenceVerified": false,
+  "dynamicAnimationVerified": false,
+  "productionApproved": false,
+  "automaticActivation": false,
+  "timingApproved": false,
+  "frames": [
+    {
+      "key": 1,
+      "stage": "onset",
+      "file": "frame-01-onset.png",
+      "sha256": "370fbe8bc88b5f56068384f1567b35c47f6942f2cfbf30fe73a48c0446bee872",
+      "bytes": 624080,
+      "size": [
+        1254,
+        1254
+      ]
+    },
+    {
+      "key": 2,
+      "stage": "held-a",
+      "file": "frame-02-held-a.png",
+      "sha256": "195dd6174481f86b8c3e57795ae16a5f92a45a1172bcd5515928752925c30af0",
+      "bytes": 623383,
+      "size": [
+        1254,
+        1254
+      ]
+    },
+    {
+      "key": 3,
+      "stage": "held-b",
+      "file": "frame-03-held-b.png",
+      "sha256": "f479224065246125bd7d8fec761fa5d858571fe7e1920f8cf33eb2bb228eaa6a",
+      "bytes": 613941,
+      "size": [
+        1254,
+        1254
+      ]
+    },
+    {
+      "key": 4,
+      "stage": "held-c",
+      "file": "frame-04-held-c.png",
+      "sha256": "0571e5527ca037a0610195303d95d629aa312f44cec18292237c56bcb7b6a361",
+      "bytes": 621893,
+      "size": [
+        1254,
+        1254
+      ]
+    },
+    {
+      "key": 5,
+      "stage": "release",
+      "file": "frame-05-release.png",
+      "sha256": "77d294ea25edb9ccc4beffcfb6ca567f2498e9a485606e5d89b4ece8d90691ef",
+      "bytes": 622409,
+      "size": [
+        1254,
+        1254
+      ]
+    },
+    {
+      "key": 6,
+      "stage": "landing",
+      "file": "frame-06-landing.png",
+      "sha256": "6e8020cda20a92d2c2bd29b5c671c23676a1071847d8c3315f47a643d7cf7c09",
+      "bytes": 653166,
+      "size": [
+        1254,
+        1254
+      ]
+    }
+  ]
+}
