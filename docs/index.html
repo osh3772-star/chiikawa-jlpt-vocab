@@ -692,7 +692,8 @@ function createKaniRailController({assets,read,decode,paint,clear,status=()=>{},
   generation++;abort?.abort();abort=null;cancelFrame(raf);raf=0;const old=resources;resources=[];phase='off';key=null;animated=false;clear();old.forEach(release);status(message);
  }
  function validFrames(state){const s=assets?.states?.[state];return s?.frames?.length===counts[state]&&s.frames.every(f=>f&&typeof f.source==='string'&&f.source.length>0&&f.nativeSize?.join(',')==='512,512');}
- function tick(t){raf=0;if(destroyed||phase!=='playing')return;const c=context();if(!eligible(c)){stop('표시 조건이 바뀌어 숨김 · 선택 유지');return;}if(c.paused||c.reduced){load('idle',false);return;}const elapsed=t-start;if(!Number.isFinite(elapsed)||elapsed<0){stop('시간 상태가 바뀌어 정지');return;}const n=resources.length;index=Math.min(n-1,Math.floor(elapsed*rates[key]/1000));paint(resources[index],{state:key,index});if(elapsed>=n*1000/rates[key]){phase='hold';status(key+' 자세 1회 완료 · 마지막 그림 유지');return;}raf=requestFrame(tick);}
+ // RAF schedules work; elapsed time uses the same injected monotonic clock as start.
+ function tick(){raf=0;if(destroyed||phase!=='playing')return;const c=context();if(!eligible(c)){stop('표시 조건이 바뀌어 숨김 · 선택 유지');return;}if(c.paused||c.reduced){load('idle',false);return;}const elapsed=now()-start;if(!Number.isFinite(elapsed)||elapsed<0){stop('시간 상태가 바뀌어 정지');return;}const n=resources.length;index=Math.min(n-1,Math.floor(elapsed*rates[key]/1000));paint(resources[index],{state:key,index});if(elapsed>=n*1000/rates[key]){phase='hold';status(key+' 자세 1회 완료 · 마지막 그림 유지');return;}raf=requestFrame(tick);}
  async function load(state,animate){
   stop('카니 그림 준비 중');const c=context();if(destroyed||!eligible(c)){status(c.requested?'표시 조건 부족 · 선택 유지':'꺼짐');return false;}if(!Object.hasOwn(rates,state)||!validFrames(state)){phase='error';status('에셋 목록 불일치 · 숨김');return false;}
   if(animate&&(c.paused||c.reduced)){state='idle';animate=false;if(!validFrames(state)){phase='error';return false;}}
@@ -705,7 +706,9 @@ function createKaniRailController({assets,read,decode,paint,clear,status=()=>{},
   }catch(_){if(destroyed||generation!==token)return false;stop('그림 로드 실패 · 숨김');phase='error';return false;}
  }
  function revalidate(){if(destroyed)return;const c=context();if(!eligible(c)){if(phase!=='off')stop(c.requested?'접힘/공간/숨김 조건 · 선택 유지':'꺼짐');return;}if((c.reduced||c.paused)&&animated){load('idle',false);return;}if(phase==='off')load('idle',false);}
- return{revalidate,play:state=>load(state,true),stop:()=>load('idle',false),imageError(){stop('그림 표시 실패 · 숨김');phase='error';},getState:()=>({phase,key,index,generation,resourceCount:resources.length}),destroy(){if(destroyed)return;destroyed=true;stop('꺼짐');}};
+ // Cancel only an explicitly started sequence, never restart static/idle decoding.
+ function cancelForInput(){if(destroyed||!animated)return Promise.resolve(false);return load('idle',false);}
+ return{revalidate,play:state=>load(state,true),stop:()=>load('idle',false),cancelForInput,imageError(){stop('그림 표시 실패 · 숨김');phase='error';},getState:()=>({phase,key,index,generation,resourceCount:resources.length}),destroy(){if(destroyed)return;destroyed=true;stop('꺼짐');}};
 }
 
 return {createKaniRailController};
@@ -1184,17 +1187,28 @@ function mountChiikawaPets(options = {}) {
   }
   function pointerDown(p, e) {
     cancelPairPresentation('pointer-input');
-    if (e.button !== 0 || e.isPrimary === false || destroyed || p.pointerId !== null || document.hidden) return;
+    if (e.isPrimary === false) { for (const actor of pets) actor.touch = null; return; }
+    if(e.pointerType==='mouse' && (e.button!==0 || (e.buttons!==undefined && e.buttons!==1))) { p.touch=null; return; }
+    if (e.button !== 0 || e.isPrimary === false || destroyed || p.pointerId !== null || p.touch || document.hidden) return;
     refreshObstacles();syncStagePosition(p);syncScaleAvailability(p);if(!onScreen(p))return;
     inlineFor(p)?.cancel('pointer-intent');
     // Long press to drag on touch; vertical gestures remain browser scrolling.
     if (e.pointerType === 'touch') { p.touch = { pointerId: e.pointerId, clientX: e.clientX, clientY: e.clientY, at: performance.now() }; wake(); return; }
+    if(e.pointerType==='mouse' && (inlineFor(p)||decorativeStage(p))) {
+      p.touch={pointerId:e.pointerId,pointerType:'mouse',clientX:e.clientX,clientY:e.clientY,at:performance.now()};wake();return;
+    }
     if (e.cancelable) e.preventDefault(); beginGrab(p, e);
   }
   function pointerMove(p, e) {
     if (p.touch?.pointerId === e.pointerId) {
-      if (Math.hypot(e.clientX - p.touch.clientX, e.clientY - p.touch.clientY) > 8) p.touch = null;
-      return;
+      if(p.touch.pointerType==='mouse') {
+        if(e.buttons!==undefined && e.buttons!==1){p.touch=null;return;}
+        if(Math.hypot(e.clientX-p.touch.clientX,e.clientY-p.touch.clientY)<=8)return;
+        const press=p.touch;beginGrab(p,press);
+      } else {
+        if (Math.hypot(e.clientX - p.touch.clientX, e.clientY - p.touch.clientY) > 8) p.touch = null;
+        return;
+      }
     }
     if (p.pointerId !== e.pointerId) return;
     if (e.cancelable) e.preventDefault();
@@ -1205,7 +1219,19 @@ function mountChiikawaPets(options = {}) {
     p.x = constrainX(p, e.clientX - p.grabDX); p.y = clamp(e.clientY - p.grabDY, 0, ground(p)); render(p);
   }
   function pointerEnd(p, e, cancelled = false) {
-    if (p.touch?.pointerId === e.pointerId) p.touch = null;
+    if (p.touch?.pointerId === e.pointerId) {
+      const press = p.touch; p.touch = null;
+      // A tap owns no capture. Never infer one after scrolling, holding, or cancellation.
+      const elapsed = performance.now() - press.at;
+      if (!cancelled && !destroyed && !document.hidden && e.isPrimary !== false && (e.pointerType === 'touch' || (e.pointerType==='mouse' && press.pointerType==='mouse' && e.button===0 && (e.buttons===undefined || e.buttons===0))) && elapsed >= 0 && elapsed < 220 && Math.hypot(e.clientX-press.clientX,e.clientY-press.clientY) <= 8) {
+        refreshObstacles(); syncStagePosition(p); syncScaleAvailability(p);
+        if (onScreen(p) && p.pointerId === null && !PHYSICAL.has(p.mode)) {
+          // Reuse opt-in responses only; no generic motion fallback or synthetic click.
+          try { onDeliberateInteraction?.(p.id,{kind:press.pointerType==='mouse'?'pointer-click':'pointer-tap',pointerType:press.pointerType==='mouse'?'mouse':'touch',repeat:false}); } catch (_) {}
+        }
+      }
+      return;
+    }
     if (p.pointerId !== e.pointerId) return;
     releaseCapture(p);
     if (cancelled || paused()) { safeReset(p); return; }
@@ -1264,7 +1290,7 @@ function mountChiikawaPets(options = {}) {
     const el = document.createElement('div'); el.className = 'cv-pet'; el.dataset.character = info.id;
     el.tabIndex = 0; el.setAttribute('role', 'button');
     if (isBeta(info)) { el.dataset.quality = 'beta'; el.title = '치이카와 동작 베타 · 원화 외형/연결 미승인'; }
-    el.setAttribute('aria-label', ((inlineResponseEnabled&&info.id==='chiikawa')||(paddedHachi&&info.id==='hachiware')||(usagiInlineEnabled&&info.id==='usagi')||(paddedMomonga&&info.id==='momonga')) ? `${info.label}: Enter 또는 Space로 제자리 작성 원화 반응 1회. 마우스로 끌기, Escape로 취소` : decorativeStage(info) ? `${info.label}: Enter 또는 Space로 관찰 자세 반응. 마우스로 끌기, Escape로 내려놓기` : `${info.label}: 마우스로 끌기, 터치는 길게 누르기. Enter로 인사, Escape로 내려놓기`);
+    el.setAttribute('aria-label', ((inlineResponseEnabled&&info.id==='chiikawa')||(paddedHachi&&info.id==='hachiware')||(usagiInlineEnabled&&info.id==='usagi')||(paddedMomonga&&info.id==='momonga')) ? `${info.label}: 짧은 터치 또는 Enter/Space로 제자리 작성 원화 반응 1회. 마우스로 끌기, Escape로 취소` : decorativeStage(info) ? `${info.label}: 짧은 터치 또는 Enter/Space로 관찰 자세 반응. 마우스로 끌기, Escape로 내려놓기` : `${info.label}: 마우스로 끌기, 터치는 길게 누르기. Enter로 인사, Escape로 내려놓기`);
     el.innerHTML = `<div class="cv-pet__figure"><img class="cv-pet__image" draggable="false" alt=""/><span class="cv-pet__name">${info.label}</span></div>`;
     const p = { ...info, el, img: el.querySelector('.cv-pet__image'), figure: el.querySelector('.cv-pet__figure'), pointerId: null, touch: null, x: 0, y: 0, width: 0, height: 0, dir: 1, mode: 'idle', frame: null, assetUnavailable:false, airborne: false, vx: 0, vy: 0, action: null };
     pets.push(p); root.appendChild(el); sizePet(p); idle(p);
@@ -1273,7 +1299,7 @@ function mountChiikawaPets(options = {}) {
     listen(el, 'pointerup', e => pointerEnd(p, e));
     listen(el, 'pointercancel', e => pointerEnd(p, e, true)); listen(el, 'lostpointercapture', e => pointerEnd(p, e, true));
     listen(el, 'keydown', e => {
-      if (['Enter', ' ', 'Escape'].includes(e.key)) { e.preventDefault(); e.stopPropagation();
+      if (['Enter', ' ', 'Escape'].includes(e.key)) { p.touch = null; e.preventDefault(); e.stopPropagation();
         if (e.key === 'Escape') { cancelPair(); safeReset(p); } else { refreshObstacles();syncStagePosition(p);syncScaleAvailability(p);if(!onScreen(p))return;let handled=false;try{handled=onDeliberateInteraction?.(p.id, {kind:'keyboard',key:e.key,repeat:e.repeat===true})===true;}catch(_){} if (!handled) react('start', p.id); }
       }
     });
@@ -1382,7 +1408,11 @@ function mountChiikawaPets(options = {}) {
   for (const type of ['start', 'correct', 'wrong', 'complete']) listen(document, `vocab:${type}`, e => { react(type, e.detail?.character ?? 'all', e.detail ?? {}); invalidate(); });
   for (const type of ['click', 'change', 'vocab:view']) listen(document, type, () => { invalidate(); });
   listen(document, 'toggle', invalidate, true); // details toggle does not bubble; refresh even without a click.
-  listen(window, 'scroll', () => { invalidate(); for (const p of pets) if (stageRect(p) && PHYSICAL.has(p.mode)) safeReset(p); }, { passive: true, capture: true });
+  listen(document,'pointermove',e=>{for(const p of pets)if(p.touch?.pointerType==='mouse'&&p.touch.pointerId===e.pointerId)pointerMove(p,e);});
+  listen(document,'pointerup',e=>{for(const p of pets)if(p.touch?.pointerType==='mouse'&&p.touch.pointerId===e.pointerId)p.touch=null;});
+  listen(document,'pointercancel',e=>{for(const p of pets)if(p.touch?.pointerId===e.pointerId)p.touch=null;});
+  listen(document, 'pointerdown', e => { if (e.isPrimary === false || (e.pointerType==='mouse' && (e.button!==0 || (e.buttons!==undefined && e.buttons!==1)))) for (const p of pets) p.touch = null; }, {capture:true,passive:true});
+  listen(window, 'scroll', () => { for (const p of pets) p.touch = null; invalidate(); for (const p of pets) if (stageRect(p) && PHYSICAL.has(p.mode)) safeReset(p); }, { passive: true, capture: true });
   listen(document, 'keydown', e => { if (e.key === 'Escape' && pets.some(p => PHYSICAL.has(p.mode))) { e.preventDefault(); resetAll(); } });
   listen(window, 'resize', () => { cancelExternalPresentation('resize'); layout(); });
   listen(window, 'blur', () => { cancelExternalPresentation('blur'); layout(); });
@@ -2771,7 +2801,9 @@ function directCarryRegistration(asset){
 function createDirectInteractionAdapter({characterId='chiikawa',getContext,getPlaybackState,start,focusTarget,onRejected=()=>{}}){
  function request(id,input){
   const c=getContext();if(id!==characterId||!c.enabled)return false;
-  if(!input||!['keyboard','native-button'].includes(input.kind)||(input.kind==='keyboard'&&!['Enter',' '].includes(input.key)))return false;
+  if(!input||!['keyboard','native-button','pointer-tap','pointer-click'].includes(input.kind)||(input.kind==='keyboard'&&!['Enter',' '].includes(input.key)))return false;
+  if(input.kind==='pointer-tap'&&input.pointerType!=='touch')return false;
+  if(input.kind==='pointer-click'&&input.pointerType!=='mouse')return false;
   // true means handled/consumed, including busy or unsafe requests; never leak into generic react.
   if(input.repeat===true)return true;
   if(getPlaybackState().mode!=='off')return true;
@@ -2963,7 +2995,7 @@ return {createHachiFullbodyResponse};
     });
   }
   const directTools=document.createElement('div');directTools.className='cv-direct-tools';
-  directTools.innerHTML='<label><input type="checkbox" id="chiikawa-direct-enabled"> 캐릭터 직접 반응 실험 (기본 꺼짐)</label><p>한 친구를 장식 무대로 골라 Enter/Space 또는 반응 버튼으로 관찰 조각을 한 번 표시합니다. 상체/장면 창은 명시 UI 컷이며 소품 획득·착지·회복 재현이 아닙니다. 클릭/드래그에는 연결하지 않습니다.</p>';
+  directTools.innerHTML='<label><input type="checkbox" id="chiikawa-direct-enabled"> 캐릭터 직접 반응 실험 (기본 꺼짐)</label><p>실험을 켜고 한 친구를 장식 무대로 고르면 짧은 터치·왼쪽 클릭, Enter/Space 또는 반응 버튼으로 기존 관찰 조각을 한 번 표시합니다. 끌기·길게 누르기는 잡기이며, 실험을 끄면 기존 잡기 방식을 유지합니다. 상체/장면 창은 명시 UI 컷이며 소품 획득·착지·회복 재현이 아닙니다.</p>';
   visibilityTools.appendChild(directTools);const directToggle=directTools.querySelector('input');directToggle.checked=directEnabled;
   const directChoiceLabel=document.createElement('label');directChoiceLabel.textContent='반응 무대의 친구 ';const directChoice=document.createElement('select');directChoice.id='direct-character-choice';for(const[id,label]of Object.entries(labels)){const option=document.createElement('option');option.value=id;option.textContent=label;directChoice.appendChild(option);}directChoice.value=directCharacter;directChoiceLabel.appendChild(directChoice);directTools.appendChild(directChoiceLabel);
   // Explicit navigation only: never toggle preferences, cancel owners, or autoplay.
@@ -3103,6 +3135,17 @@ return {createPajamaGroupPreference};
  const sync=()=>{if(disposed)return;input.checked=requested;rail.hidden=!requested||inputExclusive;for(const b of buttons)b.disabled=!requested||inputExclusive;controller.revalidate();revalidateInput();};
  on(input,'change',()=>{requested=input.checked;sync();});
  for(const b of buttons)on(b,'click',()=>{if(!requested)return;if(b.hasAttribute('data-kani-stop'))controller.stop();else controller.play(b.dataset.kaniState);});
+ // Study intent cancels only this rail's manual sequence. It neither acquires nor
+ // cancels another preview lease, and Kani's own controls/iframe stay independent.
+ const cancelKaniForStudy=event=>{
+  if(kaniPanel.contains(event.target))return;
+  const studyVisible=!document.getElementById('study')?.hidden;
+  const studyInput=event.target?.closest?.('main')&&['beforeinput','input','compositionstart'].includes(event.type);
+  if(studyInput||shouldCancelPreviewForStudyInput(event,studyVisible))controller.cancelForInput();
+ };
+ for(const type of ['click','change','keydown','beforeinput','input','compositionstart'])on(document,type,cancelKaniForStudy,{capture:true});
+ on(document,'keydown',event=>{if(event.key==='Escape'&&!event.isComposing)controller.cancelForInput();},{capture:true});
+ on(window,'blur',event=>{if(event.target===window)controller.cancelForInput();});
  on(image,'error',()=>controller.imageError());on(kaniPanel,'toggle',sync);on(document,'visibilitychange',sync);on(window,'scroll',sync,true);on(window,'resize',sync);
  if(window.visualViewport?.addEventListener){on(window.visualViewport,'resize',sync);on(window.visualViewport,'scroll',sync);}
  if(reducedQuery?.addEventListener)on(reducedQuery,'change',sync);
@@ -3395,7 +3438,7 @@ return {createKaniInputHost};
   }
   document.getElementById('pets-show-all').addEventListener('click',()=>{for(const id of groups.all)preferences.visible[id]=true;applyVisibility();});
   document.getElementById('pets-hide-all').addEventListener('click',()=>{for(const id of groups.all)preferences.visible[id]=false;applyVisibility();});
-  toggle.addEventListener('click',()=>{previewCoordinator.cancelAll('pause-change');userPaused=!pets.isPaused();if(userPaused)pets.pause();else pets.resume();saveVisibility();syncToggle();refreshCharacterGreeting();});
+  toggle.addEventListener('click',()=>{previewCoordinator.cancelAll('pause-change');userPaused=!pets.isPaused();if(userPaused)pets.pause();else pets.resume();saveVisibility();syncToggle();refreshCharacterFlight();refreshCharacterGreeting();});
   picker.addEventListener('change',()=>{pets.setMobileCharacters(groups[picker.value]);try{localStorage.setItem(preferenceKey,picker.value);}catch(_) {}});
   betaToggle.addEventListener('change',()=>{pets.destroy();mount();try{localStorage.setItem(betaPreferenceKey,String(betaToggle.checked));}catch(_) {}if(betaToggle.checked&&previewPanel.open)pets.playAction('walk','chiikawa');});
   betaWalk.addEventListener('click',()=>pets.playAction('walk','chiikawa'));
