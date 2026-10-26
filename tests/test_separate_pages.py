@@ -56,13 +56,30 @@ class SeparatePageBuildTests(unittest.TestCase):
                 self.assertFalse(url.scheme);self.assertFalse(url.netloc)
                 self.assertNotIn('/',url.path);self.assertFalse(url.fragment)
                 self.assertEqual(parse_qs(url.query),{'v':[hashlib.sha256((self.site/url.path).read_bytes()).hexdigest()[:12]]})
-    def test_frozen_overlay_release_has_exact_manifest_and_file_set(self):
+    def test_frozen_integrated_release_has_exact_manifest_and_file_set(self):
         manifest=(self.site/'manifest.json').read_bytes()
-        self.assertEqual(hashlib.sha256(manifest).hexdigest(),'0b5bbfbfef25a4908a9d80fab330f42096c6e62f32284efae663c47b5ace847d')
+        self.assertEqual(hashlib.sha256(manifest).hexdigest(),'80077df4b088abfe022a91978dd0faac2ee150377e365bd7d3309a1515b18167')
         expected=set(json.loads(manifest)['files'])|{'manifest.json'}
         actual={str(p.relative_to(self.site)) for p in self.site.rglob('*') if p.is_file()}
-        self.assertEqual(actual,expected);self.assertEqual(len(actual),24)
+        self.assertEqual(actual,expected);self.assertEqual(len(actual),27)
     def test_rebuild_is_byte_deterministic(self):
         before={str(p.relative_to(self.site)):p.read_bytes() for p in self.site.rglob('*') if p.is_file()}
         build(self.site)
         self.assertEqual(before,{str(p.relative_to(self.site)):p.read_bytes() for p in self.site.rglob('*') if p.is_file()})
+
+    def test_local_music_and_display_modules_are_separate_and_versioned(self):
+        for name in ['index.html','character-settings.html','study.html']:
+            html=(self.site/name).read_text()
+            self.assertEqual(html.count('id="bgm-player"'),1)
+            self.assertIn('id="bgm-files" type="file" accept=".mp3,audio/mpeg" multiple',html)
+            self.assertIn('src="bgm-player.js?v=',html)
+            self.assertIn('페이지 이동·새로고침',html)
+            self.assertEqual('src="study-visibility.js?v=' in html,name=='study.html')
+            self.assertEqual('href="study-visibility.css?v=' in html,name=='study.html')
+        bgm=(self.site/'bgm-player.js').read_text()
+        self.assertIn("cv-bgm-preferences-v1",bgm)
+        self.assertIn('media.autoplay=false',bgm)
+        self.assertNotRegex(bgm,r'fetch\(|XMLHttpRequest|indexedDB|FileReader|sessionStorage')
+        self.assertIn('#bgm-player', (self.site/'study-runtime.js').read_text())
+        css=(ROOT/'page-adapters/bgm-player.css').read_text()
+        self.assertNotRegex(css,r'position:\s*(?:fixed|absolute)|overflow:\s*hidden')

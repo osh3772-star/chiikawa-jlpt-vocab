@@ -38,7 +38,7 @@ def build(output):
     # Only document-head styles belong to the parent page. The body contains a
     # literal <style> inside Kani's iframe srcdoc JavaScript; never promote it.
     head=html.split('</head>',1)[0]
-    styles='\n'.join(re.findall(r'<style[^>]*>(.*?)</style>',head,re.S))+'\n'+(ROOT/'page-adapters/pages.css').read_text()
+    styles='\n'.join(re.findall(r'<style[^>]*>(.*?)</style>',head,re.S))+'\n'+(ROOT/'page-adapters/pages.css').read_text()+'\n'+(ROOT/'page-adapters/bgm-player.css').read_text()
     body=html.split('<body>',1)[1].split('<script id="vocabulary"',1)[0]
     scenery=body[:body.index('  <header')]
     home=body[body.index('    <section id="home"'):body.index('    <section id="study"')]
@@ -121,6 +121,7 @@ def build(output):
     study=replace_once(study,"    el['go-home'].addEventListener('click', showHome);","    window.CVPage.beforeNavigate(()=>{clearBackup();backupMessage('페이지를 이동하여 적용하지 않은 복원 선택을 취소했습니다.');});\n    }\n    el['go-home']?.addEventListener('click', showHome);")
     for target in ["el['review-level']","el['start-review']","el.level","el.prev","el.next","el.known","el.unknown","el['undo-answer']"]:
         study=study.replace(target+".addEventListener(",target+"?.addEventListener(")
+    study=study.replace(".cv-pet, #study-backup'",".cv-pet, #study-backup, #bgm-player'")
     study=study.replace("if (el.study.hidden || event.altKey", "if (!el.study || el.study.hidden || event.altKey")
     study=study.replace("clearAnswerUndo(); renderHome();","clearAnswerUndo();reviewFilter=el['review-level'].value;renderHome();")
     study=replace_once(study,"    el['go-home']?.addEventListener('click', showHome);","    window.CVPage.beforeNavigate(url=>{if(url.pathname.endsWith('/index.html'))clearAnswerUndo();});\n    el['go-home']?.addEventListener('click', showHome);")
@@ -154,13 +155,16 @@ def build(output):
     integration=integration.replace("JSON.parse(document.getElementById('pet-sprites').textContent)","window.CVPetData['pet-sprites']").replace("JSON.parse(document.getElementById('pet-profiles').textContent)","window.CVPetData['pet-profiles']")
     (output/'pet-runtime.js').write_text(integration)
     (output/'study-runtime.js').write_text(study)
+    (output/'bgm-player.js').write_text((ROOT/'page-adapters/bgm-player.js').read_text())
+    for name in ['study-visibility.js','study-visibility.css']:(output/name).write_text((ROOT/'page-adapters'/name).read_text())
+    bgm_markup=(ROOT/'page-adapters/bgm-player.html').read_text()
     asset_ref=lambda name:name+'?v='+sha((output/name).read_bytes())[:12]
     title={'home':'JLPT 단어장 · 시작','settings':'캐릭터 설정 · JLPT 단어장','study':'단어 공부 · JLPT 단어장'}
     for page,name,content in [('home','index.html',home+backup),('settings','character-settings.html','<section class="paper-panel cv-settings-intro"><h2>나와 함께할 친구들</h2><p>캐릭터·크기·배경·동작을 여기서 설정해요. 아래 미리보기와 캐릭터만 크게 보기에서 직접 확인할 수 있어요.</p><p>수동 동작·자동 날기·인사·카니 입력 동작은 페이지를 떠나면 멈춥니다. 새로고침하면 세션 전용 선택은 꺼집니다.</p></section>'),('study','study.html',study_markup)]:
         nav='<nav class="cv-page-nav" aria-label="페이지 이동">'+''.join(f'<a data-cv-link href="{p}"'+(' aria-current="page"' if p==name else '')+f'>{label}</a>' for p,label in [('index.html','시작'),('character-settings.html','캐릭터 설정'),('study.html','공부 이어하기')])+'</nav>'
         header='<header class="site-header"><p class="header-sticker" lang="ja">ひとつずつ、ゆっくり。</p><h1>'+title[page]+'</h1><p class="header-description">'+('내 속도로, 한 단어씩.' if page=='study' else '작은 한 걸음도 차곡차곡. 오늘도 내 속도로 공부해요.')+'</p><p id="storage-note">급수별 위치와 학습 기록은 이 브라우저에 자동 저장됩니다.</p>'+(controls if page=='settings' else '')+'</header>'
-        modules=['navigation.js']+(['vocabulary.js','study-runtime.js'] if page=='home' else ['pet-data.js','pet-runtime.js']+(['vocabulary.js','study-runtime.js'] if page=='study' else []))
-        markup='<!doctype html>\n<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>'+title[page]+'</title><link rel="stylesheet" href="'+asset_ref('app.css')+'"></head><body data-page="'+page+'">'+scenery+nav+'<p id="navigation-status" role="status" tabindex="-1"></p>'+header+'<main>'+content+'</main>'+''.join('<script src="'+asset_ref(x)+'"></script>' for x in modules)+'</body></html>\n'
+        modules=['navigation.js']+(['vocabulary.js','study-runtime.js'] if page=='home' else ['pet-data.js','pet-runtime.js']+(['vocabulary.js','study-runtime.js'] if page=='study' else []))+['bgm-player.js']+(['study-visibility.js'] if page=='study' else [])
+        markup='<!doctype html>\n<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>'+title[page]+'</title><link rel="stylesheet" href="'+asset_ref('app.css')+'">'+('<link rel="stylesheet" href="'+asset_ref('study-visibility.css')+'">' if page=='study' else '')+'</head><body data-page="'+page+'">'+scenery+nav+'<p id="navigation-status" role="status" tabindex="-1"></p>'+header+'<main>'+bgm_markup+content+'</main>'+''.join('<script src="'+asset_ref(x)+'"></script>' for x in modules)+'</body></html>\n'
         (output/name).write_text(markup)
     (output/'.nojekyll').touch()
     report={'legacySha256':BASE_SHA,'vocabularySha256':sha(data['vocabulary'].encode()),'wordCount':sum(map(len,json.loads(data['vocabulary']).values())),'publicPNGCount':len(public),'files':{str(p.relative_to(output)):{'sha256':sha(p.read_bytes()),'bytes':p.stat().st_size} for p in sorted(output.rglob('*')) if p.is_file() and p.name!='manifest.json'}}
