@@ -1,0 +1,80 @@
+{
+  "schema": "hachi-interaction-authored-candidate/v1",
+  "character": "hachiware",
+  "classification": "AUTHORED_CANDIDATE_NOT_PRODUCTION",
+  "selectedKeyCount": 6,
+  "naturalnessVerified": false,
+  "videoReferenceVerified": false,
+  "dynamicAnimationVerified": false,
+  "productionApproved": false,
+  "automaticActivation": false,
+  "timingApproved": false,
+  "frames": [
+    {
+      "key": 1,
+      "stage": "onset",
+      "file": "frame-01-onset.png",
+      "sha256": "f31a90b27b71c1b19a4dec20b019a78f25005df43ea6d16615a94bc104e8bf26",
+      "bytes": 721335,
+      "size": [
+        1254,
+        1254
+      ]
+    },
+    {
+      "key": 2,
+      "stage": "held-a",
+      "file": "frame-02-held-a.png",
+      "sha256": "1284036a0b42eb0cd2be0f185be688c995bc4b90783bd48029ff314239c78981",
+      "bytes": 759253,
+      "size": [
+        1254,
+        1254
+      ]
+    },
+    {
+      "key": 3,
+      "stage": "held-middle",
+      "file": "frame-03-held-middle.png",
+      "sha256": "dcd28b9a1449ac15eb457269c1c322829fe786f2999047a6a152feb86128bff7",
+      "bytes": 676785,
+      "size": [
+        1254,
+        1254
+      ]
+    },
+    {
+      "key": 4,
+      "stage": "held-b",
+      "file": "frame-04-held-b.png",
+      "sha256": "2237f6f4a708425411b4d60ebb1d2caf6d761637164e35fea2e1f7c2d8ea36f9",
+      "bytes": 659631,
+      "size": [
+        1254,
+        1254
+      ]
+    },
+    {
+      "key": 5,
+      "stage": "release",
+      "file": "frame-05-release.png",
+      "sha256": "035a3aa8112f4962f520e298da8254ec9ebdb9d83eac9de370dd60e66b513f42",
+      "bytes": 687526,
+      "size": [
+        1254,
+        1254
+      ]
+    },
+    {
+      "key": 6,
+      "stage": "landing-compress",
+      "file": "frame-06-landing-compress-v2.png",
+      "sha256": "e0b84ca19c56fec6736a036e5fbe19d997fe76d2964b8646366fa88b2d772975",
+      "bytes": 780557,
+      "size": [
+        1254,
+        1254
+      ]
+    }
+  ]
+}
