@@ -1,6 +1,7 @@
 (() => {
 
   const page=window.CVPage.page;
+  if(page==='study')document.body.classList.add('cv-study-overlay');
   const settingsRoot=document.createElement('div');
   if(page!=='settings')settingsRoot.innerHTML="    <div class=\"pet-tools\"><span>친구들을 잡아 끌어 보세요. 놓으면 사뿐히 내려와요.</span><button id=\"pet-toggle\" type=\"button\" aria-pressed=\"false\">움직임 멈추기</button><div class=\"mobile-pet-picker\"><label for=\"mobile-pets\">모바일 친구</label><select id=\"mobile-pets\"><option value=\"new\">시사 · 모몽가 · 랏코</option><option value=\"original\">치이카와 · 하치와레 · 우사기</option><option value=\"all\">전체 6종</option></select></div></div>\n    <div class=\"cv-background-tools\"><label for=\"background-choice\">배경</label><select id=\"background-choice\"><option value=\"original\">기존 배경</option><option value=\"field-ep6\">EP6 풀밭 모티프 · 참고 창작</option><option value=\"stone-ep2\">EP2 석조 벽 모티프 · 장소 미확정</option></select></div>\n    <p id=\"background-status\" class=\"cv-background-status\" role=\"status\" aria-live=\"polite\">기존 배경 · 기본값</p>\n";
   const control=id=>document.getElementById(id)||settingsRoot.querySelector('[id="'+id+'"]');
@@ -64,7 +65,7 @@ function stagePresentation(stage,actorPaint,{viewport,dock=null,...env}){
 
 return {clipOwnedPaint,fullStageEligible,stagePresentation,collectOwnedObstacles};
 })();
-  const B_LAYOUT_ENABLED=true; // v32 default ON on supported desktop; narrow/mobile fallback retained.
+  const B_LAYOUT_ENABLED=page==='settings'; // v32 default ON on supported desktop; narrow/mobile fallback retained.
   let contentViewport=null;
   let characterOnlyMode=false;let refreshCharacterFlight=()=>{};let refreshCharacterGreeting=()=>{};
   const kaniRailRevalidators=[],kaniRailDisposers=[];
@@ -365,7 +366,7 @@ function mountChiikawaPets(options = {}) {
     startPaused = false, onStatusChange = null, spriteSources = null, characterProfiles = {}, experimentalCharacters = [], experimentalStage = null, visibleCharacters = enabledCharacters, mobilePetStages = null, mobileStageViewport = null, decorativeStages = null, decorativeStageWindowWidths = null, onDeliberateInteraction = null, onCharacterHidden = null, onPresentationCancelled = null,
     inlineResponseAsset = null, inlineResponseEnabled = false, hachiInlineAsset = null, hachiInlineEnabled = false, usagiInlineAsset = null, usagiInlineEnabled = false, momongaInlineAsset = null, momongaInlineEnabled = false, initialBodyPositions = null, displayScalePercents = null, onBeforeSizeChange = null,
     pairArtApproved = false, readStudyState = null, isCharacterOnlyMotion = () => false, maxVisibleMobile = 3, mobilePriority = ['shisa', 'momonga', 'rakko'],
-    ownedViewportGeometry = null, avoidSelector = '#card, button, summary, select, input, textarea, a, .table-scroll' } = options;
+    viewportOverlay = false, readOverlayObstacles = null, ownedViewportGeometry = null, avoidSelector = '#card, button, summary, select, input, textarea, a, .table-scroll' } = options;
   if (typeof document === 'undefined') return { react() {}, pause() {}, resume() {}, destroy() {}, getState() { return []; }, isPaused() { return true; }, setMobileCharacters() {}, setVisibleCharacters() {}, getVisibleCharacters() { return []; } };
   if (window[INSTANCE]) return window[INSTANCE];
   const root = document.createElement('div');
@@ -386,6 +387,7 @@ function mountChiikawaPets(options = {}) {
   const paddedHachi=hachiInlineEnabled&&validHachiInlineResponse(hachiInlineAsset);
   const paddedMomonga=momongaInlineEnabled&&validMomongaInlineResponse(momongaInlineAsset);
   const paddedGeometry=(p,x=p.x,y=p.y)=>paddedHachi&&p.id==='hachiware'?hachiPaintGeometry({x,y,width:p.width,height:p.height}):paddedMomonga&&p.id==='momonga'?momongaPaintGeometry({x,y,width:p.width,height:p.height}):null;
+  let overlayRevision=0;
   const listeners = [], pets = [], preloads = [], failed = new Set(), seen = new Map();
   const viewport = () => ({ w: window.innerWidth, h: window.innerHeight });
   const paused = () => manualPaused || reduced;
@@ -411,7 +413,7 @@ function mountChiikawaPets(options = {}) {
   const ground = p => { const r = stageRect(p); return Math.max(0, (r ? r.bottom : viewport().h) - p.height - floorOffset); };
   const paintRect=(p,x=p.x,y=p.y)=>paddedGeometry(p,x,y)?.outer??{left:x,top:y,right:x+p.width,bottom:y+p.height,width:p.width,height:p.height};
   function onScreen(p) {
-    if (p.el.hidden || p.assetUnavailable || p.scalePlacementUnavailable || document.hidden) return false;
+    if (p.el.hidden || p.assetUnavailable || p.scalePlacementUnavailable || p.overlayUnavailable || document.hidden) return false;
     const r = stageRect(p), x = p.x + (r && Number.isFinite(p.stageLeft) ? r.left - p.stageLeft : 0);
     const y = r && !PHYSICAL.has(p.mode) ? Math.max(0, r.bottom - p.height - floorOffset) : p.y;
     const dock = mobileStage(p) && mobileStageViewport ? mobileStageViewport.getBoundingClientRect() : null;
@@ -443,7 +445,7 @@ function mountChiikawaPets(options = {}) {
   function wake() {
     if (started && !ticking && !raf && needsFrame()) { lastTime = 0; raf = requestAnimationFrame(tick); }
   }
-  function refreshObstacles() { if (dirty) { obstacles = [...document.querySelectorAll(avoidSelector)].filter(petObstacleIsDisplayed).map(el => ownedViewportGeometry?.obstacleRect(el,el.getBoundingClientRect())??el.getBoundingClientRect()).filter(r => r.width > 0 && r.height > 0); dirty = false; } }
+  function refreshObstacles() { if (dirty) { const custom=viewportOverlay&&typeof readOverlayObstacles==='function'?readOverlayObstacles():null;obstacles=custom??[...document.querySelectorAll(avoidSelector)].filter(petObstacleIsDisplayed).map(el => ownedViewportGeometry?.obstacleRect(el,el.getBoundingClientRect())??el.getBoundingClientRect()).filter(r => r.width > 0 && r.height > 0);overlayRevision++;dirty = false; } }
   function invalidate() { dirty = true; wake(); }
   function listen(el, type, fn, opts) { el.addEventListener(type, fn, opts); listeners.push([el, type, fn, opts]); }
   function pose(p, name = 'idle') {
@@ -544,10 +546,41 @@ function mountChiikawaPets(options = {}) {
       if(p.scalePlacementUnavailable&&!wasUnavailable&&hadFocus)onCharacterHidden?.(p.id,{hadFocus,reason:'scale-space'});
     }else if(scaleExempt(p))p.scalePlacementUnavailable=false;
   }
+/** Study-only viewport layout, not an animation or a preference change.
+ * Reuse the existing exact paint-box and nearestScalePlacement safety policy.
+ */
+function nearestViewportOverlayPlacement({x,y,width,height,padding,viewport,obstacles}) {
+  const ys=[y,viewport.top+padding.top,viewport.bottom-height-padding.bottom];
+  for(const r of obstacles)ys.push(r.top-4-height-padding.bottom,r.bottom+4+padding.top);
+  let best=null,bestDistance=Infinity;
+  for(const nextY of new Set(ys)){
+    const fit=nearestScalePlacement({x,y:nextY,width,height,padding,viewport,obstacles});
+    if(!fit)continue;
+    const distance=(fit.x-x)**2+(fit.y-y)**2;
+    if(distance<bestDistance){best=fit;bestDistance=distance;}
+  }
+  return best;
+}
+
+  function syncOverlayPlacement(p){
+    if(!viewportOverlay||p.el.hidden||stageRect(p))return;
+    const hit=paintRect(p),v=viewport(),visual=window.visualViewport;
+    const bounds=visual&&[visual.offsetLeft,visual.offsetTop,visual.width,visual.height].every(Number.isFinite)&&visual.width>0&&visual.height>0?{left:Math.max(0,visual.offsetLeft),top:Math.max(0,visual.offsetTop),right:Math.min(v.w,visual.offsetLeft+visual.width),bottom:Math.min(v.h,visual.offsetTop+visual.height)}:{left:0,top:0,right:v.w,bottom:v.h};
+    const others=pets.filter(q=>q!==p&&!q.el.hidden&&!q.overlayUnavailable&&!q.assetUnavailable).map(q=>paintRect(q));
+    const protectedRects=[...obstacles,...others];
+    if(hachiPaintSafe({outer:hit},bounds,null,protectedRects)){p.overlayUnavailable=false;p.scalePlacementUnavailable=false;return;}
+    const signature=JSON.stringify([overlayRevision,p.x,p.y,p.width,p.height,bounds,others]);
+    if(signature===p.overlaySignature)return;p.overlaySignature=signature;
+    const fit=nearestViewportOverlayPlacement({x:p.x,y:p.y,width:p.width,height:p.height,padding:{left:Math.max(0,p.x-hit.left),right:Math.max(0,hit.right-p.x-p.width),top:Math.max(0,p.y-hit.top),bottom:Math.max(0,hit.bottom-p.y-p.height)},viewport:bounds,obstacles:protectedRects});
+    p.overlayUnavailable=!fit;
+    if(fit){p.scalePlacementUnavailable=false;const moved=Math.abs(fit.x-p.x)>1e-6||Math.abs(fit.y-p.y)>1e-6;p.x=fit.x;p.y=fit.y;if(moved&&p.pointerId===null&&PHYSICAL.has(p.mode)){p.airborne=false;p.vx=p.vy=0;idle(p);}}
+    else if(p.pointerId!==null){releaseCapture(p);p.airborne=false;p.vx=p.vy=0;idle(p);}
+  }
+
   function render(p) {
     if(p.capturePose&&p.pointerId!==null){display(p,`capture-authored-${p.capturePose.poseId}`,CAPTURE_ASSET.source,'capture-authored-ui');Object.assign(p.img.style,capturePaintStyle(p.capturePose,p.width));}
     refreshObstacles();syncStagePosition(p);
-    syncScaleAvailability(p);
+    syncScaleAvailability(p);syncOverlayPlacement(p);
     p.el.dataset.scaleUnavailable=String(!!p.scalePlacementUnavailable);
     p.el.style.touchAction = mobileStage(p) ? 'pan-x pan-y' : '';
     const dock = mobileStage(p) && mobileStageViewport ? mobileStageViewport.getBoundingClientRect() : null;
@@ -558,7 +591,7 @@ function mountChiikawaPets(options = {}) {
     p.el.style.clipPath = (ownedPresentation?.owned?ownedPresentation.clipPath:null) ?? (dock ? `inset(${Math.max(0,dock.top-hit.top)}px ${Math.max(0,hit.right-dock.right)}px ${Math.max(0,hit.bottom-dock.bottom)}px ${Math.max(0,dock.left-hit.left)}px)` : '');
     p.el.style.transform = `translate3d(${hit.left.toFixed(1)}px, ${hit.top.toFixed(1)}px, 0)`;
     // No scaleX(-1), squash, rotation, or CSS walk substitution, including Rakko.
-    const blocked = p.pointerId === null && obstacles.some(r => hit.left < r.right + 4 && hit.right > r.left - 4 && hit.top < r.bottom + 4 && hit.bottom > r.top - 4);
+    const blocked = (viewportOverlay || p.pointerId === null) && obstacles.some(r => hit.left < r.right + 4 && hit.right > r.left - 4 && hit.top < r.bottom + 4 && hit.bottom > r.top - 4);
     p.el.classList.toggle('cv-pet--yielding', blocked);
     if(!painted||blocked)inlineFor(p)?.cancel('paint-ineligible');
   }
@@ -586,7 +619,7 @@ function mountChiikawaPets(options = {}) {
     if (e.isPrimary === false) { for (const actor of pets) actor.touch = null; return; }
     if(e.pointerType==='mouse' && (e.button!==0 || (e.buttons!==undefined && e.buttons!==1))) { p.touch=null; return; }
     if (e.button !== 0 || e.isPrimary === false || destroyed || p.pointerId !== null || p.touch || document.hidden) return;
-    refreshObstacles();syncStagePosition(p);syncScaleAvailability(p);if(!onScreen(p))return;
+    refreshObstacles();syncStagePosition(p);syncScaleAvailability(p);syncOverlayPlacement(p);if(!onScreen(p))return;
     inlineFor(p)?.cancel('pointer-intent');
     // Long press to drag on touch; vertical gestures remain browser scrolling.
     if (e.pointerType === 'touch') { p.touch = { pointerId: e.pointerId, clientX: e.clientX, clientY: e.clientY, at: performance.now() }; wake(); return; }
@@ -696,7 +729,7 @@ function mountChiikawaPets(options = {}) {
     listen(el, 'pointercancel', e => pointerEnd(p, e, true)); listen(el, 'lostpointercapture', e => pointerEnd(p, e, true));
     listen(el, 'keydown', e => {
       if (['Enter', ' ', 'Escape'].includes(e.key)) { p.touch = null; e.preventDefault(); e.stopPropagation();
-        if (e.key === 'Escape') { cancelPair(); safeReset(p); } else { refreshObstacles();syncStagePosition(p);syncScaleAvailability(p);if(!onScreen(p))return;let handled=false;try{handled=onDeliberateInteraction?.(p.id, {kind:'keyboard',key:e.key,repeat:e.repeat===true})===true;}catch(_){} if (!handled) react('start', p.id); }
+        if (e.key === 'Escape') { cancelPair(); safeReset(p); } else { refreshObstacles();syncStagePosition(p);syncScaleAvailability(p);syncOverlayPlacement(p);if(!onScreen(p))return;let handled=false;try{handled=onDeliberateInteraction?.(p.id, {kind:'keyboard',key:e.key,repeat:e.repeat===true})===true;}catch(_){} if (!handled) react('start', p.id); }
       }
     });
     listen(p.img, 'error', () => {
@@ -811,6 +844,7 @@ function mountChiikawaPets(options = {}) {
   listen(window, 'scroll', () => { for (const p of pets) p.touch = null; invalidate(); for (const p of pets) if (stageRect(p) && PHYSICAL.has(p.mode)) safeReset(p); }, { passive: true, capture: true });
   listen(document, 'keydown', e => { if (e.key === 'Escape' && pets.some(p => PHYSICAL.has(p.mode))) { e.preventDefault(); resetAll(); } });
   listen(window, 'resize', () => { cancelExternalPresentation('resize'); layout(); });
+  if(viewportOverlay){listen(document,'vocab:busy',invalidate,true);for(const type of ['resize','scroll'])if(window.visualViewport?.addEventListener)listen(window.visualViewport,type,()=>{invalidate();for(const p of pets)render(p);},{passive:true});}
   listen(window, 'blur', () => { cancelExternalPresentation('blur'); layout(); });
   listen(document, 'visibilitychange', () => { cancelExternalPresentation('visibility'); layout(); invalidate(); });
   listen(window, 'pagehide', () => { cancelExternalPresentation('pagehide'); layout(); }); listen(window, 'pageshow', () => { layout(); invalidate(); });
@@ -2526,6 +2560,24 @@ return {createHachiFullbodyResponse};
   const directPosition=directStage.querySelector('.cv-direct-position'),directScene=directStage.querySelector('.cv-direct-scene'),directCaption=directStage.querySelector('.cv-direct-caption');
   const directStatus=document.createElement('p');directStatus.className='cv-direct-status';directStatus.setAttribute('role','status');directStatus.textContent='직접 반응 실험 꺼짐';
   const visibilityStatus=control('pets-visibility-status');
+    // Protect real text line paint, not the whole blank paper card. Controls always
+  // keep their full hit box. No actor or transparent overlay is an input shield.
+  function studyOverlayObstacles(){
+    const rects=[],seen=new Set();
+    const add=r=>{if(r&&[r.left,r.top,r.right,r.bottom].every(Number.isFinite)&&r.right>r.left&&r.bottom>r.top)rects.push({left:r.left,top:r.top,right:r.right,bottom:r.bottom});};
+    const displayed=el=>!el.closest('[hidden]')&&petObstacleIsDisplayed(el)&&getComputedStyle(el).visibility!=='hidden'&&getComputedStyle(el).display!=='none';
+    for(const el of document.querySelectorAll('button,summary,select,input,textarea,a,progress,[contenteditable="true"],.cv-extra-static-rail:not([hidden]),.cv-direct-stage:not([hidden])')){
+      if(el.closest('.cv-pet-layer')||!displayed(el))continue;seen.add(el);add(el.getBoundingClientRect());
+    }
+    for(const el of document.querySelectorAll('h1,h2,h3,p,label,output,th,td')){
+      if(el.closest('.cv-pet-layer')||!displayed(el)||[...seen].some(control=>control===el||control.contains(el)))continue;
+      if(!el.textContent.trim())continue;
+      try{const range=document.createRange();range.selectNodeContents(el);const lines=[...range.getClientRects()];range.detach?.();if(lines.length){for(const r of lines)add(r);}else add(el.getBoundingClientRect());}
+      catch{add(el.getBoundingClientRect());}
+    }
+    return rects;
+  }
+
   const mobileDock=document.createElement('div'); mobileDock.className='cv-mobile-pet-dock';
   mobileDock.setAttribute('role','region'); mobileDock.setAttribute('aria-label','선택한 캐릭터 가로 무대');
   const mobileStages={};
@@ -2926,13 +2978,13 @@ return {createKaniInputHost};
     previewCoordinator.cancelAll('engine-remount');
     syncVisibilityUI();const mobile=groups[picker.value];
     pets=mountChiikawaPets({spriteSources,characterProfiles,enabledCharacters:groups.all,
-      ownedViewportGeometry,isCharacterOnlyMotion:()=>characterOnlyMode,visibleCharacters:selectedPetIds(preferences),mobilePetStages:mobileStages,mobileStageViewport:mobileDock,
+      ownedViewportGeometry,isCharacterOnlyMotion:()=>characterOnlyMode,visibleCharacters:selectedPetIds(preferences),mobilePetStages:page==='study'?null:mobileStages,mobileStageViewport:page==='study'?null:mobileDock,viewportOverlay:page==='study',readOverlayObstacles:studyOverlayObstacles,
       decorativeStages:directEnabled&&!inlineEnabled&&!hachiInlineEnabled&&!usagiInlineEnabled&&!momongaInlineEnabled?{[directCharacter]:directStage}:null,decorativeStageWindowWidths:directEnabled&&!inlineEnabled&&!hachiInlineEnabled&&!usagiInlineEnabled&&!momongaInlineEnabled?{[directCharacter]:directProfiles[directCharacter]?.layout.kind==='shisa-scene'?0:directProfiles[directCharacter]?.layout.windowSize[0]}:null,inlineResponseEnabled:inlineEnabled,inlineResponseAsset:inlineAsset,hachiInlineEnabled,hachiInlineAsset,usagiInlineEnabled,usagiInlineAsset,momongaInlineEnabled,momongaInlineAsset,initialBodyPositions,displayScalePercents:displayScaleMap(scaleSettings),onBeforeSizeChange:()=>previewCoordinator.cancelAll('size-change'),onDeliberateInteraction:(id,input)=>{if((inlineEnabled&&id==='chiikawa')||(hachiInlineEnabled&&id==='hachiware')||(usagiInlineEnabled&&id==='usagi')||(momongaInlineEnabled&&id==='momonga')){if(input.repeat)return true;if(pets?.getInlineResponseState(id).mode==='off')previewCoordinator.start('inline-'+id);return true;}return directAdapters[id]?.request(id,input)??false;},
       onCharacterHidden:(id,{hadFocus})=>{if(hadFocus)visibleInputs[id].focus();},
       onPresentationCancelled:reason=>previewCoordinator.cancelAll(reason),
       avoidSelector:'#card, button, summary, select, input, textarea, a, .table-scroll, .cv-extra-static-panel, .cv-extra-static-rail:not([hidden]), .cv-momonga-preview-rail:not([hidden]), .cv-static-cameo-rail:not([hidden]), .cv-fragment-rail:not([hidden])',
       experimentalCharacters:!(inlineEnabled||(directEnabled&&!hachiInlineEnabled&&!usagiInlineEnabled&&!momongaInlineEnabled&&directCharacter==='chiikawa'))&&betaToggle.checked&&previewPanel.open?['chiikawa']:[],experimentalStage:betaStage,
-      pairArtApproved:pairArtReady,readStudyState:readPairStudy,startPaused:userPaused,maxVisibleMobile:mobile.length,mobilePriority:mobile});
+      pairArtApproved:pairArtReady,readStudyState:readPairStudy,startPaused:userPaused,maxVisibleMobile:page==='study'?-1:mobile.length,mobilePriority:mobile});
     syncToggle();syncScaleUI();for(const revalidate of kaniRailRevalidators)revalidate();
   }
   control('pets-show-all').addEventListener('click',()=>{for(const id of groups.all)preferences.visible[id]=true;applyVisibility();});
@@ -3058,7 +3110,8 @@ return {createBackgroundStatusAudit};
     const actions=document.createElement('div');actions.className='cv-study-pet-actions';
     document.querySelector('.site-header').appendChild(actions);actions.appendChild(toggle);
     // These controls are retained off-document for original engine callbacks only.
-    settingsRoot.append(visibilityTools,evidencePanel,previewPanel,pairPanel,directStatus);
+    settingsRoot.append(visibilityTools,evidencePanel,previewPanel,pairPanel,directStatus,mobileDock);
+    document.body.classList.remove('cv-mobile-dock-enabled');
     document.querySelector('.site-header').appendChild(directStage);
     const display=document.createElement('div');display.className='cv-study-extras';document.querySelector('main').after(display);
     for(const panel of [extraPanel,pajamaPanel,...ownedContentPanels.filter(p=>p.classList.contains('cv-kani-static-panel'))]){

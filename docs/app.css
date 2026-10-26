@@ -525,7 +525,6 @@ body.cv-character-only .cv-kani-input-stage:not([hidden])>iframe{pointer-events:
   transition: background-color .18s ease;
 }
 
-html,body{margin:0;width:100%;height:100%;overflow:hidden;background:transparent}'+inputCss+'
 /* Three documents, not hidden panels. Shared existing theme/actor artwork. */
 .cv-page-nav{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin:8px auto 20px;position:relative;z-index:100;max-width:760px}
 .cv-page-nav a,.cv-primary-link{display:inline-block;background:#fffdf8;border:2px solid #decdb2;border-radius:14px;padding:10px 16px;color:#584a3c;font-weight:700;text-decoration:none;box-shadow:0 3px 0 #d8cbb967}
@@ -548,3 +547,12 @@ body[data-page=settings].cv-character-only .cv-character-only-stage{padding-top:
 @media(max-width:639px){.cv-page-nav{gap:6px}.cv-page-nav a{padding:8px 11px;font-size:14px}body[data-page=settings].cv-character-only .cv-character-only-stage{padding-top:88px}}
 
 @media(max-width:639px){body[data-page=study].cv-reserved-lane-candidate>.cv-content-viewport{padding-top:18px}}
+
+/* Study companions share the real visual viewport. No dock or reserved lane. */
+body.cv-study-overlay{height:auto;min-height:100dvh;overflow-y:auto;padding-bottom:24px}
+body.cv-study-overlay .cv-pet--yielding{opacity:0;pointer-events:none}
+body.cv-study-overlay .cv-pet-layer{pointer-events:none}
+body.cv-study-overlay .cv-pet{pointer-events:auto}
+body.cv-study-overlay .cv-pet[aria-hidden="true"],body.cv-study-overlay .cv-pet--yielding{pointer-events:none}
+/* The actor's accessible name remains; hover labels must not spill over study UI. */
+body.cv-study-overlay .cv-pet__name{display:none}
