@@ -638,7 +638,7 @@ export function mountKaniPet(options = {}) {
     el.tabIndex = 0; el.setAttribute('role', 'button');
     if (isBeta(info)) { el.dataset.quality = 'beta'; el.title = '치이카와 동작 베타 · 원화 외형/연결 미승인'; }
     el.setAttribute('aria-label', ((inlineResponseEnabled&&info.id==='chiikawa')||(paddedHachi&&info.id==='hachiware')||(usagiInlineEnabled&&info.id==='usagi')||(paddedMomonga&&info.id==='momonga')) ? `${info.label}: Enter 또는 Space로 제자리 작성 원화 반응 1회. 마우스로 끌기, Escape로 취소` : decorativeStage(info) ? `${info.label}: Enter 또는 Space로 관찰 자세 반응. 마우스로 끌기, Escape로 내려놓기` : `${info.label}: 마우스로 끌기, 터치는 길게 누르기. Enter로 인사, Escape로 내려놓기`);
-    el.setAttribute('aria-label','카니: 마우스로 잡아 옮기고 놓기. 터치는 길게 누르기. Escape로 취소. Enter와 Space 반응은 제공하지 않습니다.');
+    el.setAttribute('aria-label','카니: 짧은 터치·클릭 또는 Enter와 Space로 읽기 8자세, 이후 대기 6자세 반복. 누른 채 끌거나 길게 눌러 잡기, 잡는 동안 6자세 반복. Escape로 잡기 취소. 카니 전용 무대에서만 동작합니다.');
     el.innerHTML = `<div class="cv-pet__figure"><img class="cv-pet__image" draggable="false" alt=""/><span class="cv-pet__name">${info.label}</span></div>`;
     const p = { ...info, el, img: el.querySelector('.cv-pet__image'), figure: el.querySelector('.cv-pet__figure'), pointerId: null, touch: null, x: 0, y: 0, width: 0, height: 0, dir: 1, mode: 'idle', frame: null, assetUnavailable:false, airborne: false, vx: 0, vy: 0, action: null };
     pets.push(p); root.appendChild(el); sizePet(p); idle(p);

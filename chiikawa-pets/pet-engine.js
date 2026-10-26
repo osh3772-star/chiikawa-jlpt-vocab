@@ -256,7 +256,7 @@ export function mountChiikawaPets(options = {}) {
     startPaused = false, onStatusChange = null, spriteSources = null, characterProfiles = {}, experimentalCharacters = [], experimentalStage = null, visibleCharacters = enabledCharacters, mobilePetStages = null, mobileStageViewport = null, decorativeStages = null, decorativeStageWindowWidths = null, onDeliberateInteraction = null, onCharacterHidden = null, onPresentationCancelled = null,
     inlineResponseAsset = null, inlineResponseEnabled = false, hachiInlineAsset = null, hachiInlineEnabled = false, usagiInlineAsset = null, usagiInlineEnabled = false, momongaInlineAsset = null, momongaInlineEnabled = false, initialBodyPositions = null, displayScalePercents = null, candidateActions = null, onBeforeSizeChange = null,
     pairArtApproved = false, readStudyState = null, isCharacterOnlyMotion = () => false, maxVisibleMobile = 3, mobilePriority = ['shisa', 'momonga', 'rakko'],
-    ownedViewportGeometry = null, avoidSelector = '#card, button, summary, select, input, textarea, a, .table-scroll' } = options;
+    viewportOverlay = false, readOverlayObstacles = null, ownedViewportGeometry = null, avoidSelector = '#card, button, summary, select, input, textarea, a, .table-scroll' } = options;
   if (typeof document === 'undefined') return { react() {}, pause() {}, resume() {}, destroy() {}, getState() { return []; }, isPaused() { return true; }, setMobileCharacters() {}, setVisibleCharacters() {}, getVisibleCharacters() { return []; } };
   if (window[INSTANCE]) return window[INSTANCE];
   const root = document.createElement('div');
@@ -277,6 +277,7 @@ export function mountChiikawaPets(options = {}) {
   const paddedHachi=hachiInlineEnabled&&validHachiInlineResponse(hachiInlineAsset);
   const paddedMomonga=momongaInlineEnabled&&validMomongaInlineResponse(momongaInlineAsset);
   const paddedGeometry=(p,x=p.x,y=p.y)=>paddedHachi&&p.id==='hachiware'?hachiPaintGeometry({x,y,width:p.width,height:p.height}):paddedMomonga&&p.id==='momonga'?momongaPaintGeometry({x,y,width:p.width,height:p.height}):null;
+  let overlayRevision=0;
   const listeners = [], pets = [], preloads = [], failed = new Set(), seen = new Map();
   const viewport = () => ({ w: window.innerWidth, h: window.innerHeight });
   const paused = () => manualPaused || reduced;
@@ -298,25 +299,31 @@ export function mountChiikawaPets(options = {}) {
  */
 const INPUT_SEQUENCE_STATES = Object.freeze(['press','tap','grab','held','release','fall','landing','recover','walk']);
 function inputSequenceState(action) {
-  return ({'grab-onset':'grab',hold:'held',start:'tap'})[action] ?? action;
+  return ({'grab-onset':'grab',hold:'held',start:'tap','input-walk':'walk'})[action] ?? action;
 }
 function resolveActorInputSequence(profile,state,direction='front') {
   state=inputSequenceState(state);
   const registry=profile?.inputSequences;
   if(registry?.enabled!==true||!INPUT_SEQUENCE_STATES.includes(state))return null;
   const entry=registry.actions?.[state],view=entry?.views?.[direction]??entry?.views?.front??entry;
-  if(entry?.verifiedAssets!==true||!view||!Array.isArray(view.frames)||view.frames.length<2||typeof entry.timingOrigin!=='string')return null;
+  if(entry?.verifiedAssets!==true||!view||!Array.isArray(view.frames)||view.frames.length<1||typeof entry.timingOrigin!=='string')return null;
   if(view.loop===true&&!['held','fall','walk'].includes(state))return null;
   if(view.frames.some(f=>!f||typeof f.frameId!=='string'||!f.frameId||typeof f.source!=='string'||!f.source||!Number.isFinite(f.durationMs)||f.durationMs<=0||!validInputFramePaint(f.paint)||['flip','rotation','transform'].some(k=>Object.hasOwn(f,k))))return null;
-  return {inputOnly:true,state,timingOrigin:entry.timingOrigin,loop:view.loop===true,rootDistance:0,frames:view.frames};
+  const distinctDrawings=new Set(view.frames.map(f=>f.sha256??f.source)).size;
+  if(view.loop===true&&distinctDrawings<2)return null;
+  return {inputOnly:true,state,timingOrigin:entry.timingOrigin,loop:view.loop===true,rootDistance:0,frames:view.frames,distinctDrawings,representation:entry.representation??(distinctDrawings>1?'frame-sequence':'static-pose')};
 }
 function validInputFramePaint(paint) {
   return !!paint&&['left','top','width','height','referenceWidth'].every(k=>Number.isFinite(paint[k]))&&paint.width>0&&paint.height>0&&paint.referenceWidth>0&&(paint.clipPath===undefined||paint.clipPath==='none')&&(!paint.clipInset||Array.isArray(paint.clipInset)&&paint.clipInset.length===4&&paint.clipInset.every(n=>Number.isFinite(n)&&n>=0));
 }
-/** Entire source canvas, including transparent margins. Never shrink to alpha bounds. */
+/** Entire explicit paint region, including transparent margins, never alpha bounds.
+ * A registered sprite-sheet crop excludes other keys; uncropped canvases stay whole.
+ */
 function inputFrameBounds(frame,actor) {
   if(!validInputFramePaint(frame?.paint)||!actor||!['x','y','width','height'].every(k=>Number.isFinite(actor[k]))||actor.width<=0||actor.height<=0)return null;
-  const f=frame.paint,k=actor.width/f.referenceWidth,left=actor.x+f.left*k,top=actor.y+f.top*k,width=f.width*k,height=f.height*k;
+  const f=frame.paint,k=actor.width/f.referenceWidth,[t,r,b,l]=f.clipInset??[0,0,0,0];
+  const left=actor.x+(f.left+l)*k,top=actor.y+(f.top+t)*k,width=(f.width-l-r)*k,height=(f.height-t-b)*k;
+  if(![left,top,width,height].every(Number.isFinite)||width<=0||height<=0)return null;
   return {left,top,right:left+width,bottom:top+height,width,height};
 }
 function inputSequenceSample(sequence,elapsedMs) {
@@ -342,6 +349,9 @@ function inputSequenceSample(sequence,elapsedMs) {
   }
   function inputFrameSafe(p,frame) {
     if(destroyed||document.hidden||paused()||p.el.hidden||!requestedVisible.has(p.id)||p.assetUnavailable||externalPresentation||presentationRegistry.get()||failed.has(frame.source))return false;
+    const active=document.activeElement,study=readStudyState?.();
+    if(active?.isContentEditable||['INPUT','TEXTAREA','SELECT'].includes(active?.tagName)||study&&(study.busy||study.composing||study.audioPending||study.transactionDepth>0)||!candidateStyleSafe(p))return false;
+    if(p.pointerId!==null&&p.el.hasPointerCapture?.(p.pointerId)!==true)return false;
     dirty=true;refreshObstacles();
     const bounds=inputFrameBounds(frame,p);if(!bounds)return false;
     const original=originalPaintRect(p),swept=candidateUnion(original,bounds,...(p.inputLastBounds?[p.inputLastBounds]:[]));
@@ -359,7 +369,7 @@ function inputSequenceSample(sequence,elapsedMs) {
     if(!inputFrameSafe(p,frame))return false;
     if(!p.inputSavedStyle){const fields=(el,keys)=>Object.fromEntries(keys.map(k=>[k,el.style[k]||'']));p.inputSavedStyle={root:fields(p.el,['width','height','overflow']),figure:fields(p.figure,['position','left','top','width','height'])};}
     p.inputLastBounds=inputFrameBounds(frame,p);
-    p.inputFrame=frame;display(p,frame.frameId,frame.source,'input-frame-sequence',frame);
+    p.inputFrame=frame;display(p,frame.frameId,frame.source,p.action?.sequence?.distinctDrawings===1?'input-frame-static':'input-frame-sequence',frame);
     p.el.dataset.interactionFallback='';return true;
   }
   function playInputAction(id,state='tap') {
@@ -431,9 +441,9 @@ function inputSequenceSample(sequence,elapsedMs) {
     dirty=true;refreshObstacles();
     if(!plan||!candidateContextSafe(p))return false;
     const session=p.candidateSession;
-    // This first integration is stationary. Any root/size/geometry change cancels;
-    // stationary endpoint fits never authorize locomotion or a teleported exit.
-    if(session&&(p.x!==session.x||p.y!==session.y||p.width!==session.width||p.height!==session.height))return false;
+    // Every horizontal step protects the previous/current full canvas union.
+    // Size, vertical anchor, revision and owned geometry changes still cancel.
+    if(session&&(p.y!==session.y||p.width!==session.width||p.height!==session.height))return false;
     const view=candidateViewport(p),avoid=candidateObstacles(p);
     const revision=readStudyState?.()?.revision??null;
     const geometryKey=JSON.stringify([view,...avoid.map(r=>[r.left,r.top,r.right,r.bottom])]);
@@ -461,7 +471,7 @@ function inputSequenceSample(sequence,elapsedMs) {
     session.index=index;session.lastPlan=plan;
     display(p,'candidate-step-'+plan.poseId,plan.url,'authored-candidate-sequence');
     const rootPaint=originalPaintRect(p),image=plan.image;
-    Object.assign(p.img.style,{position:'absolute',maxWidth:'none',objectFit:image.objectFit,left:(image.left+p.x-rootPaint.left)+'px',top:(image.top+p.y-rootPaint.top)+'px',width:image.width+'px',height:image.height+'px',clipPath:image.clipPath});
+    Object.assign(p.img.style,{position:'absolute',maxWidth:'none',objectFit:image.objectFit,left:image.left+'px',top:image.top+'px',width:image.width+'px',height:image.height+'px',clipPath:image.clipPath});
     p.el.dataset.candidateFrame=plan.poseId;return true;
   }
   function playCandidateAction(id){
@@ -475,7 +485,7 @@ function inputSequenceSample(sequence,elapsedMs) {
     start(p,'candidate-step','idle',.96,null,sequence);return !!p.candidateSession;
   }
   function onScreen(p) {
-    if (p.el.hidden || p.assetUnavailable || p.scalePlacementUnavailable || document.hidden) return false;
+    if (p.el.hidden || p.assetUnavailable || p.scalePlacementUnavailable || p.overlayUnavailable || document.hidden) return false;
     const r = stageRect(p), x = p.x + (r && Number.isFinite(p.stageLeft) ? r.left - p.stageLeft : 0);
     const y = r && !PHYSICAL.has(p.mode) ? Math.max(0, r.bottom - p.height - floorOffset) : p.y;
     const dock = mobileStage(p) && mobileStageViewport ? mobileStageViewport.getBoundingClientRect() : null;
@@ -507,7 +517,7 @@ function inputSequenceSample(sequence,elapsedMs) {
   function wake() {
     if (started && !ticking && !raf && needsFrame()) { lastTime = 0; raf = requestAnimationFrame(tick); }
   }
-  function refreshObstacles() { if (dirty) { obstacles = [...document.querySelectorAll(avoidSelector)].filter(petObstacleIsDisplayed).map(el => ownedViewportGeometry?.obstacleRect(el,el.getBoundingClientRect())??el.getBoundingClientRect()).filter(r => r.width > 0 && r.height > 0); dirty = false; } }
+  function refreshObstacles() { if (dirty) { const custom=viewportOverlay&&typeof readOverlayObstacles==='function'?readOverlayObstacles():null;obstacles=custom??[...document.querySelectorAll(avoidSelector)].filter(petObstacleIsDisplayed).map(el => ownedViewportGeometry?.obstacleRect(el,el.getBoundingClientRect())??el.getBoundingClientRect()).filter(r => r.width > 0 && r.height > 0);overlayRevision++;dirty = false; } }
   function invalidate() { dirty = true; wake(); }
   function listen(el, type, fn, opts) { el.addEventListener(type, fn, opts); listeners.push([el, type, fn, opts]); }
   function pose(p, name = 'idle') {
@@ -542,11 +552,12 @@ function inputSequenceSample(sequence,elapsedMs) {
   function start(p, action, fallback = 'idle', duration = .6, next = null, providedSequence = null) {
     if(!providedSequence)cancelCandidate(p,'other-action');
     inlineFor(p)?.cancel('other-action');
-    clearInputFrame(p);
+    const previousInputBounds=p.inputLastBounds;clearInputFrame(p);
     const direction = p.dir < 0 ? 'left' : 'right';
     const sequence = !reduced && !manualPaused ? (providedSequence??(PHYSICAL.has(action)?inputSequenceFor(p,action):null)??sequenceFor(p, action, direction)) : null;
     p.action = { id: action, sequence, elapsed: 0, duration, next, fallback };
     mode(p, action); pose(p, fallback);
+    if(sequence?.inputOnly)p.inputLastBounds=previousInputBounds;
     p.el.dataset.interactionState=inputSequenceState(action);
     p.el.dataset.interactionFallback=sequence?'':('missing-'+inputSequenceState(action)+'-frames');
     if (sequence) advance(p, 0);
@@ -556,15 +567,21 @@ function inputSequenceSample(sequence,elapsedMs) {
   function advance(p, dt) {
     const a = p.action; if (!a) return;
     if(a.sequence?.candidate){
+      if(!Number.isFinite(dt)||dt<0||!Number.isFinite(a.elapsed)){cancelCandidate(p,'candidate-invalid-clock');return;}
       a.elapsed+=dt;
       const sample=samplePetSequence(a.sequence,a.elapsed*1000),session=p.candidateSession;
       if(!session||sample.index<(session.index??0)||sample.index>(session.index??0)+1){cancelCandidate(p,'candidate-missed-frame');return;}
       if(sample.done){idle(p);return;}
+      if(dt>0){const old=p.x;p.x=constrainX(p,p.x+p.dir*16*dt);const plan=candidatePlan(p,sample.index);if(p.x===old||!candidatePaintSafe(p,plan)){p.x=old;cancelCandidate(p,'candidate-path-blocked');return;}}
       if(!candidateFrame(p,sample.index))return;
       return;
     }
     if(a.sequence?.inputOnly){
       a.elapsed+=dt;const sample=inputSequenceSample(a.sequence,a.elapsed*1000);
+      if(sample&&a.sequence.state==='walk'&&dt>0){
+        const old=p.x;p.x=constrainX(p,p.x+p.dir*16*dt);
+        if(p.x===old||!inputFrameSafe(p,sample.frame)){p.x=old;idle(p);p.el.dataset.interactionFallback='walk-path-blocked';return;}
+      }
       if(!sample||a.inputSlot!==undefined&&(sample.slot<a.inputSlot||sample.slot>a.inputSlot+1)||!paintInputFrame(p,sample.frame)){
         clearInputFrame(p,'input-sequence-unavailable-or-unsafe');a.sequence=null;pose(p,a.fallback);
       }else{
@@ -634,13 +651,44 @@ function inputSequenceSample(sequence,elapsedMs) {
       if(p.scalePlacementUnavailable&&!wasUnavailable&&hadFocus)onCharacterHidden?.(p.id,{hadFocus,reason:'scale-space'});
     }else if(scaleExempt(p))p.scalePlacementUnavailable=false;
   }
+/** Study-only viewport layout, not an animation or a preference change.
+ * Reuse the existing exact paint-box and nearestScalePlacement safety policy.
+ */
+function nearestViewportOverlayPlacement({x,y,width,height,padding,viewport,obstacles}) {
+  const ys=[y,viewport.top+padding.top,viewport.bottom-height-padding.bottom];
+  for(const r of obstacles)ys.push(r.top-4-height-padding.bottom,r.bottom+4+padding.top);
+  let best=null,bestDistance=Infinity;
+  for(const nextY of new Set(ys)){
+    const fit=nearestScalePlacement({x,y:nextY,width,height,padding,viewport,obstacles});
+    if(!fit)continue;
+    const distance=(fit.x-x)**2+(fit.y-y)**2;
+    if(distance<bestDistance){best=fit;bestDistance=distance;}
+  }
+  return best;
+}
+
+  function syncOverlayPlacement(p){
+    if(!viewportOverlay||p.el.hidden||stageRect(p))return;
+    const hit=paintRect(p),v=viewport(),visual=window.visualViewport;
+    const bounds=visual&&[visual.offsetLeft,visual.offsetTop,visual.width,visual.height].every(Number.isFinite)&&visual.width>0&&visual.height>0?{left:Math.max(0,visual.offsetLeft),top:Math.max(0,visual.offsetTop),right:Math.min(v.w,visual.offsetLeft+visual.width),bottom:Math.min(v.h,visual.offsetTop+visual.height)}:{left:0,top:0,right:v.w,bottom:v.h};
+    const others=pets.filter(q=>q!==p&&!q.el.hidden&&!q.overlayUnavailable&&!q.assetUnavailable).map(q=>paintRect(q));
+    const protectedRects=[...obstacles,...others];
+    if(hachiPaintSafe({outer:hit},bounds,null,protectedRects)){p.overlayUnavailable=false;p.scalePlacementUnavailable=false;return;}
+    const signature=JSON.stringify([overlayRevision,p.x,p.y,p.width,p.height,bounds,others]);
+    if(signature===p.overlaySignature)return;p.overlaySignature=signature;
+    const fit=nearestViewportOverlayPlacement({x:p.x,y:p.y,width:p.width,height:p.height,padding:{left:Math.max(0,p.x-hit.left),right:Math.max(0,hit.right-p.x-p.width),top:Math.max(0,p.y-hit.top),bottom:Math.max(0,hit.bottom-p.y-p.height)},viewport:bounds,obstacles:protectedRects});
+    p.overlayUnavailable=!fit;
+    if(fit){p.scalePlacementUnavailable=false;const moved=Math.abs(fit.x-p.x)>1e-6||Math.abs(fit.y-p.y)>1e-6;p.x=fit.x;p.y=fit.y;if(moved&&p.pointerId===null&&PHYSICAL.has(p.mode)){p.airborne=false;p.vx=p.vy=0;idle(p);}}
+    else if(p.pointerId!==null){releaseCapture(p);p.airborne=false;p.vx=p.vy=0;idle(p);}
+  }
+
   function render(p) {
     if(p.capturePose&&!p.inputFrame&&p.pointerId!==null){display(p,`capture-authored-${p.capturePose.poseId}`,CAPTURE_ASSET.source,'capture-authored-ui');Object.assign(p.img.style,capturePaintStyle(p.capturePose,p.width));}
     refreshObstacles();syncStagePosition(p);
     if(p.inputFrame&&!inputFrameSafe(p,p.inputFrame)){clearInputFrame(p,'input-paint-changed');if(p.action)p.action.sequence=null;pose(p,p.action?.fallback??'idle');}
-    syncScaleAvailability(p);
+    syncScaleAvailability(p);syncOverlayPlacement(p);
     p.el.dataset.scaleUnavailable=String(!!p.scalePlacementUnavailable);
-    p.el.style.touchAction = mobileStage(p) ? 'pan-x pan-y' : '';
+    p.el.style.touchAction = 'none';
     const dock = mobileStage(p) && mobileStageViewport ? mobileStageViewport.getBoundingClientRect() : null;
     p.el.dataset.assetUnavailable=String(!!p.assetUnavailable);const painted=onScreen(p);p.el.style.visibility=painted?'':'hidden';p.el.tabIndex=painted?0:-1;p.el.setAttribute('aria-hidden',String(!painted));
     if(!painted&&document.activeElement===p.el)p.el.blur?.();
@@ -651,10 +699,14 @@ function inputSequenceSample(sequence,elapsedMs) {
       Object.assign(p.el.style,{width:hit.width+'px',height:hit.height+'px',overflow:'hidden'});
       Object.assign(p.figure.style,{position:'absolute',left:(p.x-hit.left)+'px',top:(p.y-hit.top)+'px',width:p.width+'px',height:p.height+'px'});
     }
-    const rootPaint=p.candidateSession?originalPaintRect(p):hit;
+    if(p.candidateSession){
+      Object.assign(p.el.style,{width:hit.width+'px',height:hit.height+'px',overflow:'hidden'});
+      Object.assign(p.figure.style,{position:'absolute',left:(p.x-hit.left)+'px',top:(p.y-hit.top)+'px',width:p.width+'px',height:p.height+'px'});
+    }
+    const rootPaint=hit;
     p.el.style.transform = `translate3d(${rootPaint.left.toFixed(1)}px, ${rootPaint.top.toFixed(1)}px, 0)`;
     // No scaleX(-1), squash, rotation, or CSS walk substitution, including Rakko.
-    const blocked = p.pointerId === null && obstacles.some(r => hit.left < r.right + 4 && hit.right > r.left - 4 && hit.top < r.bottom + 4 && hit.bottom > r.top - 4);
+    const blocked = (viewportOverlay || p.pointerId === null) && obstacles.some(r => hit.left < r.right + 4 && hit.right > r.left - 4 && hit.top < r.bottom + 4 && hit.bottom > r.top - 4);
     p.el.classList.toggle('cv-pet--yielding', blocked);
     if(!painted||blocked)inlineFor(p)?.cancel('paint-ineligible');
     if(p.candidateSession)candidateFrame(p,p.candidateSession.index);
@@ -680,22 +732,23 @@ function inputSequenceSample(sequence,elapsedMs) {
   }
   function pointerDown(p, e) {
     cancelPairPresentation('pointer-input');
-    if (e.isPrimary === false) { for (const actor of pets) actor.touch = null; return; }
+    if (e.isPrimary === false) { for (const actor of pets) { actor.touch = null; if(actor.pointerId!==null)safeReset(actor); } return; }
     if(e.pointerType==='mouse' && (e.button!==0 || (e.buttons!==undefined && e.buttons!==1))) { p.touch=null; return; }
     if (e.button !== 0 || e.isPrimary === false || destroyed || p.pointerId !== null || p.touch || document.hidden) return;
-    refreshObstacles();syncStagePosition(p);syncScaleAvailability(p);if(!onScreen(p))return;
+    refreshObstacles();syncStagePosition(p);syncScaleAvailability(p);syncOverlayPlacement(p);if(!onScreen(p))return;
     inlineFor(p)?.cancel('pointer-intent');
-    // Long press to drag on touch; vertical gestures remain browser scrolling.
-    if (e.pointerType === 'touch') { p.touch = { pointerId: e.pointerId, clientX: e.clientX, clientY: e.clientY, at: performance.now() }; inputPress(p);wake(); return; }
-    if(e.pointerType==='mouse' && (inlineFor(p)||decorativeStage(p)||inputSequenceFor(p,'tap'))) {
+    if(p.action?.sequence?.inputOnly&&!PHYSICAL.has(p.mode))idle(p);
+    // Direct study drag after tap slop; legacy dock retains long-press/scroll.
+    if (e.pointerType === 'touch') { p.touch = { pointerId: e.pointerId, pointerType: 'touch', directDrag: true, clientX: e.clientX, clientY: e.clientY, at: performance.now() }; inputPress(p);wake(); return; }
+    if(e.pointerType==='mouse' && (inlineFor(p)||decorativeStage(p)||profile(p).inputSequences?.actions?.tap)) {
       p.touch={pointerId:e.pointerId,pointerType:'mouse',clientX:e.clientX,clientY:e.clientY,at:performance.now()};inputPress(p);wake();return;
     }
     if (e.cancelable) e.preventDefault(); beginGrab(p, e);
   }
   function pointerMove(p, e) {
     if (p.touch?.pointerId === e.pointerId) {
-      if(p.touch.pointerType==='mouse') {
-        if(e.buttons!==undefined && e.buttons!==1){p.touch=null;return;}
+      if(p.touch.pointerType==='mouse'||p.touch.directDrag) {
+        if(p.touch.pointerType==='mouse'&&e.buttons!==undefined && e.buttons!==1){p.touch=null;return;}
         if(Math.hypot(e.clientX-p.touch.clientX,e.clientY-p.touch.clientY)<=8)return;
         const press=p.touch;beginGrab(p,press);
       } else {
@@ -711,6 +764,11 @@ function inputSequenceSample(sequence,elapsedMs) {
     scaleAnchors.delete(p.id);
     p.x = constrainX(p, e.clientX - p.grabDX); p.y = clamp(e.clientY - p.grabDY, 0, ground(p)); render(p);
   }
+  function deliberateFallbackSafe(){
+    try{const hasStudy=typeof window.__cvStudyRead==='function',study=hasStudy?window.__cvStudyRead():null,active=document.activeElement;
+      return !active?.isContentEditable&&!['INPUT','TEXTAREA','SELECT'].includes(active?.tagName)&&(!hasStudy||!!study&&['home','study','review'].includes(study.phase)&&study.transactionDepth===0&&study.composing===false&&study.audioPending!==true);
+    }catch(_){return false;}
+  }
   function pointerEnd(p, e, cancelled = false) {
     if (p.touch?.pointerId === e.pointerId) {
       const press = p.touch; p.touch = null;if(p.action?.id==='press')idle(p);
@@ -720,7 +778,9 @@ function inputSequenceSample(sequence,elapsedMs) {
         refreshObstacles(); syncStagePosition(p); syncScaleAvailability(p);
         if (onScreen(p) && p.pointerId === null && !PHYSICAL.has(p.mode)) {
           // Reuse opt-in responses only; no generic motion fallback or synthetic click.
-          try { onDeliberateInteraction?.(p.id,{kind:press.pointerType==='mouse'?'pointer-click':'pointer-tap',pointerType:press.pointerType==='mouse'?'mouse':'touch',repeat:false}); } catch (_) {}
+          try { const accepted=onDeliberateInteraction?.(p.id,{kind:press.pointerType==='mouse'?'pointer-click':'pointer-tap',pointerType:press.pointerType==='mouse'?'mouse':'touch',repeat:false});
+            if(accepted===false&&deliberateFallbackSafe())react('start',p.id,{deliberateFallback:true});
+          } catch (_) {}
         }
       }
       return;
@@ -784,16 +844,17 @@ function inputSequenceSample(sequence,elapsedMs) {
     el.tabIndex = 0; el.setAttribute('role', 'button');
     if (isBeta(info)) { el.dataset.quality = 'beta'; el.title = '치이카와 동작 베타 · 원화 외형/연결 미승인'; }
     el.setAttribute('aria-label', ((inlineResponseEnabled&&info.id==='chiikawa')||(paddedHachi&&info.id==='hachiware')||(usagiInlineEnabled&&info.id==='usagi')||(paddedMomonga&&info.id==='momonga')) ? `${info.label}: 짧은 터치 또는 Enter/Space로 제자리 작성 원화 반응 1회. 마우스로 끌기, Escape로 취소` : decorativeStage(info) ? `${info.label}: 짧은 터치 또는 Enter/Space로 관찰 자세 반응. 마우스로 끌기, Escape로 내려놓기` : `${info.label}: 마우스로 끌기, 터치는 길게 누르기. Enter로 인사, Escape로 내려놓기`);
+    el.setAttribute("aria-label",`${info.label}: 손가락이나 마우스로 끌기, 짧은 터치로 기존 반응, Escape로 내려놓기`);
     el.innerHTML = `<div class="cv-pet__figure"><img class="cv-pet__image" draggable="false" alt=""/><span class="cv-pet__name">${info.label}</span></div>`;
     const p = { ...info, el, img: el.querySelector('.cv-pet__image'), figure: el.querySelector('.cv-pet__figure'), pointerId: null, touch: null, x: 0, y: 0, width: 0, height: 0, dir: 1, mode: 'idle', frame: null, assetUnavailable:false, airborne: false, vx: 0, vy: 0, action: null };
     pets.push(p); root.appendChild(el); sizePet(p); idle(p);
     listen(el, 'focus', () => { (decorativeStage(p)??mobileStage(p))?.scrollIntoView?.({ block: 'nearest', inline: 'nearest' }); });
     listen(el, 'pointerdown', e => pointerDown(p, e)); listen(el, 'pointermove', e => pointerMove(p, e));
     listen(el, 'pointerup', e => pointerEnd(p, e));
-    listen(el, 'pointercancel', e => pointerEnd(p, e, true)); listen(el, 'lostpointercapture', e => pointerEnd(p, e, true));
+    listen(el, 'pointercancel', e => pointerEnd(p, e, true)); listen(el, 'lostpointercapture', e => { if(e.target!==el && p.pointerId===e.pointerId && el.hasPointerCapture?.(e.pointerId)===true)return; pointerEnd(p, e, true); });
     listen(el, 'keydown', e => {
       if (['Enter', ' ', 'Escape'].includes(e.key)) { p.touch = null; e.preventDefault(); e.stopPropagation();
-        if (e.key === 'Escape') { cancelPair(); safeReset(p); } else { refreshObstacles();syncStagePosition(p);syncScaleAvailability(p);if(!onScreen(p))return;let handled=false;try{handled=onDeliberateInteraction?.(p.id, {kind:'keyboard',key:e.key,repeat:e.repeat===true})===true;}catch(_){} if (!handled) react('start', p.id); }
+        if (e.key === 'Escape') { cancelPair(); safeReset(p); } else { refreshObstacles();syncStagePosition(p);syncScaleAvailability(p);syncOverlayPlacement(p);if(!onScreen(p))return;let handled=false;try{handled=onDeliberateInteraction?.(p.id, {kind:'keyboard',key:e.key,repeat:e.repeat===true})===true;}catch(_){} if (!handled) react('start', p.id); }
       }
     });
     listen(p.img, 'error', () => {
@@ -832,6 +893,7 @@ function inputSequenceSample(sequence,elapsedMs) {
   }
   function processEvent(now) {
     if (!pending) return;
+    if(pending.deliberateFallback&&!deliberateFallbackSafe()){pending=null;return;}
     if (now - pending.at > 1000) { pending = null; return; }
     // New owned clipping revokes queued intent even within the coalescing window.
     if(!pets.some(p=>onScreen(p)&&ownedAdmission(p)&&(pending.target==='all'||p.id===pending.target))&&pets.some(p=>!ownedAdmission(p)&&(pending.target==='all'||p.id===pending.target))){pending=null;return;}
@@ -861,7 +923,7 @@ function inputSequenceSample(sequence,elapsedMs) {
     if (Number.isFinite(metadata.occurredAt) && Date.now() - metadata.occurredAt > 1000) return;
     // Coalesce same-turn correct + complete; latest event replaces, never a backlog.
     if (pending?.type === 'complete' && type === 'correct' && now - pending.at < 100) return;
-    pending = { type, target, at: now, ready: now + 45 };
+    pending = { type, target, at: now, ready: now + 45, deliberateFallback:metadata.deliberateFallback===true };
     wake();
   }
   function decide(p) {
@@ -871,9 +933,13 @@ function inputSequenceSample(sequence,elapsedMs) {
     const v=viewport(),dock=mobileStage(p)&&mobileStageViewport?mobileStageViewport.getBoundingClientRect():null;
     if (presentationRegistry.get() || externalPresentation || !onScreen(p) || !ownedAdmission(p) || !hachiPaintSafe({outer:paintRect(p)},{left:0,top:0,right:v.w,bottom:v.h},dock,obstacles)) { p.wait = 1; return; }
     if (pets.some(q => q !== p && !q.el.hidden && (onScreen(q) || PHYSICAL.has(q.mode)) && q.mode !== 'idle') || pair || pending) { p.wait = 1; return; }
-    const weights = availablePetWeights(profile(p).behavior ?? { idle: 100 }, profile(p), { allowDraft: isBeta(p) });
+    const configured=profile(p).behavior??{idle:100},weights=availablePetWeights(configured,profile(p),{allowDraft:isBeta(p)});
+    // Assembly reuses the existing walk percentage. Missing walk art stays idle.
+    // Input/candidate sequences are finite, and never promote manifest loop flags.
+    if(profile(p).inputSequences?.enabled===true&&(candidateActions?.has(p.id)||inputSequenceFor(p,'walk'))&&!sequenceFor(p,'walk','right')&&!sequenceFor(p,'walk','left')){weights.idle-=configured.walk??0;weights.walk=configured.walk??0;}
     const action = pickPetBehavior(weights);
     if (action === 'idle') { p.wait = rand(1.5, 4.5); return; }
+    if (action === 'walk'&&profile(p).inputSequences?.enabled===true){p.dir=Math.random()<.5?-1:1;if(!playInputAction(p.id,'walk'))p.wait=1;return;}
     if (action === 'walk') {
       p.dir = Math.random() < .5 ? -1 : 1;
       if (!sequenceFor(p, 'walk')) p.dir *= -1;
@@ -910,13 +976,14 @@ function inputSequenceSample(sequence,elapsedMs) {
   for (const type of ['start', 'correct', 'wrong', 'complete']) listen(document, `vocab:${type}`, e => { react(type, e.detail?.character ?? 'all', e.detail ?? {}); invalidate(); });
   for (const type of ['click', 'change', 'vocab:view']) listen(document, type, () => { invalidate(); });
   listen(document, 'toggle', invalidate, true); // details toggle does not bubble; refresh even without a click.
-  listen(document,'pointermove',e=>{for(const p of pets)if(p.touch?.pointerType==='mouse'&&p.touch.pointerId===e.pointerId)pointerMove(p,e);});
-  listen(document,'pointerup',e=>{for(const p of pets)if(p.touch?.pointerType==='mouse'&&p.touch.pointerId===e.pointerId)p.touch=null;});
+  listen(document,'pointermove',e=>{for(const p of pets)if((p.touch?.pointerType==='mouse'||p.touch?.directDrag)&&p.touch.pointerId===e.pointerId)pointerMove(p,e);});
+  listen(document,'pointerup',e=>{for(const p of pets)if((p.touch?.pointerType==='mouse'||p.touch?.directDrag)&&p.touch.pointerId===e.pointerId)p.touch=null;});
   listen(document,'pointercancel',e=>{for(const p of pets)if(p.touch?.pointerId===e.pointerId)p.touch=null;});
-  listen(document, 'pointerdown', e => { if (e.isPrimary === false || (e.pointerType==='mouse' && (e.button!==0 || (e.buttons!==undefined && e.buttons!==1)))) for (const p of pets) p.touch = null; }, {capture:true,passive:true});
+  listen(document, 'pointerdown', e => { if (e.isPrimary === false || (e.pointerType==='mouse' && (e.button!==0 || (e.buttons!==undefined && e.buttons!==1)))) for (const p of pets) { p.touch = null; if(e.isPrimary===false&&p.pointerId!==null)safeReset(p); } }, {capture:true,passive:true});
   listen(window, 'scroll', () => { for (const p of pets) p.touch = null; invalidate(); for (const p of pets) if (stageRect(p) && PHYSICAL.has(p.mode)) safeReset(p); }, { passive: true, capture: true });
   listen(document, 'keydown', e => { if (e.key === 'Escape' && pets.some(p => PHYSICAL.has(p.mode))) { e.preventDefault(); resetAll(); } });
   listen(window, 'resize', () => { cancelExternalPresentation('resize'); layout(); });
+  if(viewportOverlay){listen(document,'vocab:busy',invalidate,true);for(const type of ['resize','scroll'])if(window.visualViewport?.addEventListener)listen(window.visualViewport,type,()=>{invalidate();for(const p of pets)render(p);},{passive:true});}
   listen(window, 'blur', () => { cancelExternalPresentation('blur'); layout(); });
   listen(document, 'visibilitychange', () => { cancelExternalPresentation('visibility'); layout(); invalidate(); });
   listen(window, 'pagehide', () => { cancelExternalPresentation('pagehide'); layout(); }); listen(window, 'pageshow', () => { layout(); invalidate(); });
@@ -955,6 +1022,7 @@ function inputSequenceSample(sequence,elapsedMs) {
   layout(); root.dataset.paused = String(paused()); started = true; wake();
   function playAction(action, target = 'chiikawa') {
     const p = pets.find(p => p.id === target);
+    if(action==='walk'&&p&&!isBeta(p))return playInputAction(p.id,'walk');
     if (!p || !isBeta(p) || !ownedAdmission(p) || p.el.hidden || paused() || PHYSICAL.has(p.mode) || action !== 'walk') return false;
     cancelPairPresentation('manual-preview');
     if (externalPresentation) { cancelExternalPresentation('new-preview'); layout(); }

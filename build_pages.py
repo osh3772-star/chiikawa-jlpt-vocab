@@ -49,12 +49,13 @@ def build(output):
     integration=adapt_main_candidate_actions(integration, ROOT)
     from main_interaction_actions import adapt_main_input_sequences
     integration=adapt_main_input_sequences(integration, ROOT)
-    from ordinary_input_bindings import assemble_input_bindings,inject_input_bindings
+    from ordinary_input_bindings import assemble_input_bindings,inject_input_bindings,copy_existing_walk_candidates
     def input_asset_source(path,digest,raw):
         relative='assets/interaction-sequences/'+digest+'.png'
         dest=output/relative;dest.parent.mkdir(parents=True,exist_ok=True);dest.write_bytes(raw)
         return relative
     integration=inject_input_bindings(integration,assemble_input_bindings(ROOT,input_asset_source))
+    input_walk_assets=copy_existing_walk_candidates(ROOT,output)
     # Only document-head styles belong to the parent page. The body contains a
     # literal <style> inside Kani's iframe srcdoc JavaScript; never promote it.
     head=html.split('</head>',1)[0]
@@ -195,6 +196,7 @@ def build(output):
         (output/name).write_text(markup)
     (output/'.nojekyll').touch()
     report={'legacySha256':BASE_SHA,'vocabularySha256':sha(data['vocabulary'].encode()),'wordCount':sum(map(len,json.loads(data['vocabulary']).values())),'publicPNGCount':len(public),'existingSharedAssets':{'assets/bgm/chiikawa-mix.mp3':{'sha256':'ae49185bb5b7d0cfbfb9da0d24111d2566ba992580d3c73ec790e222809f0345','bytes':23808500,'gitBlob':'e74e698356d0d7dbd4e2d29ce14a7a8b22001659','preserveExisting':True}},'files':{str(p.relative_to(output)):{'sha256':sha(p.read_bytes()),'bytes':p.stat().st_size} for p in sorted(output.rglob('*')) if p.is_file() and p.name!='manifest.json'}}
+    report['ordinaryInputAssembly']={'actors':['chiikawa','hachiware','usagi','momonga','shisa','rakko'],'inputPNGCount':len(list((output/'assets/interaction-sequences').glob('*.png'))),'candidateWalkAssets':input_walk_assets,'operationalDeployment':False,'integratedRenderVerified':False}
     (output/'manifest.json').write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\n');print(json.dumps({k:v for k,v in report.items() if k!='files'},indent=2))
 if __name__=='__main__':
     parser=argparse.ArgumentParser();parser.add_argument('--output',default=str(ROOT.parent/'site'));args=parser.parse_args();build(args.output)

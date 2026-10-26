@@ -1,0 +1,369 @@
+{
+  "schemaVersion": 1,
+  "characters": {
+    "hachiware": {
+      "grab": {
+        "actionId": "hachi-authored-grab",
+        "timingOrigin": "AUTHORED_UI_EXPOSURES_NOT_VIDEO",
+        "loop": false,
+        "frames": [
+          {
+            "frameId": "onset",
+            "assetPath": "docs/animation-candidates-20261027/hachi-interaction-candidate-v1/frame-01-onset.png",
+            "assetSha256": "f31a90b27b71c1b19a4dec20b019a78f25005df43ea6d16615a94bc104e8bf26",
+            "assetSize": [
+              1254,
+              1254
+            ],
+            "durationMs": 160,
+            "drawingOrigin": "AUTHORED_INTERACTION_CANDIDATE_NOT_VIDEO",
+            "paint": {
+              "referenceWidth": 390,
+              "left": 0,
+              "top": 130,
+              "width": 390,
+              "height": 390
+            }
+          }
+        ],
+        "sourceFlags": {
+          "schema": "hachi-interaction-authored-candidate/v1",
+          "character": "hachiware",
+          "classification": "AUTHORED_CANDIDATE_NOT_PRODUCTION",
+          "selectedKeyCount": 6,
+          "naturalnessVerified": false,
+          "videoReferenceVerified": false,
+          "dynamicAnimationVerified": false,
+          "productionApproved": false,
+          "automaticActivation": false,
+          "timingApproved": false,
+          "registration": "RAW_COMMON_CANVAS_BOTTOM_ALIGNED_NO_PER_KEY_CORRECTION",
+          "knownLandingVsReleaseFeetDeltaSourcePx": 27,
+          "sourceCommit": "c23da49de1feb4903061305a4b748ed097ad5a19"
+        }
+      },
+      "held": {
+        "actionId": "hachi-authored-held",
+        "timingOrigin": "AUTHORED_UI_EXPOSURES_NOT_VIDEO",
+        "loop": true,
+        "frames": [
+          {
+            "frameId": "held-a",
+            "assetPath": "docs/animation-candidates-20261027/hachi-interaction-candidate-v1/frame-02-held-a.png",
+            "assetSha256": "1284036a0b42eb0cd2be0f185be688c995bc4b90783bd48029ff314239c78981",
+            "assetSize": [
+              1254,
+              1254
+            ],
+            "durationMs": 120,
+            "drawingOrigin": "AUTHORED_INTERACTION_CANDIDATE_NOT_VIDEO",
+            "paint": {
+              "referenceWidth": 390,
+              "left": 0,
+              "top": 130,
+              "width": 390,
+              "height": 390
+            }
+          },
+          {
+            "frameId": "held-middle",
+            "assetPath": "docs/animation-candidates-20261027/hachi-interaction-candidate-v1/frame-03-held-middle.png",
+            "assetSha256": "dcd28b9a1449ac15eb457269c1c322829fe786f2999047a6a152feb86128bff7",
+            "assetSize": [
+              1254,
+              1254
+            ],
+            "durationMs": 120,
+            "drawingOrigin": "AUTHORED_INTERACTION_CANDIDATE_NOT_VIDEO",
+            "paint": {
+              "referenceWidth": 390,
+              "left": 0,
+              "top": 130,
+              "width": 390,
+              "height": 390
+            }
+          },
+          {
+            "frameId": "held-b",
+            "assetPath": "docs/animation-candidates-20261027/hachi-interaction-candidate-v1/frame-04-held-b.png",
+            "assetSha256": "2237f6f4a708425411b4d60ebb1d2caf6d761637164e35fea2e1f7c2d8ea36f9",
+            "assetSize": [
+              1254,
+              1254
+            ],
+            "durationMs": 120,
+            "drawingOrigin": "AUTHORED_INTERACTION_CANDIDATE_NOT_VIDEO",
+            "paint": {
+              "referenceWidth": 390,
+              "left": 0,
+              "top": 130,
+              "width": 390,
+              "height": 390
+            }
+          }
+        ],
+        "sourceFlags": {
+          "schema": "hachi-interaction-authored-candidate/v1",
+          "character": "hachiware",
+          "classification": "AUTHORED_CANDIDATE_NOT_PRODUCTION",
+          "selectedKeyCount": 6,
+          "naturalnessVerified": false,
+          "videoReferenceVerified": false,
+          "dynamicAnimationVerified": false,
+          "productionApproved": false,
+          "automaticActivation": false,
+          "timingApproved": false,
+          "registration": "RAW_COMMON_CANVAS_BOTTOM_ALIGNED_NO_PER_KEY_CORRECTION",
+          "knownLandingVsReleaseFeetDeltaSourcePx": 27,
+          "sourceCommit": "c23da49de1feb4903061305a4b748ed097ad5a19"
+        }
+      },
+      "release": {
+        "actionId": "hachi-authored-release",
+        "timingOrigin": "AUTHORED_UI_EXPOSURES_NOT_VIDEO",
+        "loop": false,
+        "frames": [
+          {
+            "frameId": "release",
+            "assetPath": "docs/animation-candidates-20261027/hachi-interaction-candidate-v1/frame-05-release.png",
+            "assetSha256": "035a3aa8112f4962f520e298da8254ec9ebdb9d83eac9de370dd60e66b513f42",
+            "assetSize": [
+              1254,
+              1254
+            ],
+            "durationMs": 100,
+            "drawingOrigin": "AUTHORED_INTERACTION_CANDIDATE_NOT_VIDEO",
+            "paint": {
+              "referenceWidth": 390,
+              "left": 0,
+              "top": 130,
+              "width": 390,
+              "height": 390
+            }
+          }
+        ],
+        "sourceFlags": {
+          "schema": "hachi-interaction-authored-candidate/v1",
+          "character": "hachiware",
+          "classification": "AUTHORED_CANDIDATE_NOT_PRODUCTION",
+          "selectedKeyCount": 6,
+          "naturalnessVerified": false,
+          "videoReferenceVerified": false,
+          "dynamicAnimationVerified": false,
+          "productionApproved": false,
+          "automaticActivation": false,
+          "timingApproved": false,
+          "registration": "RAW_COMMON_CANVAS_BOTTOM_ALIGNED_NO_PER_KEY_CORRECTION",
+          "knownLandingVsReleaseFeetDeltaSourcePx": 27,
+          "sourceCommit": "c23da49de1feb4903061305a4b748ed097ad5a19"
+        }
+      },
+      "fall": {
+        "actionId": "hachi-authored-fall",
+        "timingOrigin": "AUTHORED_UI_EXPOSURES_NOT_VIDEO",
+        "loop": false,
+        "frames": [
+          {
+            "frameId": "release",
+            "assetPath": "docs/animation-candidates-20261027/hachi-interaction-candidate-v1/frame-05-release.png",
+            "assetSha256": "035a3aa8112f4962f520e298da8254ec9ebdb9d83eac9de370dd60e66b513f42",
+            "assetSize": [
+              1254,
+              1254
+            ],
+            "durationMs": 100,
+            "drawingOrigin": "AUTHORED_RELEASE_REUSED_FOR_STATIC_FALL",
+            "paint": {
+              "referenceWidth": 390,
+              "left": 0,
+              "top": 130,
+              "width": 390,
+              "height": 390
+            }
+          }
+        ],
+        "sourceFlags": {
+          "schema": "hachi-interaction-authored-candidate/v1",
+          "character": "hachiware",
+          "classification": "AUTHORED_CANDIDATE_NOT_PRODUCTION",
+          "selectedKeyCount": 6,
+          "naturalnessVerified": false,
+          "videoReferenceVerified": false,
+          "dynamicAnimationVerified": false,
+          "productionApproved": false,
+          "automaticActivation": false,
+          "timingApproved": false,
+          "registration": "RAW_COMMON_CANVAS_BOTTOM_ALIGNED_NO_PER_KEY_CORRECTION",
+          "knownLandingVsReleaseFeetDeltaSourcePx": 27,
+          "sourceCommit": "c23da49de1feb4903061305a4b748ed097ad5a19",
+          "dedicatedFallDrawing": false,
+          "reuseOf": "release"
+        }
+      },
+      "landing": {
+        "actionId": "hachi-authored-landing",
+        "timingOrigin": "AUTHORED_UI_EXPOSURES_NOT_VIDEO",
+        "loop": false,
+        "frames": [
+          {
+            "frameId": "landing-compress",
+            "assetPath": "docs/animation-candidates-20261027/hachi-interaction-candidate-v1/frame-06-landing-compress-v2.png",
+            "assetSha256": "e0b84ca19c56fec6736a036e5fbe19d997fe76d2964b8646366fa88b2d772975",
+            "assetSize": [
+              1254,
+              1254
+            ],
+            "durationMs": 180,
+            "drawingOrigin": "AUTHORED_INTERACTION_CANDIDATE_NOT_VIDEO",
+            "paint": {
+              "referenceWidth": 390,
+              "left": 0,
+              "top": 130,
+              "width": 390,
+              "height": 390
+            }
+          }
+        ],
+        "sourceFlags": {
+          "schema": "hachi-interaction-authored-candidate/v1",
+          "character": "hachiware",
+          "classification": "AUTHORED_CANDIDATE_NOT_PRODUCTION",
+          "selectedKeyCount": 6,
+          "naturalnessVerified": false,
+          "videoReferenceVerified": false,
+          "dynamicAnimationVerified": false,
+          "productionApproved": false,
+          "automaticActivation": false,
+          "timingApproved": false,
+          "registration": "RAW_COMMON_CANVAS_BOTTOM_ALIGNED_NO_PER_KEY_CORRECTION",
+          "knownLandingVsReleaseFeetDeltaSourcePx": 27,
+          "sourceCommit": "c23da49de1feb4903061305a4b748ed097ad5a19"
+        }
+      }
+    },
+    "chiikawa": {
+      "release": {
+        "actionId": "chi-draft-release",
+        "timingOrigin": "EXISTING_AUTHORED_UI_EXPOSURES_NOT_VIDEO",
+        "loop": false,
+        "frames": [
+          {
+            "frameId": "held-relax",
+            "assetPath": "chiikawa-pets/draft-preview/assets/chiikawa-grab-keyposes.png",
+            "assetSha256": "d38ead18705743d3bcb44f0ab666db962940c7a9e49a8b356e6d4dc21caaee02",
+            "assetSize": [
+              1086,
+              1448
+            ],
+            "durationMs": 100,
+            "drawingOrigin": "EXISTING_AUTHORED_DRAFT_SHEET_CROP",
+            "paint": {
+              "referenceWidth": 126,
+              "left": -140.74408839779005,
+              "top": -166.56132596685083,
+              "width": 272.16,
+              "height": 362.88,
+              "clipInset": [
+                187.95580110497238,
+                0.0,
+                24.559558011049724,
+                136.08
+              ]
+            }
+          }
+        ],
+        "sourceFlags": {
+          "approvalStatus": "draft",
+          "sourceManifest": "chiikawa-pets/draft-preview/config.json",
+          "classification": "EXISTING_AUTHORED_DRAFT_SHEET",
+          "videoReferenceVerified": false,
+          "productionApproved": false,
+          "calibrationNote": "Uniform per-sheet scale only: walk1.00, held1.08, landing0.99. Approximate head/torso width comparison walk489px, held451px, landing495px. Residual face/body differences remain; not official-model approval. Explicit left/right profile sheets each have4keyposes, uniformScale1.24; approximate head width377/379px (front489px), height~440px (front535px). Conservative distance56px/cycle at240px reference width. Foot identity/contact locking unverified.",
+          "humanHandAssetsUsed": false
+        }
+      },
+      "fall": {
+        "actionId": "chi-draft-fall",
+        "timingOrigin": "EXISTING_AUTHORED_UI_EXPOSURES_NOT_VIDEO",
+        "loop": false,
+        "frames": [
+          {
+            "frameId": "held-relax",
+            "assetPath": "chiikawa-pets/draft-preview/assets/chiikawa-grab-keyposes.png",
+            "assetSha256": "d38ead18705743d3bcb44f0ab666db962940c7a9e49a8b356e6d4dc21caaee02",
+            "assetSize": [
+              1086,
+              1448
+            ],
+            "durationMs": 100,
+            "drawingOrigin": "EXISTING_AUTHORED_DRAFT_SHEET_CROP",
+            "paint": {
+              "referenceWidth": 126,
+              "left": -140.74408839779005,
+              "top": -166.56132596685083,
+              "width": 272.16,
+              "height": 362.88,
+              "clipInset": [
+                187.95580110497238,
+                0.0,
+                24.559558011049724,
+                136.08
+              ]
+            }
+          }
+        ],
+        "sourceFlags": {
+          "approvalStatus": "draft",
+          "sourceManifest": "chiikawa-pets/draft-preview/config.json",
+          "classification": "EXISTING_AUTHORED_DRAFT_SHEET",
+          "videoReferenceVerified": false,
+          "productionApproved": false,
+          "calibrationNote": "Uniform per-sheet scale only: walk1.00, held1.08, landing0.99. Approximate head/torso width comparison walk489px, held451px, landing495px. Residual face/body differences remain; not official-model approval. Explicit left/right profile sheets each have4keyposes, uniformScale1.24; approximate head width377/379px (front489px), height~440px (front535px). Conservative distance56px/cycle at240px reference width. Foot identity/contact locking unverified.",
+          "humanHandAssetsUsed": false,
+          "dedicatedFallDrawing": false,
+          "reuseOf": "release"
+        }
+      },
+      "landing": {
+        "actionId": "chi-draft-landing",
+        "timingOrigin": "EXISTING_AUTHORED_UI_EXPOSURES_NOT_VIDEO",
+        "loop": false,
+        "frames": [
+          {
+            "frameId": "landing-bent-legs",
+            "assetPath": "chiikawa-pets/draft-preview/assets/chiikawa-landing-keyposes.png",
+            "assetSha256": "02647f49d82c2575a6842db1188ac9ca6cf1e9412b5f92eb9ff173d269153893",
+            "assetSize": [
+              1263,
+              1245
+            ],
+            "durationMs": 210,
+            "drawingOrigin": "EXISTING_AUTHORED_DRAFT_SHEET_CROP",
+            "paint": {
+              "referenceWidth": 126,
+              "left": -131.8023,
+              "top": 47.0022,
+              "width": 262.5777,
+              "height": 258.8355,
+              "clipInset": [
+                4.158,
+                6.8607000000000005,
+                129.9375,
+                130.977
+              ]
+            }
+          }
+        ],
+        "sourceFlags": {
+          "approvalStatus": "draft",
+          "sourceManifest": "chiikawa-pets/draft-preview/config.json",
+          "classification": "EXISTING_AUTHORED_DRAFT_SHEET",
+          "videoReferenceVerified": false,
+          "productionApproved": false,
+          "calibrationNote": "Uniform per-sheet scale only: walk1.00, held1.08, landing0.99. Approximate head/torso width comparison walk489px, held451px, landing495px. Residual face/body differences remain; not official-model approval. Explicit left/right profile sheets each have4keyposes, uniformScale1.24; approximate head width377/379px (front489px), height~440px (front535px). Conservative distance56px/cycle at240px reference width. Foot identity/contact locking unverified.",
+          "humanHandAssetsUsed": false
+        }
+      }
+    }
+  }
+}
