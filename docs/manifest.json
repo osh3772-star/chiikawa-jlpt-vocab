@@ -3,14 +3,22 @@
   "vocabularySha256": "dae7ff69010f600cfe577c9fb67ec81830259dc3a76501a8c0e70f998147a1bd",
   "wordCount": 7180,
   "publicPNGCount": 13,
+  "existingSharedAssets": {
+    "assets/bgm/chiikawa-mix.mp3": {
+      "sha256": "ae49185bb5b7d0cfbfb9da0d24111d2566ba992580d3c73ec790e222809f0345",
+      "bytes": 23808500,
+      "gitBlob": "e74e698356d0d7dbd4e2d29ce14a7a8b22001659",
+      "preserveExisting": true
+    }
+  },
   "files": {
     ".nojekyll": {
       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "bytes": 0
     },
     "app.css": {
-      "sha256": "2b2ac3c53fde252a23b3f3ac246294c049b48ffb3d2935104cd45388bd103e20",
-      "bytes": 133205
+      "sha256": "1d5c2d088457ba54fff7dc08a0ae8b5c3ad8ff0bae93bec6555d060d582bf590",
+      "bytes": 136977
     },
     "assets/09526837455f4384430ef1e7f6c68b68b8e693da7fb57ce7185cba610e7303f3.png": {
       "sha256": "09526837455f4384430ef1e7f6c68b68b8e693da7fb57ce7185cba610e7303f3",
@@ -65,16 +73,20 @@
       "bytes": 882622
     },
     "bgm-player.js": {
-      "sha256": "6bc9a3fc1a3b12b0bdc793fb71201e995d12832b3d02b6013aa63547318b8ff4",
-      "bytes": 10355
+      "sha256": "9174420e0e00055f4f8d9b445d081960fb559d6fe41a28c84acc9e751f30dc0d",
+      "bytes": 10135
     },
     "character-settings.html": {
-      "sha256": "960fb5e28481bf082ec2046e03601c8475cf08c8ad090398b2abf76db97454d6",
-      "bytes": 4697
+      "sha256": "a36e2d43fb886258c4bf1e3f472d7e46ebc5d2f53def235c6721f750258c0137",
+      "bytes": 4357
+    },
+    "continuous-walk.js": {
+      "sha256": "bc5c5bed953c95533952137780303f4e6b098be40fd119fb8eac3fbe49e0dbc7",
+      "bytes": 27321
     },
     "index.html": {
-      "sha256": "579f570a3b83506b8d067c4a628dfbe1b5bad87cb210ba383fe92304f27b5597",
-      "bytes": 6183
+      "sha256": "3b8c633a1874736ad55e4fce0f9c6c674cdb9d4fe64425ff01eff21ca624ea27",
+      "bytes": 5843
     },
     "navigation.js": {
       "sha256": "77c191fe27d389cf344697f6f6defe33d6b40e3adc48aa3df7867b3348ef5216",
@@ -85,12 +97,12 @@
       "bytes": 2963577
     },
     "pet-runtime.js": {
-      "sha256": "b7dcc1823d7696962902aa4d5e12f8fe165c3357d2f06e51f1dcc2b98f8d349a",
-      "bytes": 11437272
+      "sha256": "32477ff1a7688b0c4cb572c3001c52fe5d91aebe7140b36a9367455bceef6d31",
+      "bytes": 11462875
     },
     "study-runtime.js": {
-      "sha256": "c7467195823fe3e98a84f7de174ff4ccb34b62bc2dc1755e171dafa89bf8c93f",
-      "bytes": 27524
+      "sha256": "8a9a310f3bf874ee15f21f5a3f11224d87a27a34e9e111815090aa3af2266b1a",
+      "bytes": 27551
     },
     "study-visibility.css": {
       "sha256": "6340976d753a990d5f582d950a75d4db060e950edfdf6ae1c2c55504fa42738f",
@@ -101,8 +113,8 @@
       "bytes": 3559
     },
     "study.html": {
-      "sha256": "cebeb8cffbeb50337a30d9261b25d2871c56a8558b3dbdf03a3af0edb028c698",
-      "bytes": 5104
+      "sha256": "79af6258fde6de0acc5faa859820ba04bd2ddc5bb76ca9f2f880ebde790f985f",
+      "bytes": 4821
     },
     "vocabulary.js": {
       "sha256": "f4eeee42a1e2d51940ade6cfc651235b8f34879e4b95e068f6d7da9f696a94fe",
