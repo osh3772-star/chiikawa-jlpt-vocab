@@ -47,6 +47,14 @@ def build(output):
     integration=adapt_continuous_walk(integration)
     from main_candidate_actions import adapt_main_candidate_actions
     integration=adapt_main_candidate_actions(integration, ROOT)
+    from main_interaction_actions import adapt_main_input_sequences
+    integration=adapt_main_input_sequences(integration, ROOT)
+    from ordinary_input_bindings import assemble_input_bindings,inject_input_bindings
+    def input_asset_source(path,digest,raw):
+        relative='assets/interaction-sequences/'+digest+'.png'
+        dest=output/relative;dest.parent.mkdir(parents=True,exist_ok=True);dest.write_bytes(raw)
+        return relative
+    integration=inject_input_bindings(integration,assemble_input_bindings(ROOT,input_asset_source))
     # Only document-head styles belong to the parent page. The body contains a
     # literal <style> inside Kani's iframe srcdoc JavaScript; never promote it.
     head=html.split('</head>',1)[0]

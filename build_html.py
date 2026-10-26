@@ -166,7 +166,9 @@ _capture_original = root / 'chiikawa-pets/draft-preview/assets/chiikawa-grab-key
 if hashlib.sha256(_capture_bytes).hexdigest() != 'd38ead18705743d3bcb44f0ab666db962940c7a9e49a8b356e6d4dc21caaee02' or _capture_original.read_bytes() != _capture_bytes:
     raise ValueError('capture art identity changed')
 
-integration = StreamText((root / 'chiikawa-pets/integration.js').read_text(encoding='utf-8')).replace('__PET_ENGINE__', engine)
+from ordinary_input_bindings import assemble_input_bindings,inject_input_bindings
+integration_source=inject_input_bindings((root/'chiikawa-pets/integration.js').read_text(encoding='utf-8'),assemble_input_bindings(root,lambda path,digest,raw:data_uri(path)))
+integration = StreamText(integration_source).replace('__PET_ENGINE__', engine)
 from main_candidate_actions import candidate_module
 integration=integration.replace('__CANDIDATE_ACTION_MODULE__',candidate_module(root))
 # Exact reviewed foot copies, offline bytes preserved; hosted rewriting belongs to release.

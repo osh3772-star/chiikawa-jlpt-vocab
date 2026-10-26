@@ -292,6 +292,90 @@ export function mountChiikawaPets(options = {}) {
   };
   const isBeta = p => p.id === 'chiikawa' && experimentalCharacters.includes(p.id) && !!characterProfiles[p.id]?.betaManifest;
   const profile = p => { const original = characterProfiles[p.id] ?? {}; return isBeta(p) ? { ...original, animationManifest: original.betaManifest, behavior: { idle: 30, [original.betaManifest.actions.walk ? 'walk' : 'step-in-place']: 60, happy: 10 } } : original; };
+/** Ordinary actor input sequences. This registry is separate from autonomous weights.
+ * Bindings supply verified existing sources; authored/derived timing stays labelled.
+ * No DOM, decode, clocks, timers, frame synthesis, probability or asset mutation.
+ */
+const INPUT_SEQUENCE_STATES = Object.freeze(['press','tap','grab','held','release','fall','landing','recover','walk']);
+function inputSequenceState(action) {
+  return ({'grab-onset':'grab',hold:'held',start:'tap'})[action] ?? action;
+}
+function resolveActorInputSequence(profile,state,direction='front') {
+  state=inputSequenceState(state);
+  const registry=profile?.inputSequences;
+  if(registry?.enabled!==true||!INPUT_SEQUENCE_STATES.includes(state))return null;
+  const entry=registry.actions?.[state],view=entry?.views?.[direction]??entry?.views?.front??entry;
+  if(entry?.verifiedAssets!==true||!view||!Array.isArray(view.frames)||view.frames.length<2||typeof entry.timingOrigin!=='string')return null;
+  if(view.loop===true&&!['held','fall','walk'].includes(state))return null;
+  if(view.frames.some(f=>!f||typeof f.frameId!=='string'||!f.frameId||typeof f.source!=='string'||!f.source||!Number.isFinite(f.durationMs)||f.durationMs<=0||!validInputFramePaint(f.paint)||['flip','rotation','transform'].some(k=>Object.hasOwn(f,k))))return null;
+  return {inputOnly:true,state,timingOrigin:entry.timingOrigin,loop:view.loop===true,rootDistance:0,frames:view.frames};
+}
+function validInputFramePaint(paint) {
+  return !!paint&&['left','top','width','height','referenceWidth'].every(k=>Number.isFinite(paint[k]))&&paint.width>0&&paint.height>0&&paint.referenceWidth>0&&(paint.clipPath===undefined||paint.clipPath==='none')&&(!paint.clipInset||Array.isArray(paint.clipInset)&&paint.clipInset.length===4&&paint.clipInset.every(n=>Number.isFinite(n)&&n>=0));
+}
+/** Entire source canvas, including transparent margins. Never shrink to alpha bounds. */
+function inputFrameBounds(frame,actor) {
+  if(!validInputFramePaint(frame?.paint)||!actor||!['x','y','width','height'].every(k=>Number.isFinite(actor[k]))||actor.width<=0||actor.height<=0)return null;
+  const f=frame.paint,k=actor.width/f.referenceWidth,left=actor.x+f.left*k,top=actor.y+f.top*k,width=f.width*k,height=f.height*k;
+  return {left,top,right:left+width,bottom:top+height,width,height};
+}
+function inputSequenceSample(sequence,elapsedMs) {
+  if(!sequence?.inputOnly||!Array.isArray(sequence.frames)||!Number.isFinite(elapsedMs)||elapsedMs<0)return null;
+  const duration=sequence.frames.reduce((n,f)=>n+f.durationMs,0);
+  if(!Number.isFinite(duration)||duration<=0)return null;
+  const cycle=sequence.loop?Math.floor(elapsedMs/duration):0,done=!sequence.loop&&elapsedMs>=duration;
+  const time=done?duration-.000001:sequence.loop?elapsedMs%duration:elapsedMs;
+  let cursor=0;const index=Math.max(0,sequence.frames.findIndex(f=>(cursor+=f.durationMs)>time));
+  return {frame:sequence.frames[index],index,slot:cycle*sequence.frames.length+index,done,duration};
+}
+
+  const inputReady=new Set();
+  const inputSequenceFor=(p,state)=>{const sequence=resolveActorInputSequence(profile(p),state,p.dir<0?'left':'right');return sequence&&sequence.frames.every(f=>inputReady.has(f.source))?sequence:null;};
+  function clearInputFrame(p,reason='state-change') {
+    p.inputFrame=null;p.inputLastBounds=null;
+    if(p.inputSavedStyle){Object.assign(p.el.style,p.inputSavedStyle.root);Object.assign(p.figure.style,p.inputSavedStyle.figure);p.inputSavedStyle=null;}
+    p.el.dataset.interactionFallback=reason;
+  }
+  function inputPaintRect(p,x,y,original) {
+    const bounds=inputFrameBounds(p.inputFrame,{x,y,width:p.width,height:p.height});
+    return bounds?candidateUnion(original,bounds):original;
+  }
+  function inputFrameSafe(p,frame) {
+    if(destroyed||document.hidden||paused()||p.el.hidden||!requestedVisible.has(p.id)||p.assetUnavailable||externalPresentation||presentationRegistry.get()||failed.has(frame.source))return false;
+    dirty=true;refreshObstacles();
+    const bounds=inputFrameBounds(frame,p);if(!bounds)return false;
+    const original=originalPaintRect(p),swept=candidateUnion(original,bounds,...(p.inputLastBounds?[p.inputLastBounds]:[]));
+    const v=viewport(),stage=stageRect(p),dock=mobileStage(p)&&mobileStageViewport?mobileStageViewport.getBoundingClientRect():null;
+    // The floor host already grants owned lift on successful direct capture only.
+    // Other input sequences keep the actual owned viewport/clip and UI protection.
+    const lift=p.floorInputLift===true,clips=lift?[]:[stage,dock].filter(Boolean);
+    const view={left:Math.max(0,...clips.map(r=>r.left)),top:Math.max(0,...clips.map(r=>r.top)),right:Math.min(v.w,...clips.map(r=>r.right)),bottom:Math.min(v.h,...clips.map(r=>r.bottom))};
+    if(swept.left<view.left+4.25||swept.top<view.top+4.25||swept.right>view.right-4.25||swept.bottom>view.bottom-4.25)return false;
+    const avoid=[...(lift?[]:obstacles),...pets.filter(q=>q!==p&&!q.el.hidden&&!q.assetUnavailable).map(q=>paintRect(q))];
+    if(avoid.some(r=>swept.left<r.right+4.25&&swept.right>r.left-4.25&&swept.top<r.bottom+4.25&&swept.bottom>r.top-4.25))return false;
+    return true;
+  }
+  function paintInputFrame(p,frame) {
+    if(!inputFrameSafe(p,frame))return false;
+    if(!p.inputSavedStyle){const fields=(el,keys)=>Object.fromEntries(keys.map(k=>[k,el.style[k]||'']));p.inputSavedStyle={root:fields(p.el,['width','height','overflow']),figure:fields(p.figure,['position','left','top','width','height'])};}
+    p.inputLastBounds=inputFrameBounds(frame,p);
+    p.inputFrame=frame;display(p,frame.frameId,frame.source,'input-frame-sequence',frame);
+    p.el.dataset.interactionFallback='';return true;
+  }
+  function playInputAction(id,state='tap') {
+    if(state==='walk'&&candidateActions?.has(id))return playCandidateAction(id);
+    const p=pets.find(p=>p.id===id),sequence=p&&inputSequenceFor(p,state);
+    if(!p||!sequence||!['tap','walk'].includes(state)||paused()||p.pointerId!==null||p.touch||PHYSICAL.has(p.mode)||!onScreen(p)||!ownedAdmission(p)||!inputFrameSafe(p,sequence.frames[0]))return false;
+    cancelPair();pending=null;
+    const duration=sequence.frames.reduce((n,f)=>n+f.durationMs,0)/1000;
+    start(p,state==='tap'?'start':'input-walk','idle',duration,null,{...sequence,loop:false});return true;
+  }
+  function inputPress(p){
+    const sequence=inputSequenceFor(p,'press');
+    if(sequence)start(p,'press','idle',Infinity,null,sequence);
+    else {p.el.dataset.interactionState='press';p.el.dataset.interactionFallback='missing-press-frames';}
+  }
+
   const sequenceFor = (p, action, direction = p.dir < 0 ? 'left' : 'right') => resolvePetSequence(profile(p), action, direction, { allowDraft: isBeta(p) });
   const source = (id, frame) => spriteSources?.[id]?.[frame] ?? `${String(assetBase).replace(/\/$/, '')}/characters/${id}/${frame}.png`;
   const decorativeStage = p => decorativeStages?.[p.id] && !decorativeStages[p.id].hidden ? decorativeStages[p.id] : null;
@@ -307,7 +391,7 @@ export function mountChiikawaPets(options = {}) {
   function candidatePlan(p,index,x=p.x,y=p.y){return candidateActions?.plan(p.id,index,{id:p.id,x,y,width:p.width,height:p.height},originalPaintRect(p,x,y))??null;}
   function paintRect(p,x=p.x,y=p.y){
     const original=originalPaintRect(p,x,y);
-    if(!p.candidateSession)return original;
+    if(!p.candidateSession)return inputPaintRect(p,x,y,original);
     const plan=candidatePlan(p,p.candidateSession.index,x,y);
     return plan?plan.protectedPaintBounds:p.candidateSession.lastPlan?candidateUnion(original,p.candidateSession.lastPlan.protectedPaintBounds):original;
   }
@@ -436,7 +520,10 @@ export function mountChiikawaPets(options = {}) {
   function display(p, name, src, kind, frame = null) {
     if (failed.has(src)) { name = 'idle'; src = source(p.id, 'idle'); kind = 'static-fallback'; frame=null; }
     if (p.src !== src) { p.src = src; p.img.src = src; }
-    if (frame?.assetSize) {
+    if(frame?.paint&&validInputFramePaint(frame.paint)) {
+      const f=frame.paint,k=p.width/f.referenceWidth;
+      Object.assign(p.img.style,{position:'absolute',objectFit:'fill',width:(f.width*k)+'px',height:(f.height*k)+'px',maxWidth:'none',left:(f.left*k)+'px',top:(f.top*k)+'px',clipPath:f.clipInset?`inset(${f.clipInset.map(n=>n*k+'px').join(' ')})`:'none'});
+    } else if (frame?.assetSize) {
       const [x, y, w, h] = frame.sourceRect ?? [0, 0, ...frame.assetSize], [sw, sh] = frame.assetSize;
       const scale = Math.min(p.width / w, p.height / h) * (frame.renderScale ?? 1);
       const [px, py] = frame.pivot ?? [.5, 1];
@@ -455,14 +542,17 @@ export function mountChiikawaPets(options = {}) {
   function start(p, action, fallback = 'idle', duration = .6, next = null, providedSequence = null) {
     if(!providedSequence)cancelCandidate(p,'other-action');
     inlineFor(p)?.cancel('other-action');
+    clearInputFrame(p);
     const direction = p.dir < 0 ? 'left' : 'right';
-    const sequence = !reduced && !manualPaused ? (providedSequence??sequenceFor(p, action, direction)) : null;
+    const sequence = !reduced && !manualPaused ? (providedSequence??(PHYSICAL.has(action)?inputSequenceFor(p,action):null)??sequenceFor(p, action, direction)) : null;
     p.action = { id: action, sequence, elapsed: 0, duration, next, fallback };
     mode(p, action); pose(p, fallback);
+    p.el.dataset.interactionState=inputSequenceState(action);
+    p.el.dataset.interactionFallback=sequence?'':('missing-'+inputSequenceState(action)+'-frames');
     if (sequence) advance(p, 0);
     wake();
   }
-  function idle(p) { cancelCandidate(p); inlineFor(p)?.cancel('idle'); p.action = null; p.wait = rand(1.5, 4.5); mode(p, 'idle'); pose(p); }
+  function idle(p) { clearInputFrame(p,'idle');p.el.dataset.interactionState='idle';cancelCandidate(p); inlineFor(p)?.cancel('idle'); p.action = null; p.wait = rand(1.5, 4.5); mode(p, 'idle'); pose(p); }
   function advance(p, dt) {
     const a = p.action; if (!a) return;
     if(a.sequence?.candidate){
@@ -473,7 +563,16 @@ export function mountChiikawaPets(options = {}) {
       if(!candidateFrame(p,sample.index))return;
       return;
     }
-    a.elapsed += dt;
+    if(a.sequence?.inputOnly){
+      a.elapsed+=dt;const sample=inputSequenceSample(a.sequence,a.elapsed*1000);
+      if(!sample||a.inputSlot!==undefined&&(sample.slot<a.inputSlot||sample.slot>a.inputSlot+1)||!paintInputFrame(p,sample.frame)){
+        clearInputFrame(p,'input-sequence-unavailable-or-unsafe');a.sequence=null;pose(p,a.fallback);
+      }else{
+        a.inputSlot=sample.slot;
+        if(!sample.done||a.id==='hold'||a.id==='fall')return;
+        const next=a.next;p.action=null;clearInputFrame(p,'sequence-ended');if(next)next();else idle(p);return;
+      }
+    }else a.elapsed += dt;
     let done = a.elapsed >= a.duration;
     if (a.sequence) {
       if (a.sequence.frames.some(f => failed.has(f.source))) { idle(p); return; }
@@ -498,6 +597,7 @@ export function mountChiikawaPets(options = {}) {
     for (const p of actors) { p.pairRole = null; if (!PHYSICAL.has(p.mode)) idle(p); }
   }
   function releaseCapture(p) {
+    clearInputFrame(p,'capture-release');
     p.captureVisual?.cancel('capture-release');
     cancelCandidate(p,'capture-release');
     const id = p.pointerId; p.pointerId = null; p.touch = null;
@@ -535,8 +635,9 @@ export function mountChiikawaPets(options = {}) {
     }else if(scaleExempt(p))p.scalePlacementUnavailable=false;
   }
   function render(p) {
-    if(p.capturePose&&p.pointerId!==null){display(p,`capture-authored-${p.capturePose.poseId}`,CAPTURE_ASSET.source,'capture-authored-ui');Object.assign(p.img.style,capturePaintStyle(p.capturePose,p.width));}
+    if(p.capturePose&&!p.inputFrame&&p.pointerId!==null){display(p,`capture-authored-${p.capturePose.poseId}`,CAPTURE_ASSET.source,'capture-authored-ui');Object.assign(p.img.style,capturePaintStyle(p.capturePose,p.width));}
     refreshObstacles();syncStagePosition(p);
+    if(p.inputFrame&&!inputFrameSafe(p,p.inputFrame)){clearInputFrame(p,'input-paint-changed');if(p.action)p.action.sequence=null;pose(p,p.action?.fallback??'idle');}
     syncScaleAvailability(p);
     p.el.dataset.scaleUnavailable=String(!!p.scalePlacementUnavailable);
     p.el.style.touchAction = mobileStage(p) ? 'pan-x pan-y' : '';
@@ -546,6 +647,10 @@ export function mountChiikawaPets(options = {}) {
     const hit=paintRect(p);
     const ownedPresentation=ownedViewportGeometry?.stagePresentation(decorativeStage(p)??mobileStage(p)??(isBeta(p)?experimentalStage:null),hit,dock);
     p.el.style.clipPath = (ownedPresentation?.owned?ownedPresentation.clipPath:null) ?? (dock ? `inset(${Math.max(0,dock.top-hit.top)}px ${Math.max(0,hit.right-dock.right)}px ${Math.max(0,hit.bottom-dock.bottom)}px ${Math.max(0,dock.left-hit.left)}px)` : '');
+    if(p.inputFrame){
+      Object.assign(p.el.style,{width:hit.width+'px',height:hit.height+'px',overflow:'hidden'});
+      Object.assign(p.figure.style,{position:'absolute',left:(p.x-hit.left)+'px',top:(p.y-hit.top)+'px',width:p.width+'px',height:p.height+'px'});
+    }
     const rootPaint=p.candidateSession?originalPaintRect(p):hit;
     p.el.style.transform = `translate3d(${rootPaint.left.toFixed(1)}px, ${rootPaint.top.toFixed(1)}px, 0)`;
     // No scaleX(-1), squash, rotation, or CSS walk substitution, including Rakko.
@@ -555,7 +660,7 @@ export function mountChiikawaPets(options = {}) {
     if(p.candidateSession)candidateFrame(p,p.candidateSession.index);
   }
   function captureVisualFor(p){
-    if(p.id!=='chiikawa')return null;
+    if(p.id!=='chiikawa'||inputSequenceFor(p,'grab')||inputSequenceFor(p,'held'))return null;
     if(p.captureVisual)return p.captureVisual;
     return p.captureVisual=createCaptureVisual({art:CAPTURE_ASSET,
       readCapture:()=>({characterId:p.id,captured:p.pointerId!==null&&p.el.hasPointerCapture?.(p.pointerId)===true,pointerId:p.pointerId,captureGeneration:p.captureGeneration??0,mount:root,visible:requestedVisible.has(p.id)&&!p.el.hidden,hidden:document.hidden,paused:manualPaused,reduced,mode:p.mode}),
@@ -581,9 +686,9 @@ export function mountChiikawaPets(options = {}) {
     refreshObstacles();syncStagePosition(p);syncScaleAvailability(p);if(!onScreen(p))return;
     inlineFor(p)?.cancel('pointer-intent');
     // Long press to drag on touch; vertical gestures remain browser scrolling.
-    if (e.pointerType === 'touch') { p.touch = { pointerId: e.pointerId, clientX: e.clientX, clientY: e.clientY, at: performance.now() }; wake(); return; }
-    if(e.pointerType==='mouse' && (inlineFor(p)||decorativeStage(p))) {
-      p.touch={pointerId:e.pointerId,pointerType:'mouse',clientX:e.clientX,clientY:e.clientY,at:performance.now()};wake();return;
+    if (e.pointerType === 'touch') { p.touch = { pointerId: e.pointerId, clientX: e.clientX, clientY: e.clientY, at: performance.now() }; inputPress(p);wake(); return; }
+    if(e.pointerType==='mouse' && (inlineFor(p)||decorativeStage(p)||inputSequenceFor(p,'tap'))) {
+      p.touch={pointerId:e.pointerId,pointerType:'mouse',clientX:e.clientX,clientY:e.clientY,at:performance.now()};inputPress(p);wake();return;
     }
     if (e.cancelable) e.preventDefault(); beginGrab(p, e);
   }
@@ -608,7 +713,7 @@ export function mountChiikawaPets(options = {}) {
   }
   function pointerEnd(p, e, cancelled = false) {
     if (p.touch?.pointerId === e.pointerId) {
-      const press = p.touch; p.touch = null;
+      const press = p.touch; p.touch = null;if(p.action?.id==='press')idle(p);
       // A tap owns no capture. Never infer one after scrolling, holding, or cancellation.
       const elapsed = performance.now() - press.at;
       if (!cancelled && !destroyed && !document.hidden && e.isPrimary !== false && (e.pointerType === 'touch' || (e.pointerType==='mouse' && press.pointerType==='mouse' && e.button===0 && (e.buttons===undefined || e.buttons===0))) && elapsed >= 0 && elapsed < 220 && Math.hypot(e.clientX-press.clientX,e.clientY-press.clientY) <= 8) {
@@ -709,6 +814,15 @@ export function mountChiikawaPets(options = {}) {
     for (const entry of Object.values(profile(p).animationManifest?.actions ?? {})) for (const view of Object.values(entry.views ?? {})) for (const frame of view.frames ?? []) if (frame.source) urls.add(frame.source);
   }
   for (const src of urls) { const img = new Image(); img.onload = () => { if (!destroyed) root.dataset.assetsLoaded = String(Number(root.dataset.assetsLoaded) + 1); }; img.onerror = () => { failed.add(src); root.dataset.assetError = 'preload'; }; img.src = src; preloads.push(img); }
+  // Decode readiness never starts or restarts an action. Only subsequent ordinary input may do so.
+  for(const p of pets)for(const entry of Object.values(profile(p).inputSequences?.actions??{})){
+    const views=entry.views?Object.values(entry.views):[entry];
+    for(const view of views)for(const frame of view.frames??[]){
+      if(preloads.some(im=>im.inputSource===frame.source))continue;
+      const im=new Image();im.inputSource=frame.source;preloads.push(im);im.src=frame.source;
+      void im.decode().then(()=>{if(!destroyed&&im.naturalWidth===frame.assetSize?.[0]&&im.naturalHeight===frame.assetSize?.[1])inputReady.add(frame.source);},()=>{if(!destroyed)failed.add(frame.source);});
+    }
+  }
   function reaction(p, type, duration) {
     const defaults = { start: 'wave', correct: 'happy', wrong: 'encourage', complete: 'happy' };
     const configured = profile(p).vocab?.[type];
@@ -979,7 +1093,7 @@ export function mountChiikawaPets(options = {}) {
     playInlineResponse(id='chiikawa'){const controller=inlineFor(id);if(!controller)return false;if(controller.getState().mode==='off'){const p=pets.find(p=>p.id===id);if(!p||!requestedVisible.has(id)||p.assetUnavailable||PHYSICAL.has(p.mode)||p.touch)return false;cancelPairPresentation('inline-request');cancelTransient('inline-request');for(const[key,other]of inlineResponses)if(key!==id)other.cancel('other-inline');cancelPair();pending=null;idle(p);}return controller.start();},
     cancelInlineResponse(reason,id=null){if(id)inlineFor(id)?.cancel(reason);else cancelInlineAll(reason);},
     getInlineResponseState(id='chiikawa'){return inlineFor(id)?.getState()??{mode:'off',active:false,loading:false,index:-1};},
-    playCandidateAction, react, playAction, pause() { manualPaused = true; syncPaused(); }, resume() { manualPaused = false; syncPaused(); }, isPaused: paused,
+    playInputAction, playCandidateAction, react, playAction, pause() { manualPaused = true; syncPaused(); }, resume() { manualPaused = false; syncPaused(); }, isPaused: paused,
     setDisplayScales(value) {
       if(destroyed||scaleChangeActive)return false;
       scaleChangeActive=true;
@@ -1055,7 +1169,7 @@ export function mountChiikawaPets(options = {}) {
     getExternalPresentation() { return externalPresentation; },
     focusCharacter(id) { if(!requestedVisible.has(id)||!pets.some(p=>p.id===id))return false;cancelPairPresentation('focus');if(transient?.lease.id===id)cancelTransient('focus'); if (externalPresentation === id) { cancelExternalPresentation('focus'); layout(); } const p = pets.find(p => p.id === id && !p.el.hidden); if (!p) return false; (decorativeStage(p)??mobileStage(p))?.scrollIntoView?.({ block: 'nearest', inline: 'nearest' }); render(p);if(!onScreen(p))return false;p.el.focus?.({ preventScroll: true });return true; },
     getVisibleCharacters() { return selected.map(p => p.id).filter(id => requestedVisible.has(id)); },
-    getState() { return pets.map(p => ({ id: p.id, mode: p.mode, frame: p.frame, x: p.x, y: p.y, width: p.width, height: p.height, dir: p.dir, airborne: p.airborne, glide: false, jump: false, visible: !p.el.hidden, onScreen: onScreen(p), reactionTime: p.action ? Math.max(0, p.action.duration - p.action.elapsed) : 0, assetMode: p.el.dataset.assetMode, assetUnavailable:!!p.assetUnavailable, paintHitRect:paintRect(p), inlinePadding:!!paddedGeometry(p),inlineEnabled:!!inlineFor(p), displayPercent:appliedScalePercent(p),scalePlacementUnavailable:!!p.scalePlacementUnavailable, pairRole: p.pairRole ?? null, captured: p.pointerId !== null })); },
+    getState() { return pets.map(p => ({ id: p.id, mode: p.mode, frame: p.frame, x: p.x, y: p.y, width: p.width, height: p.height, dir: p.dir, airborne: p.airborne, glide: false, jump: false, visible: !p.el.hidden, onScreen: onScreen(p), reactionTime: p.action ? Math.max(0, p.action.duration - p.action.elapsed) : 0, assetMode: p.el.dataset.assetMode, interactionState:p.el.dataset.interactionState??p.mode, interactionFallback:p.el.dataset.interactionFallback??null, assetUnavailable:!!p.assetUnavailable, paintHitRect:paintRect(p), inlinePadding:!!paddedGeometry(p),inlineEnabled:!!inlineFor(p), displayPercent:appliedScalePercent(p),scalePlacementUnavailable:!!p.scalePlacementUnavailable, pairRole: p.pairRole ?? null, captured: p.pointerId !== null })); },
     destroy() { if (destroyed) return; for(const p of pets)p.captureVisual?.destroy();candidateActions?.destroy(); cancelExternalPresentation('destroy'); resetAll(); destroyed = true; presentationRegistry.destroy();cancelAnimationFrame(raf); for (const [el, type, fn, opts] of listeners) el.removeEventListener(type, fn, opts); observer?.disconnect(); for (const img of preloads) { img.onload = img.onerror = null; } root.remove(); if (window[INSTANCE] === api) delete window[INSTANCE]; },
   };
   window[INSTANCE] = api; return api;
