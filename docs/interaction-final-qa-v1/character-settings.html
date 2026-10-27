@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="ko"><head><script src="qa-isolation.js?v=39b2cb5f7554"></script><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>캐릭터 설정 · JLPT 단어장</title><link rel="stylesheet" href="app.css?v=86fc249fef6f"></head><body data-page="settings">
+  <div class="scenery" aria-hidden="true"><span class="sun"></span><span class="cloud cloud-one"></span><span class="cloud cloud-two"></span><span class="hill hill-one"></span><span class="hill hill-two"></span></div>
+<nav class="cv-page-nav" aria-label="페이지 이동"><a data-cv-link href="index.html">시작</a><a data-cv-link href="character-settings.html" aria-current="page">캐릭터 설정</a><a data-cv-link href="study.html">공부 이어하기</a></nav><p id="navigation-status" role="status" tabindex="-1"></p><header class="site-header"><p class="header-sticker" lang="ja">ひとつずつ、ゆっくり。</p><h1>캐릭터 설정 · JLPT 단어장</h1><p class="header-description">작은 한 걸음도 차곡차곡. 오늘도 내 속도로 공부해요.</p><p id="storage-note">급수별 위치와 학습 기록은 이 브라우저에 자동 저장됩니다.</p>    <div class="pet-tools"><span>친구들을 잡아 끌어 보세요. 놓으면 사뿐히 내려와요.</span><button id="pet-toggle" type="button" aria-pressed="false">움직임 멈추기</button><div class="mobile-pet-picker"><label for="mobile-pets">모바일 친구</label><select id="mobile-pets"><option value="new">시사 · 모몽가 · 랏코</option><option value="original">치이카와 · 하치와레 · 우사기</option><option value="all">전체 6종</option></select></div></div>
+    <div class="cv-background-tools"><label for="background-choice">배경</label><select id="background-choice"><option value="original">기존 배경</option><option value="field-ep6">EP6 풀밭 모티프 · 참고 창작</option><option value="stone-ep2">EP2 석조 벽 모티프 · 장소 미확정</option></select></div>
+    <p id="background-status" class="cv-background-status" role="status" aria-live="polite">기존 배경 · 기본값</p>
+</header><main><details id="bgm-player" class="cv-bgm-player">
+  <summary>♫ BGM <span>재생 · 곡 선택</span></summary>
+  <div class="cv-bgm-content">
+    <p id="bgm-local-note">자동재생은 꺼져 있습니다. 페이지를 이동하면 음악이 정지합니다. 소리 크기는 기기의 볼륨으로 조절해 주세요.</p>
+    <label for="bgm-track">재생할 곡</label>
+    <select id="bgm-track" disabled><option value="">선택한 곡 없음</option></select>
+    <div class="cv-bgm-transport" role="group" aria-label="음악 재생 조작">
+      <button type="button" id="bgm-prev" disabled>이전곡</button>
+      <button type="button" id="bgm-play" aria-label="음악 재생" aria-pressed="false" disabled>재생</button>
+      <button type="button" id="bgm-stop" disabled>정지 (처음으로)</button>
+      <button type="button" id="bgm-next" disabled>다음곡</button>
+    </div>
+    <div class="cv-bgm-preferences">
+      <label for="bgm-repeat">반복<select id="bgm-repeat"><option value="off">반복 안 함</option><option value="all">전체 반복</option><option value="one">한 곡 반복</option></select></label>
+    </div>
+    <p id="bgm-status" role="status" aria-live="polite" aria-atomic="true">등록된 곡이 없습니다. 음원 연결을 준비 중입니다.</p>
+    <p id="bgm-preferences-status">반복 설정만 이 브라우저에 저장됩니다. 재생 위치는 저장하지 않습니다.</p>
+  </div>
+</details>
+
+<script id="bgm-playlist" type="application/json">{"version":1,"tracks":[{"title":"치이카와 BGM 모음","src":"assets/bgm/chiikawa-mix.mp3"}]}</script>
+<section class="paper-panel cv-settings-intro"><h2>나와 함께할 친구들</h2><p>캐릭터·크기·배경·동작을 여기서 설정해요. 아래 미리보기와 캐릭터만 크게 보기에서 직접 확인할 수 있어요.</p><p>수동 동작·자동 날기·인사·카니 입력 동작은 페이지를 떠나면 멈춥니다. 새로고침하면 세션 전용 선택은 꺼집니다.</p></section></main><script src="navigation.js?v=e7f7ee825510"></script><script src="pet-data.js?v=0ab853b0e623"></script><script src="pet-runtime.js?v=1a7b6e6e61e4"></script><script src="bgm-player.js?v=695bca2c2e04"></script></body></html>
