@@ -663,6 +663,32 @@ function inputSequenceSample(sequence,elapsedMs) {
   return {frame:sequence.frames[index],index,slot:cycle*sequence.frames.length+index,done,duration};
 }
 
+/** Narrow ordinary-actor policy; never changes the study/pair/flight busy source. */
+function ordinaryInputStudyBlocked(state) {
+  if(!state)return false;
+  if(state.composing||state.audioPending||state.transactionDepth>0)return true;
+  // __cvStudyRead.busy includes phase !== home. A stable study/review session
+  // is not an in-flight transaction. Unknown or other busy reasons stay closed.
+  const stableStudy=['study','review'].includes(state.phase)&&state.transactionDepth===0&&state.composing===false&&state.audioPending!==true;
+  return Boolean(state.busy&&!stableStudy);
+}
+
+/** Exactly the app's existing actor-drag shadow, not a general filter allowlist. */
+function isEngineOwnedDragShadow(value) {
+  if(typeof value!=='string')return false;
+  const match=/^drop-shadow\((.*)\)$/.exec(value.trim().toLowerCase());
+  if(!match)return false;
+  let body=match[1].trim(),color=false;
+  const rgb=/rgba?\(([^)]+)\)/.exec(body);
+  if(rgb){
+    const numbers=rgb[1].trim().split(/[\s,\/]+/).map(Number);
+    color=numbers.length===4&&numbers[0]===75&&numbers[1]===60&&numbers[2]===50&&Number.isFinite(numbers[3])&&Math.round(numbers[3]*255)===43;
+    body=body.replace(rgb[0],'').trim();
+  }else if(body.includes('#4b3c322b')){color=true;body=body.replace('#4b3c322b','').trim();}
+  const offsets=body.split(/\s+/);
+  return color&&offsets.length===3&&['0','0px'].includes(offsets[0])&&offsets[1]==='8px'&&offsets[2]==='6px';
+}
+
 /** Demand-only image readiness cache. It never starts, resumes or paints an action. */
 function createInputDecodeQueue({ImageCtor=Image,maxConcurrent=2,registerImage=()=>{},onFailure=()=>{},isDisposed=()=>false}={}) {
   const cache=new Map(),queue=[];let active=0,disposed=false;
@@ -708,11 +734,21 @@ function createInputDecodeQueue({ImageCtor=Image,maxConcurrent=2,registerImage=(
   function inputContextSafe(p){
     if(destroyed||document.hidden||p.el.hidden||!requestedVisible.has(p.id)||p.assetUnavailable||externalPresentation||presentationRegistry.get())return false;
     const active=document.activeElement,study=readStudyState?.();
-    return !active?.isContentEditable&&!['INPUT','TEXTAREA','SELECT'].includes(active?.tagName)&&!(study&&(study.busy||study.composing||study.audioPending||study.transactionDepth>0))&&candidateStyleSafe(p);
+    return !active?.isContentEditable&&!['INPUT','TEXTAREA','SELECT'].includes(active?.tagName)&&!ordinaryInputStudyBlocked(study)&&candidateStyleSafe(p);
+  }
+  function rejectOrdinaryInput(p,reason){
+    p.inputRejectedReason=reason;p.el.dataset.interactionFallback=reason;return false;
+  }
+  function suppressOwnedInputDragShadow(p){
+    // Only the known app-owned stylesheet shadow may be removed. Inline/custom
+    // filters remain untouched and are still rejected by candidateStyleSafe.
+    if(p.pointerId===null||p.el.hasPointerCapture?.(p.pointerId)!==true||p.el.classList?.contains?.('cv-pet--dragging')!==true||p.img.style.filter)return;
+    try{if(isEngineOwnedDragShadow(getComputedStyle(p.img).filter)){p.inputOwnedDragFilter=p.img.style.filter||'';p.img.style.filter='none';}}catch(_){}
   }
 
   function clearInputFrame(p,reason='state-change') {
     p.inputFrame=null;p.inputLastBounds=null;
+    if(Object.hasOwn(p,'inputOwnedDragFilter')){p.img.style.filter=p.inputOwnedDragFilter;delete p.inputOwnedDragFilter;}
     if(p.inputSavedStyle){Object.assign(p.el.style,p.inputSavedStyle.root);Object.assign(p.figure.style,p.inputSavedStyle.figure);p.inputSavedStyle=null;}
     p.el.dataset.interactionFallback=reason;
   }
@@ -723,7 +759,7 @@ function createInputDecodeQueue({ImageCtor=Image,maxConcurrent=2,registerImage=(
   function inputFrameSafe(p,frame) {
     if(destroyed||document.hidden||paused()||p.el.hidden||!requestedVisible.has(p.id)||p.assetUnavailable||externalPresentation||presentationRegistry.get()||failed.has(frame.source))return false;
     const active=document.activeElement,study=readStudyState?.();
-    if(active?.isContentEditable||['INPUT','TEXTAREA','SELECT'].includes(active?.tagName)||study&&(study.busy||study.composing||study.audioPending||study.transactionDepth>0)||!candidateStyleSafe(p))return false;
+    if(active?.isContentEditable||['INPUT','TEXTAREA','SELECT'].includes(active?.tagName)||ordinaryInputStudyBlocked(study)||!candidateStyleSafe(p))return false;
     if(p.pointerId!==null&&p.el.hasPointerCapture?.(p.pointerId)!==true)return false;
     dirty=true;refreshObstacles();
     const bounds=inputFrameBounds(frame,p);if(!bounds)return false;
@@ -747,14 +783,18 @@ function createInputDecodeQueue({ImageCtor=Image,maxConcurrent=2,registerImage=(
   }
   function playInputAction(id,state='tap') {
     const p=pets.find(p=>p.id===id);
-    if(!p||!['tap','walk'].includes(state)||p.pointerId!==null||p.touch||PHYSICAL.has(p.mode)||!onScreen(p)||!ownedAdmission(p)||!inputContextSafe(p))return false;
+    if(!p||!['tap','walk'].includes(state))return false;
+    p.inputRejectedReason=null;
+    if(p.pointerId!==null||p.touch||PHYSICAL.has(p.mode)||!onScreen(p)||!ownedAdmission(p))return rejectOrdinaryInput(p,'input-state-blocked');
+    if(!inputContextSafe(p))return rejectOrdinaryInput(p,'input-context-blocked');
     if(state==='walk'&&candidateActions?.selected(id)){
       if(paused())return false;
       if(candidateActions.has(id))return playCandidateAction(id);
       void candidateActions.prepare(id);return false;
     }
     const sequence=inputSequenceFor(p,state);
-    if(!sequence||state==='walk'&&paused())return false;
+    if(!sequence)return rejectOrdinaryInput(p,profile(p).inputSequences?.actions?.[state]?'input-sequence-invalid':('missing-'+state+'-frames'));
+    if(state==='walk'&&paused())return rejectOrdinaryInput(p,'input-motion-paused');
     cancelPair();pending=null;
     const duration=sequence.frames.reduce((n,f)=>n+f.durationMs,0)/1000;
     // The completed first tap changes an existing original pose immediately.
@@ -815,7 +855,7 @@ function createInputDecodeQueue({ImageCtor=Image,maxConcurrent=2,registerImage=(
     if(active?.isContentEditable||['INPUT','TEXTAREA','SELECT'].includes(active?.tagName))return false;
     if(!candidateStyleSafe(p))return false;
     const study=readStudyState?.();
-    if(study&&(study.busy||study.composing||study.audioPending||study.transactionDepth>0))return false;
+    if(ordinaryInputStudyBlocked(study))return false;
     if(document.getElementById?.('bgm-play')?.getAttribute('aria-pressed')==='true')return false;
     return true;
   }
@@ -951,13 +991,13 @@ function createInputDecodeQueue({ImageCtor=Image,maxConcurrent=2,registerImage=(
     const sequence = !reduced && !manualPaused ? (providedSequence??(PHYSICAL.has(action)?inputSequenceFor(p,action):null)??sequenceFor(p, action, direction)) : null;
     p.action = { id: action, sequence, elapsed: 0, duration, next, fallback };
     mode(p, action); pose(p, fallback);
-    if(sequence?.inputOnly)p.inputLastBounds=previousInputBounds;
+    if(sequence?.inputOnly){p.inputLastBounds=previousInputBounds;suppressOwnedInputDragShadow(p);}
     p.el.dataset.interactionState=inputSequenceState(action);
-    p.el.dataset.interactionFallback=sequence?'':('missing-'+inputSequenceState(action)+'-frames');
+    p.el.dataset.interactionFallback=sequence?'':(p.inputRejectedReason??(paused()&&profile(p).inputSequences?.actions?.[inputSequenceState(action)]?'input-motion-paused':('missing-'+inputSequenceState(action)+'-frames')));p.inputRejectedReason=null;
     if (sequence) advance(p, 0);
     wake();
   }
-  function idle(p) { clearInputFrame(p,'idle');p.el.dataset.interactionState='idle';cancelCandidate(p); p.floorInputLift=false;syncFloorLiftLayer();inlineFor(p)?.cancel('idle'); p.action = null; p.wait = rand(1.5, 4.5); mode(p, 'idle'); pose(p); }
+  function idle(p) { p.inputRejectedReason=null;clearInputFrame(p,'idle');p.el.dataset.interactionState='idle';cancelCandidate(p); p.floorInputLift=false;syncFloorLiftLayer();inlineFor(p)?.cancel('idle'); p.action = null; p.wait = rand(1.5, 4.5); mode(p, 'idle'); pose(p); }
   function advance(p, dt) {
     const a = p.action; if (!a) return;
     if(a.sequence?.candidate){

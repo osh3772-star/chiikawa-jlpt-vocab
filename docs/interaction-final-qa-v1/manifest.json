@@ -533,7 +533,7 @@
       "bytes": 10264
     },
     "character-settings.html": {
-      "sha256": "6efc66a25267ddea54078e806a1c948805504427b456e89d86dd0a6cb215e572",
+      "sha256": "c9d7a46d273f8f0d01a6fa557b2d347c2168434e38eded9bde4e20c4702a915e",
       "bytes": 4411
     },
     "continuous-walk.js": {
@@ -553,8 +553,8 @@
       "bytes": 2963706
     },
     "pet-runtime.js": {
-      "sha256": "1a7b6e6e61e4b6671e0b7c17922816df5ae56d5212d3aff9c54b365c2116b3d1",
-      "bytes": 11586878
+      "sha256": "06dc879c761f18ebbe1733c3907e2d0792fa1a205987a853ba5b674fb71268d4",
+      "bytes": 11589468
     },
     "qa-isolation.js": {
       "sha256": "39b2cb5f7554a818c6979384d31954b400b699485641fd7a822f53ae3fe20b90",
@@ -573,12 +573,12 @@
       "bytes": 3688
     },
     "study.html": {
-      "sha256": "f541b9c026ddb0d74e4560667b6f84b6b213c5e85da0f36ac2e5cfcf56a79227",
+      "sha256": "a5ceac89510ed4d1d47235432836be1af9d9e923803d4cbdc1dfb56bb5c81f1d",
       "bytes": 4875
     },
     "viewport-review.html": {
-      "sha256": "90e8d1edef692c0d3aaf616c1bf55e6e80d141b81abeb112feb24a14fd305d2f",
-      "bytes": 1816
+      "sha256": "f0b037bd67e8209255980101622439b2871cf82f09db0d6ea9c4d7c1d8bfc00b",
+      "bytes": 2883
     },
     "vocabulary.js": {
       "sha256": "98d642358b2034f8b428ac8d7c30d7ff328e2de34e2de5c8f8f3c134c6cb8baa",
@@ -606,8 +606,8 @@
     "prefix": "cv-qa-20261027-interaction-final-v1:",
     "localStorage": true,
     "sessionStorage": true,
-    "sourceRuntimeSHA256": "171f1ae8773327167227d0ada46ce313eadd1e112d78c39a1fbe365f30370459",
-    "sourceManifestSHA256": "c47c2186e475af410eea594f84781dba9b94108771af733caabb17a36072395a",
+    "sourceRuntimeSHA256": "c6c2c0be23dc07a1851b3c3f5c3f62836fc043725b9534e29309467af81d25ef",
+    "sourceManifestSHA256": "83ce3aa27499ef01309161339103fc4600c7aa6a78a5c121fc670b6662eeb656",
     "productionActivated": false,
     "physicalTouchVerified": false,
     "sharedAudioUrl": "/chiikawa-jlpt-vocab/assets/bgm/chiikawa-mix.mp3",

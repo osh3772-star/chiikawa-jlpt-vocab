@@ -1,6 +1,23 @@
 <!doctype html>
-<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>격리 QA · 문서 viewport 검수</title>
+<html lang="ko"><head><script src="qa-isolation.js?v=39b2cb5f7554"></script><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>격리 QA · 문서 viewport 검수</title>
 <style>body{margin:0;background:#eef1f5;font:14px system-ui,sans-serif;color:#18212b}header{padding:10px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:white;border-bottom:1px solid #ccc}label{display:flex;align-items:center;gap:5px}select{font:inherit;padding:5px}main{padding:10px;width:max-content;min-width:calc(100% - 20px)}iframe{display:block;border:0;background:white;box-shadow:0 0 0 1px #aaa}small{display:block;padding:8px 10px}</style></head>
-<body><header><strong>격리 QA</strong><label>페이지<select id="page"><option value="study.html">공부</option><option value="index.html">시작</option><option value="character-settings.html">캐릭터 설정</option></select></label><label>문서 크기<select id="size"><option value="390,640">390 × 640</option><option value="320,568">320 × 568</option><option value="1280,800">1280 × 800</option></select></label><span id="current">390 × 640</span></header>
+<body><header><strong>격리 QA</strong><label>페이지<select id="page"><option value="study.html">공부</option><option value="index.html">시작</option><option value="character-settings.html">캐릭터 설정</option></select></label><label>문서 크기<select id="size"><option value="390,640">390 × 640</option><option value="320,568">320 × 568</option><option value="1280,800">1280 × 800</option></select></label><span id="current">390 × 640</span><button id="qa-reset" type="button" disabled>QA 데이터만 초기화</button><span id="reset-status" role="status" aria-live="polite"></span></header>
 <small>실제 iframe 문서 viewport 검수입니다. 물리 터치·실제 휴대폰·GUI 확대 검증이 아닙니다. 합성 학습 데이터만 사용하세요.</small><main><iframe id="review" title="격리 QA 문서" width="390" height="640" src="study.html"></iframe></main>
-<script>(()=>{'use strict';const frame=document.getElementById('review'),page=document.getElementById('page'),size=document.getElementById('size');page.addEventListener('change',()=>{frame.src=page.value;});size.addEventListener('change',()=>{const [w,h]=size.value.split(',').map(Number);frame.width=w;frame.height=h;document.getElementById('current').textContent=w+' × '+h;});})();</script></body></html>
+<script>(()=>{'use strict';
+if(window.__CV_QA_LOCAL_READY__!==true||window.__CV_QA_SESSION_READY__!==true)throw Error('QA dual storage isolation required');
+// qa-isolation.js hardcodes cv-qa-20261027-interaction-final-v1: only.
+// Its clear() reads only its own registry and removes only its own data keys.
+let frame=document.getElementById('review');
+const page=document.getElementById('page'),size=document.getElementById('size'),reset=document.getElementById('qa-reset'),status=document.getElementById('reset-status');
+page.addEventListener('change',()=>{if(frame)frame.src=page.value;});
+size.addEventListener('change',()=>{if(!frame)return;const [w,h]=size.value.split(',').map(Number);frame.width=w;frame.height=h;document.getElementById('current').textContent=w+' × '+h;});
+reset.disabled=false;
+reset.addEventListener('click',()=>{
+  page.disabled=true;size.disabled=true;
+  if(frame){frame.remove();frame=null;}
+  try{
+    window.localStorage.clear();window.sessionStorage.clear();
+    reset.disabled=true;status.textContent='이 QA의 합성 데이터만 초기화했습니다. 앱을 다시 열지 않았습니다.';
+  }catch(_){status.textContent='QA 초기화를 완료하지 못했습니다. 앱은 종료된 상태입니다.';}
+});
+})();</script></body></html>
