@@ -890,6 +890,10 @@
       "sha256": "8d2595d7586941aefa74ce8770307d3a6b657fa084fb0f88b2bf835e47a2bae3",
       "bytes": 787088
     },
+    "assets/interaction-sequences/8e339da0f1e713340af36f27329dea2ecb60d324d8b4669e19df83c7a39967b1.png": {
+      "sha256": "8e339da0f1e713340af36f27329dea2ecb60d324d8b4669e19df83c7a39967b1",
+      "bytes": 775208
+    },
     "assets/interaction-sequences/93c61038b204646c08213a8bb36dc7b141543dc3a6c6518cb17f83d989ea8ab5.png": {
       "sha256": "93c61038b204646c08213a8bb36dc7b141543dc3a6c6518cb17f83d989ea8ab5",
       "bytes": 1020517
@@ -933,6 +937,10 @@
     "assets/interaction-sequences/b0c8310c2fd2d1d23c31a9051375463e9575d0c08d74855a3b1f8670445560d0.png": {
       "sha256": "b0c8310c2fd2d1d23c31a9051375463e9575d0c08d74855a3b1f8670445560d0",
       "bytes": 928069
+    },
+    "assets/interaction-sequences/b1c7f86c2d2600737e5cc15e9a8ce74258a96a4eff46dc30846ee56fa6f374b9.png": {
+      "sha256": "b1c7f86c2d2600737e5cc15e9a8ce74258a96a4eff46dc30846ee56fa6f374b9",
+      "bytes": 794931
     },
     "assets/interaction-sequences/b4514619519268a3ab6060aa45bd677ea0683ed244f4676e0c0864f68c3f52a2.png": {
       "sha256": "b4514619519268a3ab6060aa45bd677ea0683ed244f4676e0c0864f68c3f52a2",
@@ -1406,6 +1414,10 @@
       "sha256": "fa4ff33e393c297780ea732ff4b1c5df418812958642a34ff680e01a57ad4108",
       "bytes": 1383364
     },
+    "assets/pajama-parties/103a0ce51ec87500a70d5e3bff3e5f6993cd22a89580e0956c0911e3789b2997.png": {
+      "sha256": "103a0ce51ec87500a70d5e3bff3e5f6993cd22a89580e0956c0911e3789b2997",
+      "bytes": 1690589
+    },
     "background-runtime.js": {
       "sha256": "adf094d79c9d20f78f8b0568b7365c9226428d711d77f30d4d64ad0ceaa8aa68",
       "bytes": 9030
@@ -1415,7 +1427,7 @@
       "bytes": 10135
     },
     "character-settings.html": {
-      "sha256": "78c31486a434d66b87d656cdbda5be7866938fcb9deb4c6933bce3be977df54e",
+      "sha256": "029acc86836ed42effd40b61e7190e9f84e4fa9503af3551221af8d554710bfe",
       "bytes": 4496
     },
     "continuous-walk.js": {
@@ -1435,8 +1447,8 @@
       "bytes": 2963577
     },
     "pet-runtime.js": {
-      "sha256": "440e44489360936dbdf97603b3b16ecbef25c916abd465cd7dc2ae7b75379cfb",
-      "bytes": 11729350
+      "sha256": "58210f68c00f9cd67e4da4b496cccc88f71e0102f57fe531af469a4d722c43c1",
+      "bytes": 11748787
     },
     "registered-motion-20261027/chi-hachi-bedtime/selected/00-01-ready.png": {
       "sha256": "10089835138de8a10d5f7df01f099558a7239a5baf1288495fdbb3a6f465a3be",
@@ -1599,7 +1611,7 @@
       "bytes": 3559
     },
     "study.html": {
-      "sha256": "e11472c7327ff6a910fdb896620c290f9217c0c883e24b7689136408ce869556",
+      "sha256": "09534a003bdf7a8a066187a8da9163a8cc172f8327294ec1ba0960956ec6db28",
       "bytes": 4881
     },
     "vocabulary.js": {
