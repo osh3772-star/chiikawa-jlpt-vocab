@@ -135,8 +135,8 @@
       "bytes": 616274
     },
     "app.css": {
-      "sha256": "3f6a47dc46a7dcfc945057e28c24f19d07a45268253e8144fc884fa57f569886",
-      "bytes": 138177
+      "sha256": "cf5ccd635b8e47f0513d306b83029101270cc622d8da45bf048df82b146c4d16",
+      "bytes": 139136
     },
     "assets/09526837455f4384430ef1e7f6c68b68b8e693da7fb57ce7185cba610e7303f3.png": {
       "sha256": "09526837455f4384430ef1e7f6c68b68b8e693da7fb57ce7185cba610e7303f3",
@@ -1427,16 +1427,16 @@
       "bytes": 10688
     },
     "character-settings.html": {
-      "sha256": "7b7e96577e86b8e5bed48b042183df6093ce505b718d1d75f8175e8f6821119e",
-      "bytes": 4816
+      "sha256": "6f95cd96c274a5f7366681dea348489bbb56d72edc5c6ad07a4790d47894331e",
+      "bytes": 3667
     },
     "continuous-walk.js": {
-      "sha256": "343e9190bf11d82bcc9cd86fc9f7538f4e2f4f6a3356e5a72702b79516850af5",
-      "bytes": 30442
+      "sha256": "280943e7f6f6a1eb6f1d77d21531af7d277c1199dfabd654bba71ed9aa21ae55",
+      "bytes": 27772
     },
     "index.html": {
-      "sha256": "aff49adb232ab279f58199f2a48e33bc6e1959df3b7a9feb7d740454f88d8278",
-      "bytes": 2221
+      "sha256": "4516adc0cad98982e585d90689d8c5a294fe18ce52040ccd93565bcc8dffba6a",
+      "bytes": 2222
     },
     "navigation.js": {
       "sha256": "e9bcb5dafb46599cf035986f171f1587d6829e9c9f6f973cdb3e80bff14792a2",
@@ -1447,8 +1447,8 @@
       "bytes": 2963577
     },
     "pet-runtime.js": {
-      "sha256": "732a2c0da8505e21c58f40c8e002d61f0b2d2c570b8b4348e83f047c8345c48b",
-      "bytes": 11687813
+      "sha256": "dfd4c801adf9d4b0b8d64a9e2e0790e45ed9b4dd66c5286d97161956302cb7e1",
+      "bytes": 4973982
     },
     "registered-motion-20261027/chi-hachi-bedtime/selected/00-01-ready.png": {
       "sha256": "10089835138de8a10d5f7df01f099558a7239a5baf1288495fdbb3a6f465a3be",
@@ -1783,8 +1783,8 @@
       "bytes": 10654
     },
     "study-records.html": {
-      "sha256": "fc139c0d5465aceba4e1f3e390fa1cb1c153c43862444b294d47118378447df3",
-      "bytes": 2324
+      "sha256": "0cac6e95c9e19374f06f12e59a415aed2ba5a839bce923eaca96669ed2597a21",
+      "bytes": 2325
     },
     "study-runtime.js": {
       "sha256": "6f70c8ad6b35e47f81fcb7b5880c00a1404ba3135b8bcc079f5e2be804c45770",
@@ -1799,21 +1799,28 @@
       "bytes": 3559
     },
     "study.html": {
-      "sha256": "6f02e65423154934df9e424752e241b380f2b280b20d05910f86ed00868f37df",
-      "bytes": 5240
+      "sha256": "b86382181f8a2df8a33a7bbe3406c24d612e3a745ee09b95ead30e9d2176adee",
+      "bytes": 5247
     },
     "unknown-words.html": {
-      "sha256": "1ed38d4a2fbc3679e63c2deeb3b50824c5925840a46acb3a9567ae0c46407d7c",
-      "bytes": 2591
+      "sha256": "32190f7f78650f9f9e5cfe2b0ac30828c5a1b9e9b29989cdbbc27e70c39b5a58",
+      "bytes": 2592
     },
     "vocabulary.js": {
       "sha256": "f4eeee42a1e2d51940ade6cfc651235b8f34879e4b95e068f6d7da9f696a94fe",
       "bytes": 1395440
     },
     "word-selection.html": {
-      "sha256": "cfb4965b84609be1e6c94c86314ba903f5522406e4c355fbee8c03a694daf645",
-      "bytes": 1894
+      "sha256": "61d3366eb20b601a31130e06180f2157016e40ca09e9fe22b8c901d4692a9127",
+      "bytes": 1895
     }
   },
-  "candidate": "function-pages-20261030"
+  "candidate": "function-pages-20261030",
+  "settingsSimplification": {
+    "version": "settings-simple-20261030",
+    "baseCommit": "016f433c489d762955d9c88cf7a4140f5105d8a4",
+    "scope": "unified settings, default existing eligible motions, silhouette layout and recoverable held playback",
+    "originalAssetBytesChanged": false,
+    "browserVerified": false
+  }
 }

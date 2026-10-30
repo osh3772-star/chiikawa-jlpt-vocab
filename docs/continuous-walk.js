@@ -206,42 +206,24 @@ function bindContinuousWalkCancellation({controller,window,document,controls}){
 }
 
 const art={"schema": "chi-foot-v4-expanded-review", "characterId": "chiikawa", "reviewCandidate": true, "productionApproved": false, "enabledByDefault": false, "autonomous": false, "rootTravel": false, "loop": false, "displayMode": "actor-expanded-registration", "frames": [{"poseId": "00", "sha256": "09526837455f4384430ef1e7f6c68b68b8e693da7fb57ce7185cba610e7303f3", "width": 1254, "height": 1254, "source": "assets/09526837455f4384430ef1e7f6c68b68b8e693da7fb57ce7185cba610e7303f3.png"}, {"poseId": "01", "sha256": "1c90f622c51589025695a0fec55568719627cc2030582e06bb9617b89835f32d", "width": 1254, "height": 1254, "source": "assets/1c90f622c51589025695a0fec55568719627cc2030582e06bb9617b89835f32d.png"}, {"poseId": "02", "sha256": "40f956e223a22ed1eb978ee5163d46095d8e765bc561f5c162d364b87f8bbdf7", "width": 1254, "height": 1254, "source": "assets/40f956e223a22ed1eb978ee5163d46095d8e765bc561f5c162d364b87f8bbdf7.png"}, {"poseId": "03", "sha256": "0d48828ca2adbfe124489be261c2f9a78ad29ab037e0829af83fdf63e017dc48", "width": 1254, "height": 1254, "source": "assets/0d48828ca2adbfe124489be261c2f9a78ad29ab037e0829af83fdf63e017dc48.png"}, {"poseId": "04", "sha256": "f89be8a1dca9efd10c998b901a995575f59fd98426944daca1ff563be33e2013", "width": 1254, "height": 1254, "source": "assets/f89be8a1dca9efd10c998b901a995575f59fd98426944daca1ff563be33e2013.png"}, {"poseId": "05", "sha256": "228915d0fde57acd3fce9aa06a303c4989bce72d107408984fe18e30325948ad", "width": 1254, "height": 1254, "source": "assets/228915d0fde57acd3fce9aa06a303c4989bce72d107408984fe18e30325948ad.png"}, {"poseId": "06", "sha256": "a31368e4fac8a11ec638e3e5c864cd2d36c4c54fd0c545c239ab284b256fd7d3", "width": 1254, "height": 1254, "source": "assets/a31368e4fac8a11ec638e3e5c864cd2d36c4c54fd0c545c239ab284b256fd7d3.png"}, {"poseId": "07", "sha256": "57796e78b711e408945d06126d687ee2944d90e744e520a93755f3d570adc065", "width": 1254, "height": 1254, "source": "assets/57796e78b711e408945d06126d687ee2944d90e744e520a93755f3d570adc065.png"}, {"poseId": "08", "sha256": "874a369c3c6ae2b1331ce66f56367c7194a233c30016f0d4b0d85c0169af4a95", "width": 1254, "height": 1254, "source": "assets/874a369c3c6ae2b1331ce66f56367c7194a233c30016f0d4b0d85c0169af4a95.png"}, {"poseId": "09", "sha256": "590155819ebae2b41dc2b90b2eb1eeac182117da8eaeee7a8dfe249e86f4c181", "width": 1254, "height": 1254, "source": "assets/590155819ebae2b41dc2b90b2eb1eeac182117da8eaeee7a8dfe249e86f4c181.png"}, {"poseId": "10", "sha256": "656290e36fb9c214ea07a34c0b8d4ca66a5367ca130f66ab6ed177b7e48c637c", "width": 1254, "height": 1254, "source": "assets/656290e36fb9c214ea07a34c0b8d4ca66a5367ca130f66ab6ed177b7e48c637c.png"}, {"poseId": "11", "sha256": "4410d59938f0ef46dc70063a43fa42b3764cebbcf91241a737f8f373b8cb1c7a", "width": 1254, "height": 1254, "source": "assets/4410d59938f0ef46dc70063a43fa42b3764cebbcf91241a737f8f373b8cb1c7a.png"}]};
-  if(document.body?.dataset.page!=='study'||document.getElementById('continuous-walk-controls'))return;
-  const panel=document.createElement('div');panel.id='continuous-walk-controls';panel.className='cv-continuous-walk';
-  panel.innerHTML='<button id="continuous-walk-start" type="button">치이카와 걷기</button> <button id="continuous-walk-stop" type="button" disabled>걷기 정지</button><p id="continuous-walk-status" role="status" data-mode="off" data-reason="default-off">걷기 꺼짐 · 누르면 바닥에서 걷습니다.</p>';
-  document.getElementById('study').before(panel);
-  const start=document.getElementById('continuous-walk-start'),stop=document.getElementById('continuous-walk-stop'),status=document.getElementById('continuous-walk-status');
-  let enabled=false;
+  if(!['study','settings'].includes(document.body?.dataset.page))return;
+  let enabled=true,disposed=false,timer=null,quietSince=performance.now(),focused=true;
   const engine=()=>window[Symbol.for('jlpt.chiikawa-pets')];
   const bridge=createContinuousWalkEngineAdapter({getEngine:engine,readUI:()=>({enabled,floorRequested:true,documentHidden:document.hidden,inputBusy:false,composing:false,mediaBusy:document.getElementById('bgm-play')?.getAttribute('aria-pressed')==='true'})});
-  const controller=createContinuousWalkController({fixture:art,host:bridge,decode:decodeReviewedStep,onState:s=>{
-    const active=s.mode!=='off';start.disabled=active;stop.disabled=!active;
-    status.dataset.mode=s.mode;status.dataset.reason=s.reason||'';status.dataset.cause=s.diagnostic?.cause||'';status.dataset.engineReleaseReason=s.diagnostic?.engineReleaseReason||'';
-    status.dataset.frameGapMs=Number.isFinite(s.diagnostic?.frameGapMs)?String(Math.round(s.diagnostic.frameGapMs)):'';
-    if(s.mode==='off'&&s.reason)status.dataset.lastStopReason=s.reason;
-    const manual=['default-off','disabled','manual-stop','navigation','pagehide','restored-off','destroyed','unbind'].includes(s.reason);
-    const label={'context-changed':'화면이나 동작 상태 변경','invalid-or-delayed-frame':'화면 갱신 지연','frame-stalled':'화면 갱신 멈춤','unsafe-placement':'안전 영역 변경','blur':'창 비활성화','scroll':'화면 스크롤','resize':'화면 크기 변경','pointerdown':'직접 입력','keydown':'키보드 입력','vocab:busy':'학습 동작','visibility':'페이지 표시 변경'}[s.reason]||'안전 조건 변경';
-    status.textContent=s.mode==='loading'?'걷기 준비 중…':s.mode==='walking'?'바닥에서 걷는 중 · 잡거나 정지할 수 있어요.':!manual?'걷기 자동 정지 · 멈춘 이유: '+label+' ['+s.reason+(s.diagnostic?.cause?'/'+s.diagnostic.cause:'')+']'+(status.dataset.frameGapMs?' · '+status.dataset.frameGapMs+'ms':''):s.enabled?'걷기 멈춤 · 다시 누르면 시작합니다.':s.reason==='manual-stop'?'걷기 정지 · 다시 누르면 시작합니다.':'걷기 꺼짐 · 누르면 바닥에서 걷습니다.';
-  }});
-  const unbind=bindContinuousWalkCancellation({controller,window,document,controls:panel});
-  async function begin(){
-    await Promise.resolve();if(controller.getState().mode!=='off')return;
-    enabled=true;controller.setEnabled(true);
-    // Settle our own loading text before canStart/initial geometry is measured.
-    status.textContent='걷기 준비 중…';
-    let ok=false;try{ok=await controller.start();}catch{controller.stop('decode-or-host-error');}
-    if(!ok&&controller.getState().mode==='off'){
-      let admission;try{admission=bridge.read(null);}catch{}
-      const reason=admission?.mediaBusy?'audio-active':admission?.reason||controller.getState().reason||'state-changed';
-      enabled=false;controller.setEnabled(false,reason);status.dataset.reason=reason;
-      status.textContent=reason==='paused'?'일시정지를 풀면 걸을 수 있어요.':reason==='audio-active'?'음악을 정지한 뒤 걸어 주세요.':['no-safe-placement','no-safe-path','protected-space','outside-viewport'].includes(reason)?'바닥에서 걸을 공간이 부족해요. 다른 캐릭터를 옮긴 뒤 다시 눌러 주세요.':'아직 시작하지 못했어요. 입력이 끝난 뒤 다시 눌러 주세요.';
+  const controller=createContinuousWalkController({fixture:art,host:bridge,decode:decodeReviewedStep});
+  controller.setEnabled(true);
+  const unbind=bindContinuousWalkCancellation({controller,window,document,controls:null});
+  const cleanups=[];const listen=(node,type,fn,opts)=>{node.addEventListener(type,fn,opts);cleanups.push(()=>node.removeEventListener(type,fn,opts));};
+  const activity=()=>{quietSince=performance.now();};
+  for(const type of ['pointerdown','keydown','beforeinput','compositionstart','play','vocab:busy'])listen(document,type,activity,{capture:true,passive:true});
+  listen(window,'blur',()=>{focused=false;});listen(window,'focus',()=>{focused=true;activity();});
+  async function tick(){timer=null;if(disposed)return;
+    if(focused&&!document.hidden&&!engine()?.isPaused()&&performance.now()-quietSince>=6000&&controller.getState().mode==='off'){
+      quietSince=performance.now();try{await controller.start();}catch{controller.stop('decode-or-host-error');}
     }
+    if(!disposed)timer=setTimeout(tick,1000);
   }
-  start.addEventListener('click',begin);
-  const reset=(reason='manual-stop')=>{enabled=false;controller.setEnabled(false,reason);};
-  stop.addEventListener('click',()=>reset('manual-stop'));
-  window.CVPage?.beforeNavigate(()=>reset('navigation'));
-  window.addEventListener('pagehide',event=>{reset('pagehide');if(!event.persisted){controller.destroy();bridge.destroy();unbind();}});
-  window.addEventListener('pageshow',event=>{if(event.persisted)reset('restored-off');});
-
+  timer=setTimeout(tick,1000);
+  const dispose=()=>{if(disposed)return;disposed=true;enabled=false;clearTimeout(timer);controller.setEnabled(false,'navigation');controller.destroy();bridge.destroy();unbind();for(const fn of cleanups)fn();};
+  window.CVPage?.beforeNavigate(dispose);listen(window,'pagehide',dispose);
 })();
