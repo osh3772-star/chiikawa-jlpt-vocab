@@ -17,7 +17,7 @@ function createStudyState(onChange=()=>{}){
     Object.defineProperty(window,'__cvStudyRead',{value:studyGuard.read,configurable:true});
     document.addEventListener('compositionstart',()=>studyGuard.setComposing(true),true);
     document.addEventListener('compositionend',()=>studyGuard.setComposing(false),true);
-    const data=window.CVVocabulary;const page=window.CVPage.page;let reviewFilter='all';
+    const data=window.CVVocabulary;const page=window.CVPage.page;let reviewFilter='all',explicitStudyStart=false;
     const storageKey = 'jlpt-local-vocabulary-v1';
     const levels = Object.keys(data);
     const el = Object.fromEntries(['home', 'study', 'level-buttons', 'review-level', 'review-summary',
@@ -67,7 +67,7 @@ function createStudyState(onChange=()=>{}){
       return { known, unknown };
     }
     function renderHomeImpl() {
-      if(!el.home)return;
+      if(el['level-buttons']){
       el['level-buttons'].replaceChildren();
       for (const key of levels) {
         const { known, unknown } = stats(data[key]);
@@ -79,6 +79,8 @@ function createStudyState(onChange=()=>{}){
         row.append(button, document.createTextNode(` 알고 있음 ${known}개 / 모르겠음 ${unknown}개 / 이어보기 ${positions[key] + 1}번째`));
         el['level-buttons'].append(row);
       }
+      }
+      if(!el['review-rows'])return;
       const list = unknownWords();
       el['review-summary'].textContent = `${el['review-level'].value === 'all' ? '전체 급수' : el['review-level'].value} · 모르겠음 ${list.length.toLocaleString('ko-KR')}개`;
       el['start-review'].disabled = list.length === 0;
@@ -103,11 +105,12 @@ function createStudyState(onChange=()=>{}){
       clearAnswerUndo();
       studyGuard.setPhase('home');
       if(page==='study'){window.CVPage.go('index.html');return;}
-      el.home.hidden = false;
+      if(el.home)el.home.hidden = false;
       renderHome();
       document.dispatchEvent(new CustomEvent('vocab:view'));
     }
     function startLevelImpl(key) {
+      explicitStudyStart=true;
       clearAnswerUndo();
       studyGuard.setPhase('study');
       if(!levels.includes(key))key=level;level = key; mode = 'all';
@@ -117,6 +120,7 @@ function createStudyState(onChange=()=>{}){
       document.dispatchEvent(new CustomEvent('vocab:start'));
     }
     function startReviewImpl(index = 0) {
+      explicitStudyStart=true;
       clearAnswerUndo();
       reviewIds = unknownWords().map(word => word.id);
       if (!reviewIds.length) return;
@@ -157,7 +161,7 @@ function createStudyState(onChange=()=>{}){
       } else {
         el.position.textContent = '이번 복습을 마쳤습니다.';
       }
-      el.message.textContent = message || (!word ? '메인 화면에서 남은 모르겠음 단어를 다시 확인할 수 있습니다.' : '');
+      el.message.textContent = message || (!word ? '모르는 단어 페이지에서 남은 단어를 다시 확인할 수 있습니다.' : '');
     }
     function moveImpl(delta) {
       clearAnswerUndo();
@@ -241,7 +245,7 @@ function createStudyState(onChange=()=>{}){
     }
     window.CVPage.registerStudy(()=>({fingerprint:lastStorageRaw,unsaved:unsavedProgress,
       ...(unsavedProgress?{state:{level,positions:{...positions},answers:{...answers}}}:{}),
-      transient:{level,mode,reviewIds:reviewIds.slice(),reviewIndex,reviewTotal,lastAnswer,reviewFilter}}));
+      transient:(page==='study'||explicitStudyStart)?{level,mode,reviewIds:reviewIds.slice(),reviewIndex,reviewTotal,lastAnswer,reviewFilter}:(window.CVPage.incoming?.study?.transient||{level,mode,reviewIds:reviewIds.slice(),reviewIndex,reviewTotal,lastAnswer,reviewFilter})}));
     window.addEventListener('storage',event=>{if(event.key===storageKey||event.key===null){if(syncExternalState()&&!storageConflict){if(page==='study')render('다른 화면에서 바뀐 최신 학습 기록을 불러왔습니다.');else renderHome();}}});
 
     // Optional local learning-record transfer. File reads never hold the synchronous study guard.
@@ -347,7 +351,7 @@ function createStudyState(onChange=()=>{}){
         Object.assign(answers, next.answers);
         mode = 'all'; reviewIds = []; reviewIndex = 0; reviewTotal = 0;
         clearBackup();
-        el['review-level'].value = 'all';
+        reviewFilter='all';if(el['review-level'])el['review-level'].value = 'all';window.CVPage.clearStudy();
         try { showHome(); }
         catch (_) { backupMessage('학습 기록은 저장했지만 화면을 갱신하지 못했습니다. 파일을 다시 열어 저장된 기록을 확인해 주세요.'); return; }
         el['storage-note'].textContent = '급수별 위치와 학습 기록은 이 브라우저에 자동 저장됩니다.';
@@ -381,18 +385,18 @@ function createStudyState(onChange=()=>{}){
     function render(...args){return studyGuard.run(()=>renderImpl(...args));}
     function move(...args){return studyGuard.run(()=>{syncExternalState();if(storageConflict)return;return moveImpl(...args);});}
     function mark(...args){return studyGuard.run(()=>{syncExternalState();if(storageConflict)return;return markImpl(...args);});}
-    if(page==='home'){
+    if(page!=='study'){
       const incoming=window.CVPage.incoming?.study;
       if(incoming?.unsaved&&incoming.state){adoptState(incoming.state);lastStorageRaw=incoming.fingerprint;unsavedProgress=true;}
-      if(['all',...levels].includes(incoming?.transient?.reviewFilter)){reviewFilter=incoming.transient.reviewFilter;el['review-level'].value=reviewFilter;}
+      if(['all',...levels].includes(incoming?.transient?.reviewFilter)){reviewFilter=incoming.transient.reviewFilter;if(el['review-level'])el['review-level'].value=reviewFilter;}
       showHome();
     }else{
       const incoming=window.CVPage.incoming?.study;
       if(incoming?.unsaved&&incoming.state){adoptState(incoming.state);lastStorageRaw=incoming.fingerprint;unsavedProgress=true;}
       const params=new URLSearchParams(location.search),requested=params.get('level'),review=params.get('review');
       if(unsavedProgress&&syncExternalState()&&storageConflict){studyGuard.setPhase('study');render('저장 충돌로 현재 창의 기록을 유지하고 있습니다. 위에서 먼저 백업해 주세요.');}
-      else if(restoreContinuation(incoming)){}
       else if(levels.includes(requested))startLevel(requested);
+      else if((!review||(incoming?.transient?.mode==='review'&&incoming.transient.reviewFilter===review))&&restoreContinuation(incoming)){}
       else if(['all',...levels].includes(review)){
         reviewFilter=review;const list=unknownWords();
         if(list.length)startReview(0);else{mode='review';reviewIds=[];reviewTotal=reviewIndex=0;studyGuard.setPhase('review');render();}

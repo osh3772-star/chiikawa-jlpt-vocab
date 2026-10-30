@@ -135,8 +135,8 @@
       "bytes": 616274
     },
     "app.css": {
-      "sha256": "86fc249fef6f1f2962f9551edebb8a601d2305a16a7a23b2bcdd737b6df7fc6e",
-      "bytes": 137300
+      "sha256": "3f6a47dc46a7dcfc945057e28c24f19d07a45268253e8144fc884fa57f569886",
+      "bytes": 138177
     },
     "assets/09526837455f4384430ef1e7f6c68b68b8e693da7fb57ce7185cba610e7303f3.png": {
       "sha256": "09526837455f4384430ef1e7f6c68b68b8e693da7fb57ce7185cba610e7303f3",
@@ -1423,32 +1423,32 @@
       "bytes": 9030
     },
     "bgm-player.js": {
-      "sha256": "9174420e0e00055f4f8d9b445d081960fb559d6fe41a28c84acc9e751f30dc0d",
-      "bytes": 10135
+      "sha256": "39f4496f96facb371e874c66b00ddecf8da5a6d11aac17e26a12ee44e30b6869",
+      "bytes": 10688
     },
     "character-settings.html": {
-      "sha256": "029acc86836ed42effd40b61e7190e9f84e4fa9503af3551221af8d554710bfe",
-      "bytes": 4496
+      "sha256": "7b7e96577e86b8e5bed48b042183df6093ce505b718d1d75f8175e8f6821119e",
+      "bytes": 4816
     },
     "continuous-walk.js": {
       "sha256": "343e9190bf11d82bcc9cd86fc9f7538f4e2f4f6a3356e5a72702b79516850af5",
       "bytes": 30442
     },
     "index.html": {
-      "sha256": "5e5329fdece93a30a00f60eddc837fb05c3bc2ce1056a460337aca36816d1ed1",
-      "bytes": 5903
+      "sha256": "aff49adb232ab279f58199f2a48e33bc6e1959df3b7a9feb7d740454f88d8278",
+      "bytes": 2221
     },
     "navigation.js": {
-      "sha256": "77c191fe27d389cf344697f6f6defe33d6b40e3adc48aa3df7867b3348ef5216",
-      "bytes": 5707
+      "sha256": "e9bcb5dafb46599cf035986f171f1587d6829e9c9f6f973cdb3e80bff14792a2",
+      "bytes": 6430
     },
     "pet-data.js": {
       "sha256": "047742ce0729e790255bd3382fe69bae78cbb9eaa664b891bbcd751bc2dc0199",
       "bytes": 2963577
     },
     "pet-runtime.js": {
-      "sha256": "58210f68c00f9cd67e4da4b496cccc88f71e0102f57fe531af469a4d722c43c1",
-      "bytes": 11748787
+      "sha256": "732a2c0da8505e21c58f40c8e002d61f0b2d2c570b8b4348e83f047c8345c48b",
+      "bytes": 11687813
     },
     "registered-motion-20261027/chi-hachi-bedtime/selected/00-01-ready.png": {
       "sha256": "10089835138de8a10d5f7df01f099558a7239a5baf1288495fdbb3a6f465a3be",
@@ -1598,9 +1598,197 @@
       "sha256": "4931239a87b1658ab28d2dc891d3f4ad32b6fc1d3d0bb6241208b6ac07760cbd",
       "bytes": 1277325
     },
+    "reviewed-motion/chi-usagi/00.png": {
+      "sha256": "924ae0635a383bdc2df10001b5ff9f374437d5aa41b8221fd8fb200543562449",
+      "bytes": 1194735
+    },
+    "reviewed-motion/chi-usagi/01.png": {
+      "sha256": "15ef889357ae76d46d6a1853cb5c3269ee5c20dd67ff0e3455fc8a93e9753d72",
+      "bytes": 1181745
+    },
+    "reviewed-motion/chi-usagi/02.png": {
+      "sha256": "65b3665d3026a820979fa5292119df99a76935a796f6df3029bd8b66dd1eeafe",
+      "bytes": 1209376
+    },
+    "reviewed-motion/chi-usagi/03.png": {
+      "sha256": "f534f60ae6a8e56c8adea8f270dece31e4e4b540e7c5f440f670af8343ab09b7",
+      "bytes": 636099
+    },
+    "reviewed-motion/chi-usagi/04.png": {
+      "sha256": "9a87fd939273e09e7ec500e05300ac4e25121df973da87439228a33c9a429756",
+      "bytes": 1203114
+    },
+    "reviewed-motion/hachi-usagi/00.png": {
+      "sha256": "82cf9b11d5d89eb17229e8cd63a429a7f4744052f1ee3682f905929dbcf86bf2",
+      "bytes": 1236789
+    },
+    "reviewed-motion/hachi-usagi/01.png": {
+      "sha256": "bc10fa715b276e46d696b5d0613a89f6ee69d82969654d89282dd32e4e728350",
+      "bytes": 1206039
+    },
+    "reviewed-motion/hachi-usagi/02.png": {
+      "sha256": "15aedbbb7af00c7c27afdea83db377c1ebcec87edee0b449f07323eef32a1b35",
+      "bytes": 1220273
+    },
+    "reviewed-motion/hachi-usagi/03.png": {
+      "sha256": "4c6b8909cb3d8fc79b995576ef9d16dde1c52ed948ba239abc0bb0727099f8df",
+      "bytes": 1221138
+    },
+    "reviewed-motion/hachi-usagi/04.png": {
+      "sha256": "3cc0d5ed018e3994635491d2c33571f99481359f90e1fa465f3c600371f230b2",
+      "bytes": 1228585
+    },
+    "reviewed-motion/hachi-usagi/05.png": {
+      "sha256": "9600b98e8e57cc773fbf1aed80bc97bcbc66dce6fbd99f40afe219d1f1f80b76",
+      "bytes": 1230621
+    },
+    "reviewed-motion/hachi-usagi/06.png": {
+      "sha256": "f8b13b99a1c18a6e48934cd52b1cbfd4b0967bba6fd6dc03672faf7c68bb06f8",
+      "bytes": 1226298
+    },
+    "reviewed-motion/kuri-chi/00.png": {
+      "sha256": "0d1ace7f24bc26672b177d76f6154b722910705b70650eafd917b893ec1d5848",
+      "bytes": 238144
+    },
+    "reviewed-motion/kuri-chi/01.png": {
+      "sha256": "0387c33366e0cea6ef7ff7491a7486365103cd6e7d52feefd2c6a7901e05e79a",
+      "bytes": 216815
+    },
+    "reviewed-motion/kuri-chi/02.png": {
+      "sha256": "c0d8a500b163735dc33c6217138fff391676d4b97c269f4c6f348040db6faece",
+      "bytes": 214421
+    },
+    "reviewed-motion/kuri-chi/03.png": {
+      "sha256": "93fa523bfd4e5d82deb95aa428c2c5439cd04c3611072d46ae9ca428624e7b5b",
+      "bytes": 211476
+    },
+    "reviewed-motion/momo-held/00.png": {
+      "sha256": "d92115044d59e53edcdb79d8c256a828cc0594246aed276cc03a02f8c0c861a1",
+      "bytes": 650906
+    },
+    "reviewed-motion/momo-held/01.png": {
+      "sha256": "61472301f7117af275e4ffcb8f55b3b64987ccd6edcfb22fc6fa7fd640a93d03",
+      "bytes": 678549
+    },
+    "reviewed-motion/momo-held/02.png": {
+      "sha256": "cb9b167e4c2ab9e1dab917e601d9b87d68493761964e0995220f46dac7c7541e",
+      "bytes": 698536
+    },
+    "reviewed-motion/momo-held/03.png": {
+      "sha256": "61472301f7117af275e4ffcb8f55b3b64987ccd6edcfb22fc6fa7fd640a93d03",
+      "bytes": 678549
+    },
+    "reviewed-motion/momo-kani/00.png": {
+      "sha256": "ef94742fda64be4cf1cd8e9c8c1bc06c0b5da24221334afee5aabf8959063d44",
+      "bytes": 231268
+    },
+    "reviewed-motion/momo-kani/01.png": {
+      "sha256": "a8421a913595894dfc67559c124178cf6f2edab8bd5b4c1576568757b0ffeb18",
+      "bytes": 233855
+    },
+    "reviewed-motion/momo-kani/02.png": {
+      "sha256": "f0987abb3f630b791b4782b5363aca699e638d94fd748fbddf63d3e1ccb210ca",
+      "bytes": 234866
+    },
+    "reviewed-motion/momo-kani/03.png": {
+      "sha256": "a6cd7fe03f1e80d6a26a6457a32c19eaa772a9269ec8a705d1c8e80e2951b97b",
+      "bytes": 233077
+    },
+    "reviewed-motion/momo-walk/00.png": {
+      "sha256": "1e4f97fdbf093b9ca0dba39f8fc06862699cfd1ce99b5a8059e347b9ce38f640",
+      "bytes": 756422
+    },
+    "reviewed-motion/momo-walk/01.png": {
+      "sha256": "eb680b5a6d25a3d5c39a62653921e039da3ec92930443edd9925d025f02c3434",
+      "bytes": 816505
+    },
+    "reviewed-motion/momo-walk/02.png": {
+      "sha256": "1c313beaac99e1f25d63f84ea1654deb321ade84977fa124a9d9a94c43dce176",
+      "bytes": 757161
+    },
+    "reviewed-motion/momo-walk/03.png": {
+      "sha256": "6cc0fa093a8132ba5bc9e0ec0437d3cd4dc0b6808f562ef6487b4a46165bd43f",
+      "bytes": 704525
+    },
+    "reviewed-motion/momo-walk/04.png": {
+      "sha256": "c6c7a12e024a90feea8036b402a0a489dd47be0be8011b115fcd022a24052cf0",
+      "bytes": 729884
+    },
+    "reviewed-motion/momo-walk/05.png": {
+      "sha256": "3b7e88949e91613fd538137b717add7ce26298c0d6555188d321b33cf8d41973",
+      "bytes": 721144
+    },
+    "reviewed-motion/momo-walk/06.png": {
+      "sha256": "d1c9dead7b37b0b07ce8fe2bf8f4b22ce7fabf167e8b6521037a880d4063336d",
+      "bytes": 739621
+    },
+    "reviewed-motion/momo-walk/07.png": {
+      "sha256": "327bea12dbda0fa1a64c3d504e1bf134c22e670bcc8e51ebf684d3878a238c0e",
+      "bytes": 697990
+    },
+    "reviewed-motion/pajama-group/00.png": {
+      "sha256": "a4c36738fe83fdebbbed900cb27a06bdef84107309be228890c52a71a4aa0ef9",
+      "bytes": 195719
+    },
+    "reviewed-motion/pajama-group/01.png": {
+      "sha256": "b12919b7ed83a3de46b1b6872b9701854c87a66c278ac68053ef96c0fe5a3cd7",
+      "bytes": 201107
+    },
+    "reviewed-motion/pajama-group/02.png": {
+      "sha256": "b807fbad5c9ebcb3bfb89c596067263a42c534c8bc11227741433eb72db5cc9a",
+      "bytes": 202917
+    },
+    "reviewed-motion/pajama-group/03.png": {
+      "sha256": "49d4d7483d4f2053961cbc45eee2ab0cdd41c18a038f72f92cce9da3e2e946ae",
+      "bytes": 198449
+    },
+    "reviewed-motion/pajama-group/04.png": {
+      "sha256": "d4c853346d5cce91866f56fd50ba44a1fafc0969053f7c4cbb3255e85aac45bf",
+      "bytes": 201451
+    },
+    "reviewed-motion/pajama-group/05.png": {
+      "sha256": "558a646a3562bc729a52c4879a30b87f5fe8d31ab58f1beca6ae4fcfd76d7a68",
+      "bytes": 200482
+    },
+    "reviewed-motion/pajama-group/06.png": {
+      "sha256": "69bba49cd6ab02efd318824ba20c366070f3dc3603753cd0beea61f425a6de08",
+      "bytes": 197983
+    },
+    "reviewed-motion/pajama-group/07.png": {
+      "sha256": "ece8cd9bf51b42e3e2264f3c234dae7d0093fe83d7353221b7f6b2eb49450235",
+      "bytes": 197820
+    },
+    "reviewed-motion/rakko-hachi/00.png": {
+      "sha256": "42cb311b250e8bec94f76c1770e69d4f591c2b133c58ce6b39ed5d3a8d9afb45",
+      "bytes": 1261722
+    },
+    "reviewed-motion/rakko-hachi/01.png": {
+      "sha256": "c44aeec0bde5bac075a80bb8547a3de5f21a34407fd107cbe70a03d3c9909523",
+      "bytes": 1267812
+    },
+    "reviewed-motion/rakko-hachi/02.png": {
+      "sha256": "fce6fe0ee7600255f2dd70ca835cfdbe220e9e4c1cb8e9017fcb7fc0126c5c46",
+      "bytes": 1244787
+    },
+    "reviewed-motion/rakko-hachi/03.png": {
+      "sha256": "110e291e6768cf194e0ff73c514aaa071edf6c8da1786b1ccf70f400cb89dd8f",
+      "bytes": 1271148
+    },
+    "reviewed-motion-controls.js": {
+      "sha256": "ea6d1fcbc24ea09ef05c26d0aacd0353eb51429ec965eda341ae2d29e4a6429e",
+      "bytes": 1908
+    },
+    "reviewed-motion-data.js": {
+      "sha256": "5de1fd353a86848b5655ab0864558a5cfd62d645058a977e629a584d940e2763",
+      "bytes": 10654
+    },
+    "study-records.html": {
+      "sha256": "fc139c0d5465aceba4e1f3e390fa1cb1c153c43862444b294d47118378447df3",
+      "bytes": 2324
+    },
     "study-runtime.js": {
-      "sha256": "8a9a310f3bf874ee15f21f5a3f11224d87a27a34e9e111815090aa3af2266b1a",
-      "bytes": 27551
+      "sha256": "6f70c8ad6b35e47f81fcb7b5880c00a1404ba3135b8bcc079f5e2be804c45770",
+      "bytes": 28052
     },
     "study-visibility.css": {
       "sha256": "6340976d753a990d5f582d950a75d4db060e950edfdf6ae1c2c55504fa42738f",
@@ -1611,12 +1799,21 @@
       "bytes": 3559
     },
     "study.html": {
-      "sha256": "09534a003bdf7a8a066187a8da9163a8cc172f8327294ec1ba0960956ec6db28",
-      "bytes": 4881
+      "sha256": "6f02e65423154934df9e424752e241b380f2b280b20d05910f86ed00868f37df",
+      "bytes": 5240
+    },
+    "unknown-words.html": {
+      "sha256": "1ed38d4a2fbc3679e63c2deeb3b50824c5925840a46acb3a9567ae0c46407d7c",
+      "bytes": 2591
     },
     "vocabulary.js": {
       "sha256": "f4eeee42a1e2d51940ade6cfc651235b8f34879e4b95e068f6d7da9f696a94fe",
       "bytes": 1395440
+    },
+    "word-selection.html": {
+      "sha256": "cfb4965b84609be1e6c94c86314ba903f5522406e4c355fbee8c03a694daf645",
+      "bytes": 1894
     }
-  }
+  },
+  "candidate": "function-pages-20261030"
 }

@@ -2,6 +2,7 @@
 (function(root){
   'use strict';
   const PREFERENCES_KEY='cv-bgm-preferences-v1';
+  const TRACK_KEY='cv-bgm-selected-track-v1';
   // Fixed same-origin repository root: QA subdirectories share the verified asset.
   const SITE_ROOT='/chiikawa-jlpt-vocab/';
   const defaults=()=>({version:1,volume:1,repeat:'off'});
@@ -95,11 +96,12 @@
     panel.dataset.initialized='true';
     const ids=['track','play','stop','prev','next','repeat','status','preferences-status'];
     const el=Object.fromEntries(ids.map(id=>[id,document.getElementById('bgm-'+id)]));
-    let preferences=defaults(),renderedNames=[],player;
+    let preferences=defaults(),renderedNames=[],player,loadingPlaylist=false,trackSources=[];
     function storageNotice(text){el['preferences-status'].textContent=text;}
     try{const raw=root.localStorage.getItem(PREFERENCES_KEY);if(raw!==null)preferences=normalizePreferences(JSON.parse(raw));}
     catch{storageNotice('반복 설정을 읽지 못했습니다. 이 페이지에서는 사용할 수 있어요.');}
     function render(value){
+      if(!loadingPlaylist&&value.index>=0&&trackSources[value.index]){try{root.localStorage.setItem(TRACK_KEY,trackSources[value.index]);}catch{}}
       if(value.tracks.length!==renderedNames.length||value.tracks.some((name,i)=>name!==renderedNames[i])){
         el.track.replaceChildren();
         value.tracks.forEach((name,i)=>{const option=document.createElement('option');option.value=String(i);option.textContent=(i+1)+'. '+name;el.track.appendChild(option);});
@@ -118,7 +120,7 @@
     }
     player=createPlayer({createMedia:()=>new root.Audio(),onChange:render,preferences});
     render(player.state());
-    function loadPlaylist(){try{player.setTracks(JSON.parse(document.getElementById('bgm-playlist')?.textContent||'{"version":1,"tracks":[]}'));}catch{player.setTracks(null);}}
+    function loadPlaylist(){loadingPlaylist=true;try{const manifest=JSON.parse(document.getElementById('bgm-playlist')?.textContent||'{"version":1,"tracks":[]}');trackSources=Array.isArray(manifest.tracks)?manifest.tracks.map(t=>t.src):[];player.setTracks(manifest);let selected=null;try{selected=root.localStorage.getItem(TRACK_KEY);}catch{}const index=trackSources.indexOf(selected);if(index>=0)player.select(index);}catch{player.setTracks(null);}finally{loadingPlaylist=false;}}
     loadPlaylist();
     root.addEventListener('pageshow',event=>{if(event.persisted)loadPlaylist();});
     el.play.addEventListener('click',()=>{['pending','playing'].includes(player.state().status)?player.pause():player.play();});
@@ -126,7 +128,7 @@
     el.track.addEventListener('change',()=>player.select(Number(el.track.value)));
     function savePreferences(){
       const next=normalizePreferences({version:1,repeat:el.repeat.value});player.setPreferences(next);
-      try{root.localStorage.setItem(PREFERENCES_KEY,JSON.stringify(next));storageNotice('반복 설정만 이 브라우저에 저장됩니다.');}
+      try{root.localStorage.setItem(PREFERENCES_KEY,JSON.stringify(next));storageNotice('선택한 곡과 반복 설정을 이 브라우저에 저장합니다.');}
       catch{storageNotice('설정 저장이 차단되었습니다. 반복은 현재 페이지에서만 유지됩니다.');}
     }
     el.repeat.addEventListener('change',savePreferences);

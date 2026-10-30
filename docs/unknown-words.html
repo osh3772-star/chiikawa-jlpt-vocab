@@ -1,0 +1,19 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>모르는 단어 · JLPT 단어장</title><link rel="stylesheet" href="app.css?v=function-pages-1"></head><body data-page="unknown"><div class="scenery" aria-hidden="true"><span class="sun"></span><span class="cloud cloud-one"></span><span class="cloud cloud-two"></span><span class="hill hill-one"></span><span class="hill hill-two"></span></div><nav class="cv-page-nav" aria-label="페이지 이동"><a data-cv-link href="index.html">시작</a><a data-cv-link href="character-settings.html">캐릭터 설정</a><a data-cv-link href="word-selection.html">단어 선택</a><a data-cv-link href="study.html">공부</a><a data-cv-link href="unknown-words.html" aria-current="page">모르는 단어</a><a data-cv-link href="study-records.html">학습 기록</a></nav><p id="navigation-status" role="status" tabindex="-1"></p><header class="site-header"><h1>모르는 단어</h1><p id="storage-note">학습 기록은 이 브라우저에 자동 저장됩니다.</p></header><main><section class="paper-panel review-panel" aria-label="모르겠음 단어 모음">
+        <p class="section-tag pink-tag">한 번 더 만나기</p>
+        <h2>모르겠음 단어 모음</h2>
+        <label for="review-level">복습할 급수</label>
+        <select id="review-level">
+          <option value="all">전체 급수</option>
+          <option>N5</option><option>N4</option><option>N3</option><option>N2</option><option>N1</option>
+        </select>
+        <p id="review-summary"></p>
+        <button id="start-review" type="button">모르겠음 단어만 복습</button>
+        <p id="review-empty">아직 모르겠음으로 표시한 단어가 없습니다. 학습 화면에서 ↓를 눌러 등록하세요.</p>
+        <div class="table-scroll" tabindex="0" role="region" aria-label="모르겠음 단어 목록">
+        <table id="review-table">
+          <caption>모르겠음으로 표시한 단어 목록 · 단어를 누르면 해당 위치에서 복습합니다.</caption>
+          <thead><tr><th scope="col">급수</th><th scope="col">단어</th><th scope="col">읽는 법</th><th scope="col">뜻</th></tr></thead>
+          <tbody id="review-rows"></tbody>
+        </table>
+        </div>
+      </section></main><script src="navigation.js?v=function-pages-1"></script><script src="background-runtime.js?v=adf094d79c9d"></script><script src="vocabulary.js?v=f4eeee42a1e2"></script><script src="study-runtime.js?v=function-pages-1"></script></body></html>

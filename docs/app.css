@@ -617,3 +617,8 @@ body.cv-floor-layout .cv-pet-layer[data-floor-lift="true"]{z-index:140}
 .cv-continuous-walk :focus-visible{outline:3px solid #7756a7;outline-offset:3px}
 /* Keep loading on its own row; minimum room for normal status text, not a clipping height. */
 #continuous-walk-status{flex:0 0 100%;min-inline-size:0;min-block-size:4.2em;font-size:13px;line-height:1.4;margin:0;overflow-wrap:anywhere}
+
+/* Independent feature documents: no anchor/scroll navigation. */
+body[data-page=selection] main,body[data-page=unknown] main,body[data-page=records] main{max-width:760px;margin:auto}
+.cv-feature-menu{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.cv-feature-card{display:flex;flex-direction:column;gap:8px;text-decoration:none;color:inherit;min-height:110px;justify-content:center}.cv-feature-card strong{font-size:1.25rem}.cv-feature-card span{font-size:.95rem}.cv-page-nav{flex-wrap:wrap}.cv-page-nav a{min-height:44px;box-sizing:border-box;display:inline-flex;align-items:center;justify-content:center}
+@media(max-width:480px){.cv-feature-menu{grid-template-columns:1fr}.cv-page-nav{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px}.cv-page-nav a{font-size:13px;padding:8px 4px;white-space:normal}.cv-feature-card{min-height:88px}}
