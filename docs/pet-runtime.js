@@ -195,12 +195,40 @@ const DATA = [
   { id: 'chiikawa', label: '치이카와', size: 126, speed: 42 },
   { id: 'hachiware', label: '하치와레', size: 130, speed: 48 },
   { id: 'usagi', label: '우사기', size: 126, speed: 64 },
-  { id: 'shisa', label: '시사', size: 80*390/327, speed: 39 },
-  { id: 'momonga', label: '모몽가', size: 80*1664/896, speed: 61 },
+  // Face/torso references inspected in the original drawings; ears/tails are not body height.
+  { id: 'shisa', label: '시사', size: 96*390/286, speed: 39 },
+  { id: 'momonga', label: '모몽가', size: 96*1224/688, speed: 61 },
   { id: 'rakko', label: '랏코', size: 120, speed: 34 },
   { id: 'kurimanju', label: '쿠리만쥬', size: 120, speed: 0 },
   { id: 'kani', label: '카니', size: 80*512/331, speed: 0 },
 ];
+// One crop shared by every reviewed Momonga pose; its union includes every nonzero-alpha pixel.
+// Only CSS source registration changes. Original PNG bytes and per-frame scale remain intact.
+const MOMONGA_SCENE_CROP=Object.freeze([176,203,1224,1254]);
+// Static visible sole/support, in source pixels per rendered canvas width.
+// Momonga excludes the tail; Kani/Kurimanju retain their registered support anchors.
+const SCENE_FOOT_Y=Object.freeze({chiikawa:459/390,hachiware:492/390,usagi:476/390,shisa:505/390,momonga:1104/1224,rakko:500/390,kurimanju:359/384,kani:428/512});
+// Fixed locations in one field, independent of the card width or selection count.
+// Narrow screens move the camera horizontally; they never create more document rows.
+function planCompanionScene(items,width,{margin=4.5}={}){
+  const spots={chiikawa:[0,165],hachiware:[190,160],usagi:[380,200],shisa:[570,190],momonga:[30,355],rakko:[235,335],kurimanju:[430,360],kani:[620,325]};
+  const registered=items.map(r=>{const spot=spots[r.id]??[0,0],scale=r.scale??1;return{r,left:spot[0]*scale,top:spot[1]*scale-(r.support??r.bottom)+r.top};});
+  if(!registered.length)return{placements:[],width,height:0};
+  const left=Math.min(...registered.map(p=>p.left)),top=Math.min(...registered.map(p=>p.top));
+  const right=Math.max(...registered.map(p=>p.left+p.r.right-p.r.left)),bottom=Math.max(...registered.map(p=>p.top+p.r.bottom-p.r.top));
+  const sceneWidth=Math.max(width,Math.ceil(right-left+2*margin)),offset=(sceneWidth-(right-left))/2;
+  return {placements:registered.map(p=>({id:p.r.id,x:offset+p.left-left-p.r.left,y:margin+p.top-top-p.r.top})),width:sceneWidth,height:Math.ceil(bottom-top+2*margin)};
+}
+
+function fieldCameraKey(event,lane,sync=()=>{}){
+  if(event.altKey||event.ctrlKey||event.metaKey||event.isComposing)return;
+  // Map focus must never mark a word known/unknown through document shortcuts.
+  if(event.key==='ArrowUp'||event.key==='ArrowDown'){event.stopPropagation();return;}
+  if(!['ArrowLeft','ArrowRight','Home','End'].includes(event.key))return;
+  event.preventDefault();event.stopPropagation();
+  lane.scrollLeft=event.key==='Home'?0:event.key==='End'?lane.scrollWidth:lane.scrollLeft+(event.key==='ArrowLeft'?-120:120);sync();
+}
+
 function pickPetBehavior(weights, random = Math.random) {
   const entries = Object.entries(weights);
   if (!entries.length || entries.some(([, weight]) => !Number.isFinite(weight) || weight < 0)) {
@@ -663,6 +691,9 @@ const {routeOrdinaryPairPointer}=OrdinaryActorIdentityModule;
 function planOrdinaryPairFloor(env,a){
   const pets=env.pets,visible=pets.filter(p=>!p.el.hidden&&!env.stageRect(p));
   if(!env.state().floorWalk||a.actors.some(id=>!visible.some(p=>p.id===id)))return null;
+  // Document scenes keep their existing rows. Pair admission may use the vacated
+  // actor slots, but never re-seat every companion across the browser width.
+  if(env.floorViewport)return visible.map(p=>({p,x:p.x,y:env.ground(p)}));
   const sorted=[...visible].sort((p,q)=>p.x-q.x),first=sorted.findIndex(p=>a.actors.includes(p.id));
   const before=sorted.slice(0,first).filter(p=>!a.actors.includes(p.id)),after=sorted.slice(first).filter(p=>!a.actors.includes(p.id));
   const ordered=[...before,...a.actors.map(id=>pets.find(p=>p.id===id)),...after];
@@ -680,6 +711,7 @@ function readOrdinaryPair(env,a,owned=false){
   const pets=env.pets,PHYSICAL=env.PHYSICAL,doc=env.document??globalThis.document;
   env.markDirty();env.refreshObstacles();let study;try{study=env.readStudyState?.();}catch(_){}
   const actors=a.actors.map(id=>pets.find(p=>p.id===id)),v=env.viewport();
+  const scene=env.floorViewport?.(),clip=scene?{left:Math.max(0,scene.left),top:Math.max(0,scene.top),right:Math.min(v.w,scene.right),bottom:Math.min(v.h,scene.bottom)}:{left:0,top:0,right:v.w,bottom:v.h};
   const owner=env.presentationRegistry.get(),st=env.state();
   const safe=!!study&&Number.isSafeInteger(study.revision)&&!st.destroyed&&!doc.hidden&&!env.paused()&&!env.ordinaryInputStudyBlocked(study)&&!st.externalPresentation&&!st.pending&&!st.pair&&(!owner||(owned&&owner.kind==='pair'))&&actors.every(p=>p&&env.isRequestedVisible(p.id)&&!p.assetUnavailable&&!p.scalePlacementUnavailable&&!PHYSICAL.has(p.mode)&&p.pointerId===null&&!p.touch&&!p.airborne&&p.mode==='idle'&&!p.action&&!env.isBeta(p))&&!pets.some(p=>p.pointerId!==null||p.touch||p.airborne||PHYSICAL.has(p.mode)||(!p.el.hidden&&(p.action||p.mode!=='idle')));
   if(!safe)return {safe:false};
@@ -693,11 +725,11 @@ function readOrdinaryPair(env,a,owned=false){
   const avoid=[...env.obstacles(),...pets.filter(p=>!actors.includes(p)&&!p.el.hidden).map(p=>env.paintRect(planned(p)))];
   // Keep the foot baseline and exact full-alpha paint. Asymmetric pairs may
   // need a horizontal translation inside the vacated floor slots, not scaling.
-  if(Number.isFinite(scale)&&scale>0&&!env.hachiPaintSafe({outer:paint},{left:0,top:0,right:v.w,bottom:v.h},null,avoid)){
-    const fit=env.nearestScalePlacement({x:paint.left,y:paint.top,width:paint.right-paint.left,height:paint.bottom-paint.top,viewport:{left:4.5,top:4.5,right:v.w-4.5,bottom:v.h-4.5},obstacles:avoid.map(r=>({left:r.left-.5,top:r.top-.5,right:r.right+.5,bottom:r.bottom+.5}))});
+  if(Number.isFinite(scale)&&scale>0&&!env.hachiPaintSafe({outer:paint},clip,null,avoid)){
+    const fit=env.nearestScalePlacement({x:paint.left,y:paint.top,width:paint.right-paint.left,height:paint.bottom-paint.top,viewport:{left:clip.left+4.5,top:clip.top+4.5,right:clip.right-4.5,bottom:clip.bottom-4.5},obstacles:avoid.map(r=>({left:r.left-.5,top:r.top-.5,right:r.right+.5,bottom:r.bottom+.5}))});
     if(fit){const dx=fit.x-paint.left;x+=dx;paint={...paint,left:paint.left+dx,right:paint.right+dx};}
   }
-  const geometrySafe=Number.isFinite(scale)&&scale>0&&(placement??[]).filter(slot=>!actors.includes(slot.p)).every(slot=>env.hachiPaintSafe({outer:env.paintRect(planned(slot.p))},{left:0,top:0,right:v.w,bottom:v.h},null,env.obstacles()))&&env.hachiPaintSafe({outer:paint},{left:0,top:0,right:v.w,bottom:v.h},null,avoid);
+  const geometrySafe=Number.isFinite(scale)&&scale>0&&(placement??[]).filter(slot=>!actors.includes(slot.p)).every(slot=>env.hachiPaintSafe({outer:env.paintRect(planned(slot.p))},clip,null,env.obstacles()))&&env.hachiPaintSafe({outer:paint},clip,null,avoid);
   return {safe:geometrySafe,key:JSON.stringify([st.transientEpoch,study?.revision,actors.map(p=>[p.x,p.y,p.width,p.height]),v,avoid]),actors,placement,scene:{x,y,scale,width:a.nativeSize[0]*scale,height:a.nativeSize[1]*scale,hit:paint,feet:actors.map(p=>({id:p.id,x:x+anchors[p.id][0]*scale}))}};
 }
 
@@ -1147,7 +1179,7 @@ function mountChiikawaPets(options = {}) {
     startPaused = false, onStatusChange = null, spriteSources = null, characterProfiles = {}, experimentalCharacters = [], experimentalStage = null, visibleCharacters = enabledCharacters, mobilePetStages = null, mobileStageViewport = null, decorativeStages = null, decorativeStageWindowWidths = null, onDeliberateInteraction = null, onCharacterHidden = null, onPresentationCancelled = null,
     inlineResponseAsset = null, inlineResponseEnabled = false, hachiInlineAsset = null, hachiInlineEnabled = false, usagiInlineAsset = null, usagiInlineEnabled = false, momongaInlineAsset = null, momongaInlineEnabled = false, initialBodyPositions = null, displayScalePercents = null, candidateActions = null, onBeforeSizeChange = null,
     pairArtApproved = false, readStudyState = null, isCharacterOnlyMotion = () => false, maxVisibleMobile = 3, mobilePriority = ['shisa', 'momonga', 'rakko'],
-    viewportOverlay = false, readOverlayObstacles = null, floorWalk = false, readFloorWalkViewport = null, onFloorLayout = null, ownedViewportGeometry = null, avoidSelector = '#card, button, summary, select, input, textarea, a, .table-scroll' } = options;
+    viewportOverlay = false, readOverlayObstacles = null, floorWalk = false, readFloorWalkViewport = null, readFloorWalkWorld = null, onFloorLayout = null, ownedViewportGeometry = null, avoidSelector = '#card, button, summary, select, input, textarea, a, .table-scroll' } = options;
   InputPaintHost.apply(characterProfiles);
   PhysicalProfileHost.apply(characterProfiles,spriteSources);let physicalSettle=null;
   if (typeof document === 'undefined') return { react() {}, pause() {}, resume() {}, destroy() {}, getState() { return []; }, isPaused() { return true; }, setMobileCharacters() {}, setVisibleCharacters() {}, getVisibleCharacters() { return []; } };
@@ -1182,14 +1214,18 @@ function mountChiikawaPets(options = {}) {
   const transientEpoch=++transientEngineSerial;let transient=null,transientSerial=0,positionRevision=0,positionSignature=null;
   const presentationRegistry=createPresentationRegistry(transientEpoch);let pairPresentation=null;
   let externalPresentation = null, externalLease = null, externalStageAnchor = null, externalLeaseRequired = false, externalNoLayout = false, leaseSerial = 0;
-  // A single viewport-bottom row. No DOM cloning, storage writes, or upper-space search.
+  // One compact field after the learning controls, with an independent horizontal camera.
   const floorPaintMargin=4.5; // 4.25px guard plus actual 0.1px DOM rounding reserve.
+  const floorAnchors=new Map();let floorSceneGeometry=null;
+  function floorViewport(){const v=viewport();let r;try{r=readFloorWalkViewport?.();}catch{}return r&&['left','top','right','bottom','width','height'].every(k=>Number.isFinite(r[k]))&&r.width>0?r:{left:0,top:0,right:v.w,bottom:v.h,width:v.w,height:v.h};}
+  function floorWorld(){const lane=floorViewport();let r;try{r=readFloorWalkWorld?.();}catch{}return r&&['left','top','right','bottom','width','height'].every(k=>Number.isFinite(r[k]))&&r.width>0?r:lane;}
+  function floorGeometryKey(){return JSON.stringify([floorViewport(),floorWorld()].map(r=>[r.left,r.top,r.width,r.height]));}
   function floorFootprint(p){
     const body=paintRect(p,0,0),walk=p.id==='chiikawa'?chiFootReviewBounds({...p,x:0,y:0}):null;
     const bounds=[body,...(walk?[walk]:[])],actor={id:p.id,x:0,y:0,width:p.width,height:p.height};
     // Reserve complete registered paint, not opaque pixels or an unpadded body.
     // Metadata inspection neither requests images nor activates an action.
-    if(typeof inputFrameBounds==='function')for(const action of Object.values(profile(p).inputSequences?.actions??{})){
+    if(p.id!=='momonga'&&typeof inputFrameBounds==='function')for(const action of [profile(p).inputSequences?.actions?.walk].filter(Boolean)){
       for(const frame of PhysicalReservationModule.reservationFrameSets(profile(p),action).flat()){const r=inputFrameBounds(frame,actor);if(r)bounds.push(r);}
     }
     const candidate=candidateActions?.layoutPlan?.(p.id,actor,body);
@@ -1207,7 +1243,7 @@ function mountChiikawaPets(options = {}) {
     return{left:floorPaintMargin+(travel[0]??0),right:floorPaintMargin+(travel.at(-1)??0),gaps:actors.slice(1).map((_,i)=>floorPaintMargin+Math.max(travel[i],travel[i+1]))};
   }
   // UI silhouette alignment for the three reported actors, not canonical anatomy.
-  const baselineCanvasGaps=Object.freeze({shisa:15/390,kani:81/512,momonga:354/1664});
+  const baselineCanvasGaps=Object.freeze({shisa:15/390,kani:81/512,momonga:150/1224});
   function rawFloorInset(p){return Math.max(0,floorFootprint(p).bottom-p.height);}
   function floorBottomInset(p){
     if(!floorWalk||stageRect(p))return 0;
@@ -1222,23 +1258,14 @@ function mountChiikawaPets(options = {}) {
     const r=floorFootprint(p);
     return{left:p.x+r.left,top:p.y+r.top,right:p.x+r.right,bottom:p.y+r.bottom,width:r.right-r.left,height:r.bottom-r.top};
   }
-  function floorFitScale(baseScale){
-    const ids=visibleIds(),actors=selected.filter(q=>ids.includes(q.id)&&!decorativeStage(q)&&!isBeta(q));
-    if(!actors.length)return 1;
-    let total=0;for(const q of actors){const width=q.size*baseScale*appliedScalePercent(q)/100,r=floorFootprint({...q,width,height:width*(profile(q).nativeAspect??(4/3))});total+=r.right-r.left;}
-    const spacing=floorRowSpacing(actors),reserve=spacing.left+spacing.right+spacing.gaps.reduce((sum,n)=>sum+n,0);
-    return Math.min(1,Math.max(.05,(viewport().w-reserve)/total));
-  }
   function placeFloorRow(){
-    const actors=pets.filter(p=>!p.el.hidden&&!stageRect(p)),v=viewport();
-    if(!actors.length){onFloorLayout?.(0);return;}
-    const rects=actors.map(floorFootprint),spacing=floorRowSpacing(actors);
-    const total=rects.reduce((sum,r)=>sum+r.right-r.left,0)+spacing.left+spacing.right+spacing.gaps.reduce((sum,n)=>sum+n,0);
-    let x=Math.max(0,(v.w-total)/2)+spacing.left,height=0;
-    actors.forEach((p,i)=>{p.x=x-rects[i].left;p.y=ground(p);x+=rects[i].right-rects[i].left+(spacing.gaps[i]??0);height=Math.max(height,v.h-(p.y+rects[i].top)+floorPaintMargin);});
-    root.dataset.floorLayout='true';root.dataset.floorHeight=String(Math.ceil(height));
-    onFloorLayout?.(Math.ceil(height));dirty=true;refreshObstacles();
-    for(const p of actors)render(p);
+    const actors=pets.filter(p=>!p.el.hidden&&!stageRect(p)),lane=floorViewport();
+    const plan=planCompanionScene(actors.map(p=>({...floorFootprint(p),id:p.id,scale:appliedScalePercent(p)/100,support:p.width*SCENE_FOOT_Y[p.id]})),lane.width,{margin:floorPaintMargin});
+    floorAnchors.clear();for(const point of plan.placements)floorAnchors.set(point.id,point);
+    onFloorLayout?.(plan.height,plan.width);floorSceneGeometry=floorGeometryKey();const world=floorWorld();
+    root.dataset.floorLayout='scene';root.dataset.floorHeight=String(plan.height);root.dataset.floorWidth=String(plan.width);
+    for(const p of actors){const point=floorAnchors.get(p.id);if(p.pointerId===null&&!p.airborne&&!PHYSICAL.has(p.mode)){p.x=world.left+point.x;p.y=ground(p);}}
+    dirty=true;refreshObstacles();for(const p of actors)render(p);
   }
 
   // Dedicated opt-in capability. The old authored-step/manual guards are untouched.
@@ -1511,7 +1538,7 @@ function isEngineOwnedDragShadow(value) {
 }
 
 /** Demand-only image readiness cache. It never starts, resumes or paints an action. */
-function createInputDecodeQueue({ImageCtor=Image,maxConcurrent=2,registerImage=()=>{},onFailure=()=>{},isDisposed=()=>false}={}) {
+function createInputDecodeQueue({ImageCtor=Image,maxConcurrent=2,registerImage=()=>{},onFailure=()=>{},onRetry=()=>{},isDisposed=()=>false}={}) {
   const cache=new Map(),queue=[];let active=0,disposed=false;
   const stopped=()=>disposed||isDisposed();
   function pump(){
@@ -1522,9 +1549,9 @@ function createInputDecodeQueue({ImageCtor=Image,maxConcurrent=2,registerImage=(
           const image=new ImageCtor();item.image=image;registerImage(image);image.src=item.frame.source;
           await image.decode();
           if(stopped())return;
-          if(image.naturalWidth!==item.frame.assetSize[0]||image.naturalHeight!==item.frame.assetSize[1])throw Error('input-image-dimensions');
+          if(image.naturalWidth!==item.frame.assetSize[0]||image.naturalHeight!==item.frame.assetSize[1]){item.failure='dimensions';throw Error('input-image-dimensions');}
           item.status='ready';
-        }catch(_){if(!stopped()){item.status='failed';onFailure(item.frame.source);}}
+        }catch(_){if(!stopped()){item.status='failed';item.failure??='decode';onFailure(item.frame.source);}}
         finally{active--;pump();}
       })();
     }
@@ -1537,12 +1564,21 @@ function createInputDecodeQueue({ImageCtor=Image,maxConcurrent=2,registerImage=(
       if(!item){item={frame,status:'queued'};cache.set(frame.source,item);queue.push(item);pump();}
       return item.status==='ready'?'ready':item.status==='failed'?'failed':'pending';
     },
+    // A fresh deliberate grab may retry a transient load failure once. No timer,
+    // held-loop retry, or retry of a decoded but wrongly sized asset is allowed.
+    retryFailed(frames){
+      if(stopped())return;
+      for(const frame of frames){const item=cache.get(frame?.source);
+        if(item?.status!=='failed'||item.failure!=='decode')continue;
+        cache.delete(frame.source);onRetry(frame.source);this.request(frame);
+      }
+    },
     getState:()=>({active,queued:queue.length,cached:cache.size,disposed:stopped()}),
     destroy(){disposed=true;queue.length=0;cache.clear();}
   };
 }
 
-  const inputDecode=createInputDecodeQueue({registerImage:im=>preloads.push(im),onFailure:source=>failed.add(source),isDisposed:()=>destroyed});physicalSettle=PhysicalProfileModule.createPhysicalSettle({settleFrames:PhysicalProfileModule.settleFramesFromProfiles(characterProfiles),isReady:s=>inputDecode.has(s),isFailed:s=>failed.has(s)});
+  const inputDecode=createInputDecodeQueue({registerImage:im=>preloads.push(im),onFailure:source=>failed.add(source),onRetry:source=>failed.delete(source),isDisposed:()=>destroyed});physicalSettle=PhysicalProfileModule.createPhysicalSettle({settleFrames:PhysicalProfileModule.settleFramesFromProfiles(characterProfiles),isReady:s=>inputDecode.has(s),isFailed:s=>failed.has(s)});
   const inputSequenceFor=(p,state)=>p.id==='momonga'?null:resolveActorInputSequence(profile(p),state,p.dir<0?'left':'right');
   function primeInputFrames(sequence,index=0){
     if(!sequence)return;
@@ -1593,7 +1629,7 @@ function createInputDecodeQueue({ImageCtor=Image,maxConcurrent=2,registerImage=(
     const v=viewport(),stage=stageRect(p),dock=mobileStage(p)&&mobileStageViewport?mobileStageViewport.getBoundingClientRect():null;
     // The floor host already grants owned lift on successful direct capture only.
     // Other input sequences keep the actual owned viewport/clip and UI protection.
-    const lift=p.floorInputLift===true,clips=lift?[]:[stage,dock].filter(Boolean);
+    const lift=p.floorInputLift===true,clips=lift?[]:[stage,dock,...(floorWalk?[floorViewport()]:[])].filter(Boolean);
     const view={left:Math.max(0,...clips.map(r=>r.left)),top:Math.max(0,...clips.map(r=>r.top)),right:Math.min(v.w,...clips.map(r=>r.right)),bottom:Math.min(v.h,...clips.map(r=>r.bottom))};
     if(swept.left<view.left+4.25||swept.top<view.top+4.25||swept.right>view.right-4.25||swept.bottom>view.bottom-4.25)return false;
     const avoid=[...(lift?[]:obstacles),...pets.filter(q=>q!==p&&!q.el.hidden&&!q.assetUnavailable).map(q=>ordinaryPeerPaintRect(q))];
@@ -1637,8 +1673,8 @@ function createInputDecodeQueue({ImageCtor=Image,maxConcurrent=2,registerImage=(
 
   const sequenceFor = (p, action, direction = p.dir < 0 ? 'left' : 'right') => {
  if(p.id==='momonga') {
-  const d=window.CVReviewedMotionData;
   if(!reviewedMomoReady)return null;
+  const d=Object.fromEntries(['momo-held','momo-walk'].map(key=>[key,{...window.CVReviewedMotionData[key],frames:window.CVReviewedMotionData[key].frames.map(f=>({...f,sourceRect:MOMONGA_SCENE_CROP}))}]));
   if(action==='grab-onset')return {...d['momo-held'],frames:[{...d['momo-held'].frames[0],durationMs:160}],loop:false,rootDistance:0};
   if(action==='hold')return {...d['momo-held'],loop:true,rootDistance:0};
   if(action==='walk')return {...d['momo-walk'],loop:true,rootDistance:.12};
@@ -1651,9 +1687,9 @@ function createInputDecodeQueue({ImageCtor=Image,maxConcurrent=2,registerImage=(
   const decorativeStage = p => decorativeStages?.[p.id] && !decorativeStages[p.id].hidden ? decorativeStages[p.id] : null;
   const mobileStage = p => !decorativeStage(p) && viewport().w < 640 ? mobilePetStages?.[p.id] : null;
   const stageRect = p => decorativeStage(p) ? decorativeStage(p).getBoundingClientRect() : mobileStage(p) && !mobileStage(p).hidden ? mobileStage(p).getBoundingClientRect() : isBeta(p) && experimentalStage && !experimentalStage.hidden ? experimentalStage.getBoundingClientRect() : null;
-  const xBounds = p => { const r = stageRect(p); const margin=decorativeStage(p)&&r?Math.min(Math.max(18,((decorativeStageWindowWidths?.[p.id]??160)-p.width)/2+1),Math.max(0,(r.right-r.left-p.width)/2)):8; return r ? [r.left + margin, r.right - p.width - margin] : [0, viewport().w - p.width]; };
+  const xBounds = p => { const r = stageRect(p); const margin=decorativeStage(p)&&r?Math.min(Math.max(18,((decorativeStageWindowWidths?.[p.id]??160)-p.width)/2+1),Math.max(0,(r.right-r.left-p.width)/2)):8; if(!r&&floorWalk&&!floorOwnedLift(p)){const lane=floorWorld(),paint=floorFootprint(p);return[lane.left+Math.max(0,-paint.left)+floorPaintMargin,lane.right-p.width-Math.max(0,paint.right-p.width)-floorPaintMargin];}return r ? [r.left + margin, r.right - p.width - margin] : [0, viewport().w - p.width]; };
   const constrainX = (p, x) => { const [left, right] = xBounds(p); return clamp(x, left, right); };
-  const ground = p => { const r = stageRect(p); return Math.max(0, (r ? r.bottom : viewport().h) - p.height - floorOffset - floorBottomInset(p)); };
+  const ground = p => { const r = stageRect(p);if(!r&&floorWalk){const lane=floorWorld(),anchor=floorAnchors.get(p.id);return anchor?lane.top+anchor.y:lane.bottom-p.height-floorOffset-floorBottomInset(p);}return Math.max(0, (r ? r.bottom : viewport().h) - p.height - floorOffset - floorBottomInset(p)); };
   // Review-only ordinary-action channel. Candidate art never enters probabilities.
   const originalPaintRect=(p,x=p.x,y=p.y)=>continuousWalk&&p.id==='chiikawa'?chiFootReviewBounds({...p,x,y}):paddedGeometry(p,x,y)?.outer??{left:x,top:y,right:x+p.width,bottom:y+p.height,width:p.width,height:p.height};
   const candidateUnion=(...rs)=>{const left=Math.min(...rs.map(r=>r.left)),top=Math.min(...rs.map(r=>r.top)),right=Math.max(...rs.map(r=>r.right)),bottom=Math.max(...rs.map(r=>r.bottom));return{left,top,right,bottom,width:right-left,height:bottom-top};};
@@ -1760,7 +1796,7 @@ function createInputDecodeQueue({ImageCtor=Image,maxConcurrent=2,registerImage=(
     if (p.el.hidden || p.assetUnavailable || p.scalePlacementUnavailable || p.overlayUnavailable || document.hidden) return false;
     const r = stageRect(p), x = p.x + (r && Number.isFinite(p.stageLeft) ? r.left - p.stageLeft : 0);
     const y = r && !PHYSICAL.has(p.mode) ? Math.max(0, r.bottom - p.height - floorOffset) : p.y;
-    const dock = !floorOwnedLift(p) && mobileStage(p) && mobileStageViewport ? mobileStageViewport.getBoundingClientRect() : null;
+    const dock = !floorOwnedLift(p) ? (floorWalk?floorViewport():mobileStage(p)&&mobileStageViewport?mobileStageViewport.getBoundingClientRect():null) : null;
     const hit=paintRect(p,x,y);
     const sourceStage=decorativeStage(p)??mobileStage(p)??(isBeta(p)?experimentalStage:null);
     const ownedStage=!floorOwnedLift(p)&&sourceStage&&ownedViewportGeometry?.stagePresentation(sourceStage,hit,dock);
@@ -1792,7 +1828,7 @@ function createInputDecodeQueue({ImageCtor=Image,maxConcurrent=2,registerImage=(
   function refreshObstacles() { if (dirty) { const custom=viewportOverlay&&typeof readOverlayObstacles==='function'?readOverlayObstacles():null;obstacles=custom??[...document.querySelectorAll(avoidSelector)].filter(petObstacleIsDisplayed).map(el => ownedViewportGeometry?.obstacleRect(el,el.getBoundingClientRect())??el.getBoundingClientRect()).filter(r => r.width > 0 && r.height > 0);overlayRevision++;dirty = false; } }
   function invalidate() { dirty = true; wake(); }
   function listen(el, type, fn, opts) { el.addEventListener(type, fn, opts); listeners.push([el, type, fn, opts]); }
-  function pose(p, name = 'idle') {if(p.id==='momonga'){const f=window.CVReviewedMotionData['momo-walk'].frames[0];display(p,'reviewed-idle',f.source,'reviewed-static',f);return;}if(name==='idle'&&physicalSettle?.paintIdle(p,display))return;
+  function pose(p, name = 'idle') {if(p.id==='momonga'){const f={...window.CVReviewedMotionData['momo-walk'].frames[0],sourceRect:MOMONGA_SCENE_CROP};display(p,'reviewed-idle',f.source,'reviewed-static',f);return;}if(name==='idle'&&physicalSettle?.paintIdle(p,display))return;
     if (isBeta(p) && name === 'idle') { const neutral = sequenceFor(p, 'idle', 'front')?.frames[0]; if (neutral && !failed.has(neutral.source)) { display(p, neutral.frameId, neutral.source, 'beta-static', neutral); return; } }
     const frames = spriteSources?.[p.id] ?? profile(p).frames;
     if (!(frames ? Object.hasOwn(frames, name) : DEFAULT_POSES.includes(name))) name = 'idle';
@@ -1942,6 +1978,9 @@ function createInputDecodeQueue({ImageCtor=Image,maxConcurrent=2,registerImage=(
     if(r&&!PHYSICAL.has(p.mode))p.y=ground(p);
   }
   function syncScaleAvailability(p) {
+    if(floorWalk&&!stageRect(p)&&!floorOwnedLift(p)){
+      p.scalePlacementUnavailable=!hachiPaintSafe({outer:paintRect(p)},floorWorld(),null,obstacles);return;
+    }
     if(!scaleExempt(p)&&(appliedScalePercent(p)!==100||p.scalePlacementUnavailable)&&!PHYSICAL.has(p.mode)){
       const wasUnavailable=!!p.scalePlacementUnavailable,hadFocus=document.activeElement===p.el,fit=scalePlacement(p,p.x,scaleAnchors.has(p.id)?[...obstacles,...pets.filter(q=>q!==p&&!q.el.hidden&&!q.scalePlacementUnavailable&&!q.assetUnavailable).map(q=>paintRect(q))]:obstacles);
       p.scalePlacementUnavailable=!fit||Math.abs(fit.x-p.x)>1e-6;
@@ -1989,7 +2028,7 @@ function nearestViewportOverlayPlacement({x,y,width,height,padding,viewport,obst
     p.el.dataset.scaleUnavailable=String(!!p.scalePlacementUnavailable);
     p.el.style.touchAction = 'none';
     const lifted=floorOwnedLift(p);p.el.dataset.floorLift=String(lifted);p.el.style.pointerEvents=lifted&&p.pointerId===null?'none':'';syncFloorLiftLayer();
-    const dock = !lifted && mobileStage(p) && mobileStageViewport ? mobileStageViewport.getBoundingClientRect() : null;
+    const dock = !lifted ? (floorWalk?floorViewport():mobileStage(p)&&mobileStageViewport?mobileStageViewport.getBoundingClientRect():null) : null;
     p.el.dataset.assetUnavailable=String(!!p.assetUnavailable);const painted=onScreen(p);p.el.style.visibility=painted?'':'hidden';p.el.tabIndex=painted?0:-1;p.el.setAttribute('aria-hidden',String(!painted));
     if(!painted&&document.activeElement===p.el)p.el.blur?.();
     const hit=paintRect(p);
@@ -2029,6 +2068,7 @@ function nearestViewportOverlayPlacement({x,y,width,height,padding,viewport,obst
     p.prevX = e.clientX; p.prevY = e.clientY; p.prevTime = performance.now();
     p.throwVX = p.throwVY = 0; p.airborne = false;
     p.captureGeneration=(p.captureGeneration??0)+1;
+    if(!paused())inputDecode.retryFailed(['grab','held','release','fall','landing','recover'].flatMap(state=>inputSequenceFor(p,state)?.frames??[]));
     start(p, 'grab-onset', 'grabbed', .16, () => start(p, 'hold', 'grabbed', Infinity));for(const f of profile(p).physicalPrewarm??[])inputDecode.request(f); render(p);captureVisualFor(p)?.begin();
   }
   function pointerDown(p, e) {
@@ -2106,8 +2146,8 @@ function nearestViewportOverlayPlacement({x,y,width,height,padding,viewport,obst
     start(p, 'landing', 'idle', .18, () => start(p, 'recover', 'idle', .2, p.id==='momonga'?()=>idle(p):physicalSettle?.afterRecover(p,idle)));
   }
   function sizePet(p) {
-    const baseScale = decorativeStage(p) ? 1 : viewport().w < 640 ? (mobilePetStages ? .70 : visibleIds().length > 3 ? .40 : .62) : viewport().w <= 900 ? .8 : 1;
-    const scale=baseScale*(floorWalk&&!stageRect(p)?floorFitScale(baseScale):1);
+    const baseScale = floorWalk||decorativeStage(p) ? 1 : viewport().w < 640 ? (mobilePetStages ? .70 : visibleIds().length > 3 ? .40 : .62) : viewport().w <= 900 ? .8 : 1;
+    const scale=baseScale;
     p.width = Math.min(p.size * scale * appliedScalePercent(p)/100, Math.max(1, viewport().w)); p.height = p.width * (profile(p).nativeAspect??(4/3));
     p.el.style.width=p.width+'px';p.el.style.height=p.height+'px';
     p.el.style.setProperty('--cv-pet-size', `${p.width}px`);p.el.dataset.displayPercent=String(appliedScalePercent(p));
@@ -2139,7 +2179,10 @@ function nearestViewportOverlayPlacement({x,y,width,height,padding,viewport,obst
       if(!p.el.hidden&&p.id==='momonga'){if(momongaAnchor)p.x=constrainX(p,momongaStage&&momongaAnchor.offset!==null?momongaStage.getBoundingClientRect().left+momongaAnchor.offset:momongaAnchor.x);else if(!initialBodyPositionsApplied&&Number.isFinite(initialBodyPositions?.momonga?.x))p.x=constrainX(p,initialBodyPositions.momonga.x);p.momongaStageIdentity=decorativeStage(p)??mobileStage(p)??null;}
       p.decorativeStageIdentity=decorativeStage(p);p.stageLeft = stageRect(p)?.left ?? null;
       p.y = ground(p);
-      if(appliedScalePercent(p)!==100&&!p.el.hidden){refreshObstacles();const fit=scalePlacement(p);p.scalePlacementUnavailable=!fit;if(fit)p.x=fit.x;}
+      // Below-the-fold scene rows are valid document placements. Current viewport
+      // visibility is handled by onScreen; it must not latch scaleUnavailable.
+      if(floorWalk&&!stageRect(p))p.scalePlacementUnavailable=false;
+      else if(appliedScalePercent(p)!==100&&!p.el.hidden){refreshObstacles();const fit=scalePlacement(p);p.scalePlacementUnavailable=!fit;if(fit)p.x=fit.x;}
       render(p);
     }
     if(floorWalk)placeFloorRow();
@@ -2257,6 +2300,7 @@ function nearestViewportOverlayPlacement({x,y,width,height,padding,viewport,obst
     if (destroyed) return;
     ticking = true;
     const dt = lastTime ? clamp((now - lastTime) / 1000, 0, .04) : 0; lastTime = now;
+    if(floorWalk){if(floorSceneGeometry!==floorGeometryKey()){cancelContinuousWalk('scene-layout');cancelPairPresentation('scene-layout');cancelTransient('scene-layout');placeFloorRow();}}
     refreshObstacles();
     if (!document.hidden) {
       if (pair?.actors.some(p => !onScreen(p)||!ownedAdmission(p))) cancelPair();
@@ -2286,7 +2330,7 @@ function nearestViewportOverlayPlacement({x,y,width,height,padding,viewport,obst
   listen(document,'pointerup',e=>{for(const p of pets)if((p.touch?.pointerType==='mouse'||p.touch?.directDrag)&&p.touch.pointerId===e.pointerId)p.touch=null;});
   listen(document,'pointercancel',e=>{for(const p of pets)if(p.touch?.pointerId===e.pointerId)p.touch=null;});
   listen(document, 'pointerdown', e => { if (e.isPrimary === false || (e.pointerType==='mouse' && (e.button!==0 || (e.buttons!==undefined && e.buttons!==1)))) for (const p of pets) { p.touch = null; if(e.isPrimary===false&&p.pointerId!==null)safeReset(p); } }, {capture:true,passive:true});
-  listen(window, 'scroll', () => { for (const p of pets) p.touch = null; invalidate(); for (const p of pets) if (stageRect(p) && PHYSICAL.has(p.mode)) safeReset(p); }, { passive: true, capture: true });
+  listen(window, 'scroll', () => { for (const p of pets) p.touch = null;if(floorWalk){cancelContinuousWalk('scroll');placeFloorRow();}invalidate(); for (const p of pets) if (stageRect(p) && PHYSICAL.has(p.mode)) safeReset(p); }, { passive: true, capture: true });
   listen(document, 'keydown', e => { if (e.key === 'Escape' && pets.some(p => PHYSICAL.has(p.mode))) { e.preventDefault(); resetAll(); } });
   listen(window, 'resize', () => { cancelExternalPresentation('resize'); layout(); });
   if(viewportOverlay){listen(document,'vocab:busy',invalidate,true);for(const type of ['resize','scroll'])if(window.visualViewport?.addEventListener)listen(window.visualViewport,type,()=>{invalidate();for(const p of pets)render(p);},{passive:true});}
@@ -2587,7 +2631,7 @@ function createOrdinaryPairAnimation({asset,read,acquire,owns,release,host,point
     state:()=>({destroyed,externalPresentation,pending,pair,floorWalk,transientEpoch}),
     obstacles:()=>obstacles,markDirty:()=>{dirty=true;},refreshObstacles,
     isRequestedVisible:id=>requestedVisible.has(id),
-    viewport,ground,stageRect,paintRect,floorFootprint,floorRowSpacing,hachiPaintSafe,nearestScalePlacement,
+    viewport,...(floorWalk?{floorViewport}:{}),ground,stageRect,paintRect,floorFootprint,floorRowSpacing,hachiPaintSafe,nearestScalePlacement,
     paused,isBeta,ordinaryInputStudyBlocked,render,idle,setMode:mode,wake,
     setPairPresentation:value=>{pairPresentation=value;for(const id of value?.token?.actors??[]){const q=pets.find(q=>q.id===id);if(q)physicalSettle?.release(q,'pair-scene',pose);}},releasePairPresentation,ownsPairPresentation:t=>api.ownsPairPresentation(t),
     setTransient:value=>{transient=value;},releaseTransient,
@@ -2738,7 +2782,7 @@ function normalizePetVisibilityPreferences(value) {
   const valid = value && typeof value === 'object' && value.schemaVersion === 1;
   return { schemaVersion: 1,
     visible: Object.fromEntries(PET_VISIBILITY_IDS.map(id => [id,
-      valid && typeof value.visible?.[id] === 'boolean' ? value.visible[id] : !['kurimanju','kani'].includes(id)])),
+      valid && typeof value.visible?.[id] === 'boolean' ? value.visible[id] : true])),
     paused: valid && typeof value.paused === 'boolean' ? value.paused : false };
 }
 function selectedPetIds(preferences) {
@@ -3814,6 +3858,7 @@ return {createHachiFullbodyResponse};
   const motionEvidence = {"schemaVersion":1,"designVersion":"2.1-video-only","runtimeEnabled":false,"activationSupported":false,"candidateCount":13,"enabledCount":0,"entries":[{"actionId":"chiikawa.video_turn","characterId":"chiikawa","title":"정면→옆→정면과 팔 내림","evidenceStatus":"OBSERVED_PARTIAL","enabled":false,"observationRef":{"ledger":"vocab-motion-research/gap_review.json","episode":2,"record_id":null,"window_index":0,"url":"https://www.tiktok.com/@chiikawa.eps/video/7665040641147047198","time_anchor_kind":"pre_image_player_reading","observation_indices":[0,1],"support_window_indices":[]},"observationDigest":"223664c9ecf64ff6045dde0ba57a581cca1a87a9cf901aaeb37ab9381784b642","evidenceApproval":"PENDING_FRAGMENT_REVIEW","designApproval":"CANDIDATE_ONLY","artValidation":"NOT_REVIEWED","blockingReasons":["runtime-binding-not-implemented","explicit-activation-off","video-fragment-not-approved","design-fragment-not-approved","art-not-reviewed","no-matching-art-manifest","safe-zone-and-cancel-not-reviewed","accessibility-not-reviewed"],"missingEvidence":"세부 각도·눈동자 선행·포즈간 정확한 프레임수 미확인.","timingPolicy":"Player readings are provenance only; never converted into animation durations."},{"actionId":"chiikawa.video_greeting","characterId":"chiikawa","title":"눈 감은 미소와 앞발 들기","evidenceStatus":"OBSERVED_PARTIAL","enabled":false,"observationRef":{"ledger":"vocab-motion-research/gap_review.json","episode":6,"record_id":null,"window_index":1,"url":"https://www.tiktok.com/@chiikawa.eps/video/7665208365328469278","time_anchor_kind":"pre_image_player_reading","observation_indices":[0],"support_window_indices":[]},"observationDigest":"852aaeecddc0da78ea3a669fa956af950689b095c61ec1aa5e2fbe802b51da69","evidenceApproval":"PENDING_FRAGMENT_REVIEW","designApproval":"CANDIDATE_ONLY","artValidation":"NOT_REVIEWED","blockingReasons":["runtime-binding-not-implemented","explicit-activation-off","video-fragment-not-approved","design-fragment-not-approved","art-not-reviewed","no-matching-art-manifest","safe-zone-and-cancel-not-reviewed","accessibility-not-reviewed"],"missingEvidence":"초기 paused 중복 제외. 컷 이후 팔 내림 미확인.","timingPolicy":"Player readings are provenance only; never converted into animation durations."},{"actionId":"chiikawa.video_balance","characterId":"chiikawa","title":"기울어진 한발 자세→양발 바로서기","evidenceStatus":"OBSERVED_PARTIAL","enabled":false,"observationRef":{"ledger":"vocab-motion-research/gap_review.json","episode":25,"record_id":null,"window_index":2,"url":"https://www.tiktok.com/@chiikawa.eps/video/7667658522963774751","time_anchor_kind":"pre_image_player_reading","observation_indices":[1,2],"support_window_indices":[]},"observationDigest":"88f6b7b0d59e9d3f06fcd254e2ecf15c3314a7e305217f54730b4d39bfe40f38","evidenceApproval":"PENDING_FRAGMENT_REVIEW","designApproval":"CANDIDATE_ONLY","artValidation":"NOT_REVIEWED","blockingReasons":["runtime-binding-not-implemented","explicit-activation-off","video-fragment-not-approved","design-fragment-not-approved","art-not-reviewed","no-matching-art-manifest","safe-zone-and-cancel-not-reviewed","accessibility-not-reviewed"],"missingEvidence":"정확한 충돌/접촉·미끄러짐 원인·도약 낙하는 미확인.","timingPolicy":"Player readings are provenance only; never converted into animation durations."},{"actionId":"hachiware.video_packet_lift","characterId":"hachiware","title":"두 앞발로 봉지 들어 보여주기","evidenceStatus":"OBSERVED_PARTIAL","enabled":false,"observationRef":{"ledger":"vocab-motion-research/gap_review.json","episode":5,"record_id":null,"window_index":0,"url":"https://www.tiktok.com/@chiikawa.eps/video/7665154740417826078","time_anchor_kind":"pre_image_player_reading","observation_indices":[1],"support_window_indices":[]},"observationDigest":"ddf22b7a68b085a1ad5750faf2e666d4cec57be95ee8c730b3883b22ed70de38","evidenceApproval":"PENDING_FRAGMENT_REVIEW","designApproval":"CANDIDATE_ONLY","artValidation":"NOT_REVIEWED","blockingReasons":["runtime-binding-not-implemented","explicit-activation-off","video-fragment-not-approved","design-fragment-not-approved","art-not-reviewed","no-matching-art-manifest","safe-zone-and-cancel-not-reviewed","accessibility-not-reviewed"],"missingEvidence":"초기 paused 중복 제외. 내려놓기/물건 펼치기 연결 미확인.","timingPolicy":"Player readings are provenance only; never converted into animation durations."},{"actionId":"hachiware.video_card_reaction","characterId":"hachiware","title":"카드를 든 미소→눈 뜸과 몸 상승","evidenceStatus":"REACQUIRE_TIME","enabled":false,"observationRef":{"ledger":"vocab-motion-research/episode_observations.json","episode":7,"record_id":null,"window_index":null,"url":"https://www.tiktok.com/@chiikawa.eps/video/7665392516249685279","time_anchor_kind":"unrecorded","observation_indices":[3],"support_window_indices":[]},"observationDigest":"41396dc56cf4822fb53bd21d434006bfb5f92e31b3a334e8debc86701c116fcc","evidenceApproval":"PENDING_FRAGMENT_REVIEW","designApproval":"CANDIDATE_ONLY","artValidation":"NOT_REVIEWED","blockingReasons":["runtime-binding-not-implemented","explicit-activation-off","source-window-unresolved","timestamp-reacquisition-required","video-fragment-not-approved","design-fragment-not-approved","art-not-reviewed","no-matching-art-manifest","safe-zone-and-cancel-not-reviewed","accessibility-not-reviewed"],"missingEvidence":"출처는 있지만 이 시퀀스 구간 시각이 없음. EP7의 다른33~39초 보완 구간과 혼동 금지.","timingPolicy":"Player readings are provenance only; never converted into animation durations."},{"actionId":"hachiware.video_outward_paw","characterId":"hachiware","title":"옆에서 앞발을 밖으로 내미는 제스처","evidenceStatus":"REACQUIRE_TIME","enabled":false,"observationRef":{"ledger":"vocab-motion-research/episode_observations.json","episode":8,"record_id":null,"window_index":null,"url":"https://www.tiktok.com/@chiikawa.eps/video/7665415467812556062","time_anchor_kind":"unrecorded","observation_indices":[1],"support_window_indices":[]},"observationDigest":"eebb8dff36ae5b0caf1b81919097794e832cb1236bc5f47d7b8124321997a538","evidenceApproval":"PENDING_FRAGMENT_REVIEW","designApproval":"CANDIDATE_ONLY","artValidation":"NOT_REVIEWED","blockingReasons":["runtime-binding-not-implemented","explicit-activation-off","source-window-unresolved","timestamp-reacquisition-required","video-fragment-not-approved","design-fragment-not-approved","art-not-reviewed","no-matching-art-manifest","safe-zone-and-cancel-not-reviewed","accessibility-not-reviewed"],"missingEvidence":"구간 시각·손 되돌림·입과 꼬리의 정확한 선후가 없음.","timingPolicy":"Player readings are provenance only; never converted into animation durations."},{"actionId":"usagi.video_circle","characterId":"usagi","title":"풀밭의 원형 달리기/뛰기","evidenceStatus":"OBSERVED_PARTIAL","enabled":false,"observationRef":{"ledger":"vocab-motion-research/gap_review.json","episode":6,"record_id":null,"window_index":0,"url":"https://www.tiktok.com/@chiikawa.eps/video/7665208365328469278","time_anchor_kind":"pre_image_player_reading","observation_indices":[0,1],"support_window_indices":[]},"observationDigest":"bf179cfc8ebcd789bac1e90ce8477262ce11dca5531b249ff6c0fc82f19f4da2","evidenceApproval":"PENDING_FRAGMENT_REVIEW","designApproval":"CANDIDATE_ONLY","artValidation":"NOT_REVIEWED","blockingReasons":["runtime-binding-not-implemented","explicit-activation-off","video-fragment-not-approved","design-fragment-not-approved","art-not-reviewed","no-matching-art-manifest","safe-zone-and-cancel-not-reviewed","accessibility-not-reviewed"],"missingEvidence":"시작/감속/루프 연결 미확인. 공중제비는 관찰 안 됨.","timingPolicy":"Player readings are provenance only; never converted into animation durations."},{"actionId":"usagi.video_air_contact","characterId":"usagi","title":"푸딩 위 공중 팔벌림→접촉·반동","evidenceStatus":"OBSERVED_PARTIAL","enabled":false,"observationRef":{"ledger":"vocab-motion-research/gap_review.json","episode":1,"record_id":null,"window_index":0,"url":"https://www.tiktok.com/@chiikawa.eps/video/7664889241553440031","time_anchor_kind":"pre_image_player_reading","observation_indices":[0,1,2],"support_window_indices":[]},"observationDigest":"99744dbe52049a7fb84f91341d5f99229be7bca50f9061563b133b4c3f4d1334","evidenceApproval":"PENDING_FRAGMENT_REVIEW","designApproval":"CANDIDATE_ONLY","artValidation":"NOT_REVIEWED","blockingReasons":["runtime-binding-not-implemented","explicit-activation-off","video-fragment-not-approved","design-fragment-not-approved","art-not-reviewed","no-matching-art-manifest","safe-zone-and-cancel-not-reviewed","accessibility-not-reviewed"],"missingEvidence":"이륙 전체/최종회복 공백. 연속표본 안에서도 컷 여부/지지물 관계를 재확인해야 함.","timingPolicy":"Player readings are provenance only; never converted into animation durations."},{"actionId":"usagi.video_bounce_still","characterId":"usagi","title":"앞을 향해 팔 벌리고 튀었다 정지","evidenceStatus":"OBSERVED_PARTIAL","enabled":false,"observationRef":{"ledger":"vocab-motion-research/gap_review.json","episode":6,"record_id":null,"window_index":1,"url":"https://www.tiktok.com/@chiikawa.eps/video/7665208365328469278","time_anchor_kind":"pre_image_player_reading","observation_indices":[1],"support_window_indices":[]},"observationDigest":"852aaeecddc0da78ea3a669fa956af950689b095c61ec1aa5e2fbe802b51da69","evidenceApproval":"PENDING_FRAGMENT_REVIEW","designApproval":"CANDIDATE_ONLY","artValidation":"NOT_REVIEWED","blockingReasons":["runtime-binding-not-implemented","explicit-activation-off","video-fragment-not-approved","design-fragment-not-approved","art-not-reviewed","no-matching-art-manifest","safe-zone-and-cancel-not-reviewed","accessibility-not-reviewed"],"missingEvidence":"표본 창에 다른 캐릭터 샷도 포함. 우사기만의 정확 시작/끝 구간 재확인 필요.","timingPolicy":"Player readings are provenance only; never converted into animation durations."},{"actionId":"momonga.video_appear_move","characterId":"momonga","title":"치이카와 옆에 등장→왼쪽 전경 이동","evidenceStatus":"OBSERVED_PARTIAL","enabled":false,"observationRef":{"ledger":"vocab-motion-research/gap_review.json","episode":25,"record_id":null,"window_index":2,"url":"https://www.tiktok.com/@chiikawa.eps/video/7667658522963774751","time_anchor_kind":"pre_image_player_reading","observation_indices":[0],"support_window_indices":[]},"observationDigest":"88f6b7b0d59e9d3f06fcd254e2ecf15c3314a7e305217f54730b4d39bfe40f38","evidenceApproval":"PENDING_FRAGMENT_REVIEW","designApproval":"CANDIDATE_ONLY","artValidation":"NOT_REVIEWED","blockingReasons":["runtime-binding-not-implemented","explicit-activation-off","video-fragment-not-approved","design-fragment-not-approved","art-not-reviewed","no-matching-art-manifest","safe-zone-and-cancel-not-reviewed","accessibility-not-reviewed"],"missingEvidence":"보행 방식·정확접촉·완전 진입/퇴장 연결 미확인.","timingPolicy":"Player readings are provenance only; never converted into animation durations."},{"actionId":"momonga.video_airborne_spread","characterId":"momonga","title":"영상에서 확인한 공중 펼침 자세","evidenceStatus":"VIDEO_SAMPLED_CONFIRMED","enabled":false,"observationRef":{"ledger":"vocab-motion-research/missing_character_video_observations.json","episode":27,"record_id":"MOMONGA_EP27_AIRBORNE_20261024","window_index":5,"url":"https://www.tiktok.com/@jherby.y/video/7498263134847667474","time_anchor_kind":"pre_image_player_reading","observation_indices":[0,1,2],"support_window_indices":[]},"observationDigest":"91b845762cb9cfe19cc8e4ce2c6f436df16b28b2f87db071d03c13db02480f07","evidenceApproval":"APPROVED_VIDEO_FRAGMENT","designApproval":"APPROVED_REFERENCE_POSE_ONLY","artValidation":"PASS","blockingReasons":["runtime-binding-not-implemented","explicit-activation-off","design-fragment-not-approved","asset-review-binding-not-implemented","safe-zone-and-cancel-not-reviewed","accessibility-not-reviewed"],"missingEvidence":"나무접촉 해제→공중 연결, 실제 세계좌표 이동/선회, 착지, 물리속도/동작길이. 편집크롭을 캐릭터 translation으로 사용할 수 없음.","timingPolicy":"Player readings are provenance only; never converted into animation durations."},{"actionId":"rakko.video_cup_eye_fragment","characterId":"rakko","title":"컵을 입에 댄 채 눈 감았다 다시 뜨는 조각","evidenceStatus":"VIDEO_SAMPLED_ACTION_FRAGMENT","enabled":false,"observationRef":{"ledger":"vocab-motion-research/missing_character_video_observations.json","episode":179,"record_id":"RAKKO_EP179_CUP_CREAM_20261024","window_index":4,"url":"https://www.tiktok.com/@mikachiii0.5/video/7384926690696301840","time_anchor_kind":"pre_image_player_reading","observation_indices":[0],"support_window_indices":[5]},"observationDigest":"1deac838faf8aaea6de32e44052f44b7819f627eef79baabd8f59080fbcf95ac","evidenceApproval":"PENDING_FRAGMENT_REVIEW","designApproval":"CANDIDATE_ONLY","artValidation":"NOT_REVIEWED","blockingReasons":["runtime-binding-not-implemented","explicit-activation-off","video-fragment-not-approved","design-fragment-not-approved","art-not-reviewed","no-matching-art-manifest","safe-zone-and-cancel-not-reviewed","accessibility-not-reviewed"],"missingEvidence":"컵들기시작/삼킴/내리는연결/놓기 미확인. 한차례눈감음만 재현할 때 미관찰전후를 필수로 요구할 필요 없음.","timingPolicy":"Player readings are provenance only; never converted into animation durations."},{"actionId":"shisa.video_pour_fragment","characterId":"shisa","title":"기울어진 병에서 갈색 줄기가 잔으로 들어가는 제한 붓기","evidenceStatus":"VIDEO_SAMPLED_ACTION_FRAGMENT","enabled":false,"observationRef":{"ledger":"vocab-motion-research/missing_character_video_observations.json","episode":264,"record_id":"SHISA_EP264_POUR_20261024","window_index":1,"url":"https://www.tiktok.com/@anzu_anzu04/video/7535691427284520210","time_anchor_kind":"pre_image_player_reading","observation_indices":[1,2],"support_window_indices":[2,3]},"observationDigest":"065ba4b2625da92dbb79045aea22527d0f8932977fb1f3aae453f11b648fa02b","evidenceApproval":"PENDING_FRAGMENT_REVIEW","designApproval":"CANDIDATE_ONLY","artValidation":"NOT_REVIEWED","blockingReasons":["runtime-binding-not-implemented","explicit-activation-off","video-fragment-not-approved","design-fragment-not-approved","art-not-reviewed","no-matching-art-manifest","safe-zone-and-cancel-not-reviewed","accessibility-not-reviewed"],"missingEvidence":"직립→기울임연결/붓기시작/원위치/병놓기 없음. 실제타이밍 미측정. 현재 관찰된 중간줄기만 재현하려면 이 전후를 새로 찾느라 무기한 막을 필요는 없음.","timingPolicy":"Player readings are provenance only; never converted into animation durations."}],"characters":{"chiikawa":{"candidateCount":3,"enabledCount":0},"hachiware":{"candidateCount":3,"enabledCount":0},"usagi":{"candidateCount":3,"enabledCount":0},"momonga":{"candidateCount":2,"enabledCount":0},"rakko":{"candidateCount":1,"enabledCount":0},"shisa":{"candidateCount":1,"enabledCount":0}},"nonActionCount":1,"holdCount":9,"mappingCount":1,"mappingEnabledCount":0,"mappings":[{"mappingId":"momonga.web_airborne_pass","characterId":"momonga","title":"관찰된 펼침 자세 + 별도 작성한 단어장 바깥 경로","kind":"AUTHORED_WEB_PLACEMENT","bodyActionRef":"momonga.video_airborne_spread","enabled":false,"previewTestingAuthorized":true,"previewReviewId":"ART_MOMONGA_EP27_PREVIEW_20261024_R3","previewAssetSha256":"2b6068c38fdab9f0bc6ca54366729df0a2b25ab93524a68a12616b32cefbf580","layoutProvenance":"웹UX 작성안, 원작 경로/속도 측정 아님","blockingReasons":["production-layout-binding-not-implemented","explicit-activation-off","asset-review-binding-not-implemented","safety-checks-not-reviewed","accessibility-checks-not-reviewed"],"canonicalTrajectory":false}],"legacyBetaCanonical":false};
   const spriteSources = window.CVPetData['pet-sprites'];
   const characterProfiles = window.CVPetData['pet-profiles'];
+  characterProfiles.momonga={...characterProfiles.momonga,nativeAspect:MOMONGA_SCENE_CROP[3]/MOMONGA_SCENE_CROP[2]};
   const ordinaryPairExtraArt={"kurimanju":{"label":"\ucfe0\ub9ac\ub9cc\uc96c","source":"assets/pair-actors/baee1b3a1c72013f825d5534bffba94d499604f412431b14c46173f6e17209d3.png","sha256":"baee1b3a1c72013f825d5534bffba94d499604f412431b14c46173f6e17209d3","nativeSize":[1222,1287]},"kani":{"label":"\uce74\ub2c8","source":"assets/pair-actors/23e2443779d86add05cd25a39b4bc8b4976ba7c6e3488a1287777240e0376734.png","sha256":"23e2443779d86add05cd25a39b4bc8b4976ba7c6e3488a1287777240e0376734","nativeSize":[512,512]}};
   for(const [id,art] of Object.entries(ordinaryPairExtraArt)){spriteSources[id]={idle:art.source};characterProfiles[id]={nativeAspect:art.nativeSize[1]/art.nativeSize[0],frames:{idle:art.source},behavior:{idle:100},vocab:{start:'idle',correct:'idle',wrong:'idle',complete:'idle'},scope:'EXISTING_STATIC_IDLE_AND_AUTHORED_PAIR_ONLY'};}
 
@@ -3834,12 +3879,24 @@ return {createHachiFullbodyResponse};
   const readStudy=()=>{const s=window.__cvStudyRead?.()??{phase:page==='settings'?'settings':'unknown',busy:page!=='settings',transactionDepth:0,revision:0,composing:false,audioPending:false};return {...s,composing:s.composing||pairIME};};
   const selected=()=>selectedPetIds(preferences);
   const uniformScale=()=>Object.fromEntries(ids.map(id=>[id,scaleSettings.globalPercent]));
-  // The reserved lane keeps every full canvas inside the viewport, including transparent padding.
+  // Keep learning content consecutive. The same wallpaper continues into the field
+  // after the answer buttons; its camera never inserts space inside the word card.
   contentViewport=document.createElement('div');contentViewport.className='cv-floor-content';
   contentViewport.setAttribute('role','region');contentViewport.setAttribute('aria-label',page==='settings'?'설정':'학습');
   document.body.appendChild(contentViewport);
   for(const el of [document.querySelector('.cv-page-nav'),document.getElementById('navigation-status'),document.querySelector('.site-header'),document.querySelector('main')].filter(Boolean))contentViewport.appendChild(el);
-  const floorLane=document.createElement('div');floorLane.className='cv-floor-lane';floorLane.setAttribute('aria-hidden','true');document.body.appendChild(floorLane);
+  const fieldHost=document.getElementById('study')||document.querySelector('main');
+  const fieldNavigation=document.createElement('nav');fieldNavigation.className='cv-field-navigation';fieldNavigation.setAttribute('aria-label','들판 둘러보기');fieldNavigation.hidden=true;
+  const fieldLeft=document.createElement('button'),fieldRight=document.createElement('button'),fieldLabel=document.createElement('span');
+  fieldLeft.type=fieldRight.type='button';fieldLeft.textContent='‹';fieldRight.textContent='›';fieldLeft.setAttribute('aria-label','왼쪽 친구들 보기');fieldRight.setAttribute('aria-label','오른쪽 친구들 보기');fieldLabel.textContent='친구들 둘러보기';fieldNavigation.append(fieldLeft,fieldLabel,fieldRight);fieldHost.appendChild(fieldNavigation);
+  const floorLane=document.createElement('div');floorLane.className='cv-floor-lane';floorLane.tabIndex=0;floorLane.setAttribute('role','region');floorLane.setAttribute('aria-label','친구들 들판. 좌우 방향키로 둘러보기');
+  const floorWorldNode=document.createElement('div');floorWorldNode.className='cv-floor-world';floorWorldNode.setAttribute('aria-hidden','true');floorLane.appendChild(floorWorldNode);fieldHost.appendChild(floorLane);
+  const syncFieldCamera=()=>{document.body.style.setProperty('--cv-map-pan',floorLane.scrollLeft+'px');fieldLeft.disabled=floorLane.scrollLeft<=0;fieldRight.disabled=floorLane.scrollLeft>=floorLane.scrollWidth-floorLane.clientWidth-1;};
+  const moveField=direction=>{floorLane.scrollLeft+=direction*Math.max(120,floorLane.clientWidth*.75);syncFieldCamera();};
+  listen(fieldLeft,'click',()=>moveField(-1));listen(fieldRight,'click',()=>moveField(1));listen(floorLane,'scroll',syncFieldCamera,{passive:true});
+  // These keys belong to the map camera, not the document's study shortcuts.
+  const fieldKeys=event=>fieldCameraKey(event,floorLane,syncFieldCamera);
+  listen(floorLane,'keydown',fieldKeys);listen(fieldNavigation,'keydown',fieldKeys);
   const panel=page==='settings'?document.getElementById('character-preferences'):null;
   const choices=panel?.querySelector('.cv-character-choices');
   const visibleInputs={};
@@ -3860,8 +3917,8 @@ return {createHachiFullbodyResponse};
     if(disposed)return;
     pets=mountChiikawaPets({spriteSources,characterProfiles,enabledCharacters:ids,visibleCharacters:selected(),startPaused:preferences.paused,
       maxVisibleMobile:-1,mobilePriority:ids,displayScalePercents:uniformScale(),
-      ownedViewportGeometry,floorWalk:true,readFloorWalkViewport:()=>floorLane.getBoundingClientRect(),
-      onFloorLayout:height=>document.documentElement.style.setProperty('--cv-floor-height',height+'px'),
+      ownedViewportGeometry,floorWalk:true,readFloorWalkViewport:()=>{const r=floorLane.getBoundingClientRect();return{left:r.left,top:r.top,right:r.left+floorLane.clientWidth,bottom:r.top+floorLane.clientHeight,width:floorLane.clientWidth,height:floorLane.clientHeight};},readFloorWalkWorld:()=>floorWorldNode.getBoundingClientRect(),
+      onFloorLayout:(height,width)=>{for(const[key,value]of [['--cv-floor-height',(height?height+16:0)+'px'],['--cv-floor-world-height',height+'px'],['--cv-floor-width',width+'px']])if(floorLane.style.getPropertyValue(key)!==value)floorLane.style.setProperty(key,value);fieldNavigation.hidden=height===0||width<=floorLane.clientWidth;floorLane.tabIndex=height>0?0:-1;syncFieldCamera();},
       readStudyState:readStudy,onDeliberateInteraction:(id,input)=>!input.repeat&&pets?.playInputAction(id,'tap'),
       onCharacterHidden:(id,{hadFocus})=>{if(hadFocus)visibleInputs[id]?.focus();},
       onStatusChange:()=>syncPause(),avoidSelector:'#card,button,summary,select,input,textarea,a,.table-scroll'});

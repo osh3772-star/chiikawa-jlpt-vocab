@@ -570,16 +570,23 @@ body[data-page=settings].cv-character-only .cv-character-only-stage>.cv-direct-s
 body[data-page=settings].cv-character-only .cv-character-only-stage>.cv-extra-static-panel{order:4}
 body[data-page=settings].cv-character-only .cv-character-only-stage>.cv-mobile-motion-toolbar{order:5;margin:8px 0;max-width:100%;box-sizing:border-box}
 
-/* Restore companions to the viewport floor without selection buttons or a large dock. */
-body[data-page=study].cv-floor-layout{height:100dvh;min-height:0;overflow:hidden;padding:0}
-body.cv-floor-layout>.cv-floor-content{position:relative;box-sizing:border-box;height:calc(100dvh - var(--cv-floor-height,96px));overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain;padding:12px 16px 20px}
-body.cv-floor-layout>.cv-floor-lane{position:fixed;left:0;right:0;bottom:0;height:var(--cv-floor-height,96px);pointer-events:none;background:transparent;border:0;padding:0;margin:0}
+/* One scrolling document and wallpaper. The field follows the learning controls;
+   its camera never inserts a gallery between the word, examples and answer buttons. */
+body[data-page=study].cv-floor-layout,body[data-page=settings].cv-floor-layout{height:auto;min-height:100dvh;overflow-y:auto;padding:12px 16px 24px}
+body.cv-floor-layout{position:relative}
+body.cv-floor-layout>.scenery{position:absolute;inset:0}
+body.cv-floor-layout>.scenery::before{background-position:calc(50% - var(--cv-map-pan,0px)) bottom}
+body.cv-floor-layout.cv-field-background>.scenery{background-position:calc(50% - var(--cv-map-pan,0px)) center}
+body.cv-floor-layout>.cv-floor-content{position:relative;box-sizing:border-box;min-height:100dvh;height:auto;overflow:visible;padding:0}
+body.cv-floor-layout .cv-floor-lane{position:relative;box-sizing:border-box;width:calc(100% - 88px);height:var(--cv-floor-height,0px);overflow-x:auto;overflow-y:hidden;touch-action:pan-x pan-y;background:none;border:0;padding:0;margin:8px auto;scrollbar-width:thin;overscroll-behavior-x:contain}
+body.cv-floor-layout .cv-field-navigation{display:flex;align-items:center;justify-content:space-between;gap:12px;max-width:380px;margin:12px auto 0;font-size:.8rem;color:var(--muted)}
+body.cv-floor-layout .cv-field-navigation button{min-width:44px;min-height:44px;padding:0 12px;font-size:1.4rem}
+body.cv-floor-layout .cv-floor-world{width:var(--cv-floor-width,100%);height:var(--cv-floor-world-height,0px);pointer-events:none}
+@media(max-width:560px){body.cv-floor-layout .cv-floor-lane{width:calc(100% - 40px)}}
 body.cv-floor-layout .cv-pet__name{display:none}
 body.cv-floor-layout .cv-pet--yielding{opacity:0;pointer-events:none}
 
-/* Settings uses the same bottom baseline; its existing horizontal slots remain real,
-   scrollable input stages on narrow displays, not middle-of-document previews. */
-body[data-page=settings].cv-floor-layout{height:100dvh;min-height:0;overflow:hidden;padding:0}
+/* Legacy experimental dock selectors. Current settings uses cv-floor-content above. */
 body[data-page=settings].cv-floor-layout>.cv-content-viewport{box-sizing:border-box;height:calc(100dvh - var(--cv-floor-height,184px));overflow:auto;padding:12px 16px 20px}
 body[data-page=settings].cv-floor-layout.cv-character-only .cv-character-only-stage{height:calc(100dvh - var(--cv-floor-height,184px));min-height:0;overflow:auto;padding-bottom:20px}
 @media(max-width:639px){
