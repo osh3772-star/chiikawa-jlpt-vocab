@@ -1204,9 +1204,22 @@ function mountChiikawaPets(options = {}) {
   const paddedGeometry=(p,x=p.x,y=p.y)=>paddedHachi&&p.id==='hachiware'?hachiPaintGeometry({x,y,width:p.width,height:p.height}):paddedMomonga&&p.id==='momonga'?momongaPaintGeometry({x,y,width:p.width,height:p.height}):null;
   let overlayRevision=0;
   const listeners = [], pets = [], preloads = [], failed = new Set(), seen = new Map();
-  let reviewedMomoReady=false,reviewedMomoFailed=false;
+  let reviewedMomoReady=false,reviewedMomoFailed=false,reviewedMomoFailure=null,reviewedMomoGeneration=0,reviewedMomoAbort=null;
   const reviewedMomoFrames=[...window.CVReviewedMotionData['momo-walk'].frames,...window.CVReviewedMotionData['momo-held'].frames];
-  Promise.all(reviewedMomoFrames.map(async f=>{const im=new Image();preloads.push(im);im.src=f.source;await im.decode();if(im.naturalWidth!==f.assetSize[0]||im.naturalHeight!==f.assetSize[1])throw Error('reviewed-frame-size');})).then(()=>{if(!destroyed){reviewedMomoReady=true;wake();}},()=>{reviewedMomoFailed=true;});
+  function loadReviewedMomo({retry=false}={}){
+    if(destroyed||reviewedMomoReady||reviewedMomoAbort||reviewedMomoFailed&&(!retry||reviewedMomoFailure==='dimensions'))return;
+    const generation=++reviewedMomoGeneration,abort=reviewedMomoAbort=new AbortController();
+    reviewedMomoFailed=false;reviewedMomoFailure=null;
+    Promise.all(reviewedMomoFrames.map(async f=>{const im=new Image();preloads.push(im);im.src=f.source;await decodeImageWithDeadline(im,{signal:abort.signal});if(im.naturalWidth!==f.assetSize[0]||im.naturalHeight!==f.assetSize[1])throw Error('reviewed-frame-size');})).then(()=>{
+      if(destroyed||generation!==reviewedMomoGeneration)return;
+      reviewedMomoAbort=null;reviewedMomoReady=true;wake();
+    },error=>{
+      if(destroyed||generation!==reviewedMomoGeneration)return;
+      reviewedMomoFailed=true;reviewedMomoFailure=error?.message==='reviewed-frame-size'?'dimensions':'decode';
+      reviewedMomoAbort=null;abort.abort();
+    });
+  }
+  loadReviewedMomo();
   const viewport = () => ({ w: window.innerWidth, h: window.innerHeight });
   const paused = () => manualPaused || reduced;
   const selected = DATA.filter(p => enabledCharacters.includes(p.id));
@@ -1537,22 +1550,35 @@ function isEngineOwnedDragShadow(value) {
   return color&&offsets.length===3&&['0','0px'].includes(offsets[0])&&offsets[1]==='8px'&&offsets[2]==='6px';
 }
 
+/** One deadline per decode; timeout/abort settles once and ignores late completion. */
+function decodeImageWithDeadline(image,{timeoutMs=8000,setTimer=setTimeout,clearTimer=clearTimeout,signal}={}){
+  return new Promise((resolve,reject)=>{
+    if(signal?.aborted){reject(Error('input-image-aborted'));return;}
+    let settled=false,timer;
+    const finish=(ok,error)=>{if(settled)return;settled=true;clearTimer(timer);signal?.removeEventListener('abort',abort);ok?resolve():reject(error);};
+    const abort=()=>{finish(false,Error('input-image-aborted'));image.removeAttribute?.('src');};
+    timer=setTimer(()=>{finish(false,Error('input-image-timeout'));image.removeAttribute?.('src');},timeoutMs);
+    signal?.addEventListener('abort',abort,{once:true});
+    try{Promise.resolve(image.decode()).then(()=>finish(true),error=>finish(false,error));}catch(error){finish(false,error);}
+  });
+}
+
 /** Demand-only image readiness cache. It never starts, resumes or paints an action. */
-function createInputDecodeQueue({ImageCtor=Image,maxConcurrent=2,registerImage=()=>{},onFailure=()=>{},onRetry=()=>{},isDisposed=()=>false}={}) {
+function createInputDecodeQueue({ImageCtor=Image,maxConcurrent=2,decodeTimeoutMs=8000,setTimer=setTimeout,clearTimer=clearTimeout,registerImage=()=>{},onFailure=()=>{},onRetry=()=>{},isDisposed=()=>false}={}) {
   const cache=new Map(),queue=[];let active=0,disposed=false;
   const stopped=()=>disposed||isDisposed();
   function pump(){
     while(!stopped()&&active<maxConcurrent&&queue.length){
-      const item=queue.shift();active++;item.status='loading';
+      const item=queue.shift();active++;item.status='loading';item.controller=new AbortController();
       void (async()=>{
         try{
           const image=new ImageCtor();item.image=image;registerImage(image);image.src=item.frame.source;
-          await image.decode();
+          await decodeImageWithDeadline(image,{timeoutMs:decodeTimeoutMs,setTimer,clearTimer,signal:item.controller.signal});
           if(stopped())return;
           if(image.naturalWidth!==item.frame.assetSize[0]||image.naturalHeight!==item.frame.assetSize[1]){item.failure='dimensions';throw Error('input-image-dimensions');}
           item.status='ready';
-        }catch(_){if(!stopped()){item.status='failed';item.failure??='decode';onFailure(item.frame.source);}}
-        finally{active--;pump();}
+        }catch(error){if(!stopped()){item.status='failed';item.failure??=error?.message==='input-image-timeout'?'timeout':'decode';onFailure(item.frame.source);}}
+        finally{delete item.controller;active--;pump();}
       })();
     }
   }
@@ -1569,12 +1595,12 @@ function createInputDecodeQueue({ImageCtor=Image,maxConcurrent=2,registerImage=(
     retryFailed(frames){
       if(stopped())return;
       for(const frame of frames){const item=cache.get(frame?.source);
-        if(item?.status!=='failed'||item.failure!=='decode')continue;
+        if(item?.status!=='failed'||!['decode','timeout'].includes(item.failure))continue;
         cache.delete(frame.source);onRetry(frame.source);this.request(frame);
       }
     },
     getState:()=>({active,queued:queue.length,cached:cache.size,disposed:stopped()}),
-    destroy(){disposed=true;queue.length=0;cache.clear();}
+    destroy(){disposed=true;queue.length=0;for(const item of cache.values())item.controller?.abort();cache.clear();}
   };
 }
 
@@ -1613,6 +1639,28 @@ function createInputDecodeQueue({ImageCtor=Image,maxConcurrent=2,registerImage=(
     if(Object.hasOwn(p,'inputOwnedDragFilter')){p.img.style.filter=p.inputOwnedDragFilter;delete p.inputOwnedDragFilter;}
     if(p.inputSavedStyle){Object.assign(p.el.style,p.inputSavedStyle.root);Object.assign(p.figure.style,p.inputSavedStyle.figure);p.inputSavedStyle=null;}
     p.el.dataset.interactionFallback=reason;
+  }
+  function retryOwnedHeldInput(p,reason) {
+    const a=p.action;clearInputFrame(p,reason);
+    // This is current-capture state, not an asynchronous retry. Release/reset
+    // replaces the action, so an old held loop cannot revive on a later grab.
+    if(a?.id==='hold'&&a.sequence?.inputOnly&&p.pointerId!==null&&p.el.hasPointerCapture?.(p.pointerId)===true&&!destroyed&&!paused()){
+      a.inputStarted=false;a.inputElapsed=0;a.inputRetryAt=a.elapsed+.12;delete a.inputSlot;
+    }else if(a)a.sequence=null;
+    pose(p,a?.fallback??'idle');
+  }
+  function constrainOwnedHeldDrag(p) {
+    if(!floorOwnedLift(p)||p.pointerId===null||paused())return;
+    const sequence=inputSequenceFor(p,'held');if(!sequence?.inputOnly)return;
+    const frames=sequence.frames.map(frame=>inputFrameBounds(frame,{x:0,y:0,width:p.width,height:p.height}));
+    if(frames.some(r=>!r))return;
+    const bounds=candidateUnion(originalPaintRect(p,0,0),...frames),v=viewport(),inset=4.5;
+    // Reserve every approved held canvas, not just the current idle rectangle.
+    // Keep the existing 4.25px paint guard; a small rounding allowance stays inside it.
+    const left=inset-bounds.left,right=v.w-inset-bounds.right;
+    const top=inset-bounds.top,bottom=Math.min(ground(p),v.h-inset-bounds.bottom);
+    if(left<=right)p.x=clamp(p.x,left,right);
+    if(top<=bottom)p.y=clamp(p.y,top,bottom);
   }
   function inputPaintRect(p,x,y,original) {
     const bounds=inputFrameBounds(p.inputFrame,{x,y,width:p.width,height:p.height});
@@ -1900,12 +1948,9 @@ function createInputDecodeQueue({ImageCtor=Image,maxConcurrent=2,registerImage=(
           if(p.x===old||!inputFrameSafe(p,sample.frame)){p.x=old;idle(p);p.el.dataset.interactionFallback='walk-path-blocked';return;}
         }
         if(a.inputSlot!==undefined&&(sample.slot<a.inputSlot||sample.slot>a.inputSlot+1)||!paintInputFrame(p,sample.frame)){
-          clearInputFrame(p,'input-sequence-unavailable-or-unsafe');
           // A transient collision must not permanently erase an infinite held loop.
           // Retry from its first real frame only while this actor still owns capture.
-          if(a.id==='hold'&&p.pointerId!==null&&p.el.hasPointerCapture?.(p.pointerId)===true){a.inputStarted=false;a.inputElapsed=0;a.inputRetryAt=a.elapsed+.12;delete a.inputSlot;}
-          else a.sequence=null;
-          pose(p,a.fallback);
+          retryOwnedHeldInput(p,'input-sequence-unavailable-or-unsafe');
         }else{delete a.inputRetryAt;a.inputStarted=true;a.inputElapsed=nextElapsed;a.inputSlot=sample.slot;}
       }else if(readiness==='failed'){
         clearInputFrame(p,'input-decode-failed');a.sequence=null;pose(p,a.fallback);
@@ -2022,8 +2067,8 @@ function nearestViewportOverlayPlacement({x,y,width,height,padding,viewport,obst
     if(p.ordinaryFlight){ordinaryFlight.render(p);return;}
     if(renderContinuousWalk(p))return;if(p.id!=='momonga')physicalSettle?.refresh(p,display);
     if(p.capturePose&&!p.inputFrame&&p.pointerId!==null){display(p,`capture-authored-${p.capturePose.poseId}`,CAPTURE_ASSET.source,'capture-authored-ui');Object.assign(p.img.style,capturePaintStyle(p.capturePose,p.width));}
-    refreshObstacles();syncStagePosition(p);
-    if(p.inputFrame&&!inputFrameSafe(p,p.inputFrame)){clearInputFrame(p,'input-paint-changed');if(p.action)p.action.sequence=null;pose(p,p.action?.fallback??'idle');}
+    refreshObstacles();syncStagePosition(p);constrainOwnedHeldDrag(p);
+    if(p.inputFrame&&!inputFrameSafe(p,p.inputFrame))retryOwnedHeldInput(p,'input-paint-changed');
     syncScaleAvailability(p);syncOverlayPlacement(p);
     p.el.dataset.scaleUnavailable=String(!!p.scalePlacementUnavailable);
     p.el.style.touchAction = 'none';
@@ -2068,7 +2113,7 @@ function nearestViewportOverlayPlacement({x,y,width,height,padding,viewport,obst
     p.prevX = e.clientX; p.prevY = e.clientY; p.prevTime = performance.now();
     p.throwVX = p.throwVY = 0; p.airborne = false;
     p.captureGeneration=(p.captureGeneration??0)+1;
-    if(!paused())inputDecode.retryFailed(['grab','held','release','fall','landing','recover'].flatMap(state=>inputSequenceFor(p,state)?.frames??[]));
+    if(!paused()){inputDecode.retryFailed(['grab','held','release','fall','landing','recover'].flatMap(state=>inputSequenceFor(p,state)?.frames??[]));if(p.id==='momonga')loadReviewedMomo({retry:true});}
     start(p, 'grab-onset', 'grabbed', .16, () => start(p, 'hold', 'grabbed', Infinity));for(const f of profile(p).physicalPrewarm??[])inputDecode.request(f); render(p);captureVisualFor(p)?.begin();
   }
   function pointerDown(p, e) {
@@ -2594,7 +2639,7 @@ function nearestViewportOverlayPlacement({x,y,width,height,padding,viewport,obst
     focusCharacter(id) { if(!requestedVisible.has(id)||!pets.some(p=>p.id===id))return false;cancelPairPresentation('focus');if(transient?.lease.id===id)cancelTransient('focus'); if (externalPresentation === id) { cancelExternalPresentation('focus'); layout(); } const p = pets.find(p => p.id === id && !p.el.hidden); if (!p) return false; (decorativeStage(p)??mobileStage(p))?.scrollIntoView?.({ block: 'nearest', inline: 'nearest' }); render(p);if(!onScreen(p))return false;p.el.focus?.({ preventScroll: true });return true; },
     getVisibleCharacters() { return selected.map(p => p.id).filter(id => requestedVisible.has(id)); },
     getState() { return pets.map(p => ({ id: p.id, mode: p.mode, frame: p.frame, x: p.x, y: p.y, width: p.width, height: p.height, dir: p.dir, airborne: p.airborne||!!p.ordinaryFlight, glide: !!p.ordinaryFlight, jump: false, visible: !p.el.hidden, onScreen: onScreen(p), reactionTime: p.action ? Math.max(0, p.action.duration - p.action.elapsed) : 0, assetMode: p.el.dataset.assetMode, interactionState:p.el.dataset.interactionState??p.mode, interactionFallback:p.el.dataset.interactionFallback??null, assetUnavailable:!!p.assetUnavailable, paintHitRect:paintRect(p), inlinePadding:!!paddedGeometry(p),inlineEnabled:!!inlineFor(p), displayPercent:appliedScalePercent(p),scalePlacementUnavailable:!!p.scalePlacementUnavailable, pairRole: p.pairRole ?? null, captured: p.pointerId !== null })); },
-    destroy() { if (destroyed) return; ordinaryFlight.cancel('destroy'); ordinaryPairController.cancel('destroy'); for(const p of pets)p.captureVisual?.destroy();candidateActions?.destroy();inputDecode.destroy(); cancelExternalPresentation('destroy'); resetAll(); destroyed = true; presentationRegistry.destroy();cancelAnimationFrame(raf); for (const [el, type, fn, opts] of listeners) el.removeEventListener(type, fn, opts); observer?.disconnect(); for (const img of preloads) { img.onload = img.onerror = null; } root.remove(); if (window[INSTANCE] === api) delete window[INSTANCE]; },
+    destroy() { if (destroyed) return; ordinaryFlight.cancel('destroy'); ordinaryPairController.cancel('destroy'); for(const p of pets)p.captureVisual?.destroy();candidateActions?.destroy();inputDecode.destroy();reviewedMomoAbort?.abort(); cancelExternalPresentation('destroy'); resetAll(); destroyed = true; presentationRegistry.destroy();cancelAnimationFrame(raf); for (const [el, type, fn, opts] of listeners) el.removeEventListener(type, fn, opts); observer?.disconnect(); for (const img of preloads) { img.onload = img.onerror = null; } root.remove(); if (window[INSTANCE] === api) delete window[INSTANCE]; },
   };
 /** Shared authored pair artwork. A missing scene is unavailable, never a solo fallback. */
 function createOrdinaryPairAnimation({asset,read,acquire,owns,release,host,pointer,now=()=>performance.now()}){
