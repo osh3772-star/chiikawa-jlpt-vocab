@@ -245,7 +245,10 @@ function createStudyState(onChange=()=>{}){
     }
     window.CVPage.registerStudy(()=>({fingerprint:lastStorageRaw,unsaved:unsavedProgress,
       ...(unsavedProgress?{state:{level,positions:{...positions},answers:{...answers}}}:{}),
-      transient:(page==='study'||explicitStudyStart)?{level,mode,reviewIds:reviewIds.slice(),reviewIndex,reviewTotal,lastAnswer,reviewFilter}:(window.CVPage.incoming?.study?.transient||{level,mode,reviewIds:reviewIds.slice(),reviewIndex,reviewTotal,lastAnswer,reviewFilter})}));
+      // The list's selected filter is independent of an in-progress review's scope.
+      transient:(page==='study'||explicitStudyStart)?{level,mode,reviewIds:reviewIds.slice(),reviewIndex,reviewTotal,lastAnswer,reviewFilter,
+        unknownFilter:page==='unknown'?reviewFilter:(window.CVPage.incoming?.study?.transient?.unknownFilter??reviewFilter)}:
+        {...(window.CVPage.incoming?.study?.transient||{level,mode,reviewIds:reviewIds.slice(),reviewIndex,reviewTotal,lastAnswer,reviewFilter}),unknownFilter:reviewFilter}}));
     window.addEventListener('storage',event=>{if(event.key===storageKey||event.key===null){if(syncExternalState()&&!storageConflict){if(page==='study')render('다른 화면에서 바뀐 최신 학습 기록을 불러왔습니다.');else renderHome();}}});
 
     // Optional local learning-record transfer. File reads never hold the synchronous study guard.
@@ -388,7 +391,8 @@ function createStudyState(onChange=()=>{}){
     if(page!=='study'){
       const incoming=window.CVPage.incoming?.study;
       if(incoming?.unsaved&&incoming.state){adoptState(incoming.state);lastStorageRaw=incoming.fingerprint;unsavedProgress=true;}
-      if(['all',...levels].includes(incoming?.transient?.reviewFilter)){reviewFilter=incoming.transient.reviewFilter;if(el['review-level'])el['review-level'].value=reviewFilter;}
+      const filter=incoming?.transient?.unknownFilter??incoming?.transient?.reviewFilter;
+      if(['all',...levels].includes(filter)){reviewFilter=filter;if(el['review-level'])el['review-level'].value=reviewFilter;}
       showHome();
     }else{
       const incoming=window.CVPage.incoming?.study;
@@ -403,4 +407,3 @@ function createStudyState(onChange=()=>{}){
       }else startLevel(level);
     }
   })();
-  

@@ -1427,16 +1427,16 @@
       "bytes": 10688
     },
     "character-settings.html": {
-      "sha256": "6f95cd96c274a5f7366681dea348489bbb56d72edc5c6ad07a4790d47894331e",
-      "bytes": 3667
+      "sha256": "ea83bad85535b8f487588ecc290fe5641fa48a2b7e2a3ff28c9bc30eaf041e2f",
+      "bytes": 3673
     },
     "continuous-walk.js": {
-      "sha256": "280943e7f6f6a1eb6f1d77d21531af7d277c1199dfabd654bba71ed9aa21ae55",
-      "bytes": 27772
+      "sha256": "c1a4ad0a1f1a93b6ce5af1c8c30715a5bc5352e33a5006e696d7444ce2840392",
+      "bytes": 28339
     },
     "index.html": {
-      "sha256": "4516adc0cad98982e585d90689d8c5a294fe18ce52040ccd93565bcc8dffba6a",
-      "bytes": 2222
+      "sha256": "0f802f313a5cff55935d6ab1b3bd0c9ac13d32538af3ee6f56cd03b2e92e2776",
+      "bytes": 2225
     },
     "navigation.js": {
       "sha256": "e9bcb5dafb46599cf035986f171f1587d6829e9c9f6f973cdb3e80bff14792a2",
@@ -1447,8 +1447,8 @@
       "bytes": 2963577
     },
     "pet-runtime.js": {
-      "sha256": "dfd4c801adf9d4b0b8d64a9e2e0790e45ed9b4dd66c5286d97161956302cb7e1",
-      "bytes": 4973982
+      "sha256": "5fdc8d9f53da7c96e6ae76776d0a958c88e47c8c1d701b68cf67b3cc3299d584",
+      "bytes": 4975498
     },
     "registered-motion-20261027/chi-hachi-bedtime/selected/00-01-ready.png": {
       "sha256": "10089835138de8a10d5f7df01f099558a7239a5baf1288495fdbb3a6f465a3be",
@@ -1783,12 +1783,12 @@
       "bytes": 10654
     },
     "study-records.html": {
-      "sha256": "0cac6e95c9e19374f06f12e59a415aed2ba5a839bce923eaca96669ed2597a21",
-      "bytes": 2325
+      "sha256": "5c7eb24d9b037a42909e02a5fb31fdcf543cac6f39b09c8c6e87660cdf876593",
+      "bytes": 2328
     },
     "study-runtime.js": {
-      "sha256": "6f70c8ad6b35e47f81fcb7b5880c00a1404ba3135b8bcc079f5e2be804c45770",
-      "bytes": 28052
+      "sha256": "a173b224dafccac1042c348de30fca03a1bd60fe5983fa4ee09d1bed90302205",
+      "bytes": 28339
     },
     "study-visibility.css": {
       "sha256": "6340976d753a990d5f582d950a75d4db060e950edfdf6ae1c2c55504fa42738f",
@@ -1799,20 +1799,20 @@
       "bytes": 3559
     },
     "study.html": {
-      "sha256": "b86382181f8a2df8a33a7bbe3406c24d612e3a745ee09b95ead30e9d2176adee",
-      "bytes": 5247
+      "sha256": "81e8fa6a44beb2cb90c494e2a147000619963b8633341010c81137315d6e11f1",
+      "bytes": 5256
     },
     "unknown-words.html": {
-      "sha256": "32190f7f78650f9f9e5cfe2b0ac30828c5a1b9e9b29989cdbbc27e70c39b5a58",
-      "bytes": 2592
+      "sha256": "9f20605da63167dda55c5f5527bd81eea15fb1b46cca8e1104ba4df351096a1f",
+      "bytes": 2595
     },
     "vocabulary.js": {
       "sha256": "f4eeee42a1e2d51940ade6cfc651235b8f34879e4b95e068f6d7da9f696a94fe",
       "bytes": 1395440
     },
     "word-selection.html": {
-      "sha256": "61d3366eb20b601a31130e06180f2157016e40ca09e9fe22b8c901d4692a9127",
-      "bytes": 1895
+      "sha256": "3c2bfcf312a35f2628d5d15817de94fc513f5b102d9a62305dfaf13d9b00d28d",
+      "bytes": 1898
     }
   },
   "candidate": "function-pages-20261030",

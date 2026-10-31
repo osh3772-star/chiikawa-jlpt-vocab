@@ -207,7 +207,7 @@ function bindContinuousWalkCancellation({controller,window,document,controls}){
 
 const art={"schema": "chi-foot-v4-expanded-review", "characterId": "chiikawa", "reviewCandidate": true, "productionApproved": false, "enabledByDefault": false, "autonomous": false, "rootTravel": false, "loop": false, "displayMode": "actor-expanded-registration", "frames": [{"poseId": "00", "sha256": "09526837455f4384430ef1e7f6c68b68b8e693da7fb57ce7185cba610e7303f3", "width": 1254, "height": 1254, "source": "assets/09526837455f4384430ef1e7f6c68b68b8e693da7fb57ce7185cba610e7303f3.png"}, {"poseId": "01", "sha256": "1c90f622c51589025695a0fec55568719627cc2030582e06bb9617b89835f32d", "width": 1254, "height": 1254, "source": "assets/1c90f622c51589025695a0fec55568719627cc2030582e06bb9617b89835f32d.png"}, {"poseId": "02", "sha256": "40f956e223a22ed1eb978ee5163d46095d8e765bc561f5c162d364b87f8bbdf7", "width": 1254, "height": 1254, "source": "assets/40f956e223a22ed1eb978ee5163d46095d8e765bc561f5c162d364b87f8bbdf7.png"}, {"poseId": "03", "sha256": "0d48828ca2adbfe124489be261c2f9a78ad29ab037e0829af83fdf63e017dc48", "width": 1254, "height": 1254, "source": "assets/0d48828ca2adbfe124489be261c2f9a78ad29ab037e0829af83fdf63e017dc48.png"}, {"poseId": "04", "sha256": "f89be8a1dca9efd10c998b901a995575f59fd98426944daca1ff563be33e2013", "width": 1254, "height": 1254, "source": "assets/f89be8a1dca9efd10c998b901a995575f59fd98426944daca1ff563be33e2013.png"}, {"poseId": "05", "sha256": "228915d0fde57acd3fce9aa06a303c4989bce72d107408984fe18e30325948ad", "width": 1254, "height": 1254, "source": "assets/228915d0fde57acd3fce9aa06a303c4989bce72d107408984fe18e30325948ad.png"}, {"poseId": "06", "sha256": "a31368e4fac8a11ec638e3e5c864cd2d36c4c54fd0c545c239ab284b256fd7d3", "width": 1254, "height": 1254, "source": "assets/a31368e4fac8a11ec638e3e5c864cd2d36c4c54fd0c545c239ab284b256fd7d3.png"}, {"poseId": "07", "sha256": "57796e78b711e408945d06126d687ee2944d90e744e520a93755f3d570adc065", "width": 1254, "height": 1254, "source": "assets/57796e78b711e408945d06126d687ee2944d90e744e520a93755f3d570adc065.png"}, {"poseId": "08", "sha256": "874a369c3c6ae2b1331ce66f56367c7194a233c30016f0d4b0d85c0169af4a95", "width": 1254, "height": 1254, "source": "assets/874a369c3c6ae2b1331ce66f56367c7194a233c30016f0d4b0d85c0169af4a95.png"}, {"poseId": "09", "sha256": "590155819ebae2b41dc2b90b2eb1eeac182117da8eaeee7a8dfe249e86f4c181", "width": 1254, "height": 1254, "source": "assets/590155819ebae2b41dc2b90b2eb1eeac182117da8eaeee7a8dfe249e86f4c181.png"}, {"poseId": "10", "sha256": "656290e36fb9c214ea07a34c0b8d4ca66a5367ca130f66ab6ed177b7e48c637c", "width": 1254, "height": 1254, "source": "assets/656290e36fb9c214ea07a34c0b8d4ca66a5367ca130f66ab6ed177b7e48c637c.png"}, {"poseId": "11", "sha256": "4410d59938f0ef46dc70063a43fa42b3764cebbcf91241a737f8f373b8cb1c7a", "width": 1254, "height": 1254, "source": "assets/4410d59938f0ef46dc70063a43fa42b3764cebbcf91241a737f8f373b8cb1c7a.png"}]};
   if(!['study','settings'].includes(document.body?.dataset.page))return;
-  let enabled=true,disposed=false,timer=null,quietSince=performance.now(),focused=true;
+  let enabled=true,disposed=false,suspended=false,timer=null,timerGeneration=0,quietSince=performance.now(),focused=true;
   const engine=()=>window[Symbol.for('jlpt.chiikawa-pets')];
   const bridge=createContinuousWalkEngineAdapter({getEngine:engine,readUI:()=>({enabled,floorRequested:true,documentHidden:document.hidden,inputBusy:false,composing:false,mediaBusy:document.getElementById('bgm-play')?.getAttribute('aria-pressed')==='true'})});
   const controller=createContinuousWalkController({fixture:art,host:bridge,decode:decodeReviewedStep});
@@ -217,13 +217,17 @@ const art={"schema": "chi-foot-v4-expanded-review", "characterId": "chiikawa", "
   const activity=()=>{quietSince=performance.now();};
   for(const type of ['pointerdown','keydown','beforeinput','compositionstart','play','vocab:busy'])listen(document,type,activity,{capture:true,passive:true});
   listen(window,'blur',()=>{focused=false;});listen(window,'focus',()=>{focused=true;activity();});
-  async function tick(){timer=null;if(disposed)return;
+  async function tick(){timer=null;if(disposed||suspended)return;
+    const generation=timerGeneration;
     if(focused&&!document.hidden&&!engine()?.isPaused()&&performance.now()-quietSince>=6000&&controller.getState().mode==='off'){
       quietSince=performance.now();try{await controller.start();}catch{controller.stop('decode-or-host-error');}
     }
-    if(!disposed)timer=setTimeout(tick,1000);
+    if(!disposed&&!suspended&&generation===timerGeneration)timer=setTimeout(tick,1000);
   }
   timer=setTimeout(tick,1000);
-  const dispose=()=>{if(disposed)return;disposed=true;enabled=false;clearTimeout(timer);controller.setEnabled(false,'navigation');controller.destroy();bridge.destroy();unbind();for(const fn of cleanups)fn();};
-  window.CVPage?.beforeNavigate(dispose);listen(window,'pagehide',dispose);
+  const suspend=()=>{if(disposed||suspended)return;suspended=true;timerGeneration++;enabled=false;clearTimeout(timer);timer=null;controller.setEnabled(false,'navigation');};
+  const resume=()=>{if(disposed||!suspended)return;suspended=false;enabled=true;quietSince=performance.now();focused=document.hasFocus?.()??true;controller.setEnabled(true);timer=setTimeout(tick,1000);};
+  const dispose=()=>{if(disposed)return;suspend();disposed=true;controller.destroy();bridge.destroy();unbind();for(const fn of cleanups)fn();};
+  window.CVPage?.beforeNavigate(suspend);listen(window,'pagehide',event=>event.persisted?suspend():dispose());
+  listen(window,'pageshow',event=>{if(event.persisted&&!window.CVPage?.navigating)resume();});
 })();

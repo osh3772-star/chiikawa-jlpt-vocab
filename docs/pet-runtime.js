@@ -1356,8 +1356,10 @@ function proposeFloorWalk({position,walkingBounds,actorBounds,viewport,obstacles
     const focusedInput=!!document.activeElement?.closest?.('input:not([type=checkbox]):not([type=radio]):not([type=button]):not([type=range]),textarea,[contenteditable="true"]');
     const captured=pets.some(q=>q.pointerId!==null),physical=pets.some(q=>q.airborne||PHYSICAL.has(q.mode)||floor&&['walk-start','walk','walk-stop'].includes(q.mode)),inputBusy=focusedInput||pets.some(q=>!!q.touch),composing=study?.composing!==false;
     const mediaBusy=study?.audioPending!==false||document.getElementById('bgm-play')?.getAttribute('aria-pressed')==='true';
-    // Legacy busy remains unchanged. Only a quiescent explicit study/review request qualifies.
-    const studyBusy=!['study','review'].includes(study?.phase)||!Number.isSafeInteger(study?.revision)||!Number.isSafeInteger(study?.transactionDepth)||study.transactionDepth!==0;
+    // Settings has no study document; admit only its explicit idle context.
+    // Study/review transactions, media and composition keep their existing guards.
+    const settingsIdle=page==='settings'&&study?.phase==='settings'&&study.busy===false;
+    const studyBusy=!(settingsIdle||['study','review'].includes(study?.phase))||!Number.isSafeInteger(study?.revision)||!Number.isSafeInteger(study?.transactionDepth)||study.transactionDepth!==0;
     const visible=!!p&&requestedVisible.has(p.id)&&!p.el.hidden&&!p.assetUnavailable&&!p.scalePlacementUnavailable&&!p.overlayUnavailable&&p.img.naturalWidth>0;
     const g=p?continuousWalkGeometry(p,(placement||floor)&&!own):null;
     const available=!destroyed&&visible&&!document.hidden&&!paused()&&!reduced&&!captured&&!physical&&!inputBusy&&!studyBusy&&!composing&&!mediaBusy&&!stageRect(p)&&!isBeta(p)&&!pair&&!pending&&!externalPresentation&&!transient&&(!presentationRegistry.get()||own)&&(floor||pets.every(q=>q.mode==='idle'&&!q.action))&&![...inlineResponses.values()].some(c=>c.getState().mode!=='off')&&CW_FRAMES.every(f=>!failed.has(f.source));
@@ -3824,12 +3826,12 @@ return {createHachiFullbodyResponse};
   let preferences=normalizePetVisibilityPreferences(null);
   try{preferences=normalizePetVisibilityPreferences(JSON.parse(localStorage.getItem(visibilityKey)));}catch{}
   let scaleSettings=normalizeDisplayScale(null);try{scaleSettings=readDisplayScale(localStorage);}catch{}
-  let pets=null,disposed=false,focused=true,pairIndex=0,automaticTimer=null,pairIME=false;
+  let pets=null,disposed=false,suspended=false,focused=true,pairIndex=0,automaticTimer=null,pairIME=false;
   const motionQuery=window.matchMedia('(prefers-reduced-motion: reduce)');
   const cleanups=[];
   const listen=(node,type,fn,opts)=>{node?.addEventListener(type,fn,opts);cleanups.push(()=>node?.removeEventListener(type,fn,opts));};
   const save=()=>{try{localStorage.setItem(visibilityKey,JSON.stringify(preferences));}catch{}};
-  const readStudy=()=>{const s=window.__cvStudyRead?.()??{phase:'home',busy:false,composing:false,revision:0};return {...s,composing:s.composing||pairIME};};
+  const readStudy=()=>{const s=window.__cvStudyRead?.()??{phase:page==='settings'?'settings':'unknown',busy:page!=='settings',transactionDepth:0,revision:0,composing:false,audioPending:false};return {...s,composing:s.composing||pairIME};};
   const selected=()=>selectedPetIds(preferences);
   const uniformScale=()=>Object.fromEntries(ids.map(id=>[id,scaleSettings.globalPercent]));
   // The reserved lane keeps every full canvas inside the viewport, including transparent padding.
@@ -3877,7 +3879,7 @@ return {createHachiFullbodyResponse};
   listen(document,'compositionstart',()=>{pairIME=true;activity();});listen(document,'compositionend',()=>{pairIME=false;});
   listen(window,'blur',()=>{focused=false;activity();});listen(window,'focus',()=>{focused=true;quietSince=performance.now();});
   function automatic(){
-    automaticTimer=null;if(disposed)return;
+    automaticTimer=null;if(disposed||suspended)return;
     const state=readStudy();
     if(focused&&!document.hidden&&!pets.isPaused()&&!motionQuery.matches&&!state.busy&&!state.composing&&!['study','review'].includes(state.phase)&&performance.now()-quietSince>=15000){
       pets.playReviewedPair(pairIds[pairIndex++%pairIds.length]);quietSince=performance.now();
@@ -3886,14 +3888,15 @@ return {createHachiFullbodyResponse};
   }
   automaticTimer=setTimeout(automatic,1000);
   // Pajama selection stays in its original private local key and shares the same simple picker.
-  let pajamaRequested=false;try{const p=JSON.parse(localStorage.getItem('cv-pajama-group-v1'));pajamaRequested=p?.schemaVersion===1&&p.groupId==='pajama-parties'&&p.requested===true;}catch{}
+  const readPajamaRequested=()=>{try{const p=JSON.parse(localStorage.getItem('cv-pajama-group-v1'));return p?.schemaVersion===1&&p.groupId==='pajama-parties'&&p.requested===true;}catch{return false;}};
+  let pajamaRequested=readPajamaRequested(),pajamaInput=null;
   const pajamaData=window.CVReviewedMotionData['pajama-group'];
   const pajamaHost=document.createElement('div');pajamaHost.className='cv-pajama-host';pajamaHost.hidden=!pajamaRequested;(panel||document.querySelector('main')).appendChild(pajamaHost);
   const pajamaImage=document.createElement('img');pajamaImage.className='cv-pajama-companion';pajamaImage.alt='파자마 파티즈';pajamaImage.hidden=true;pajamaImage.draggable=false;pajamaHost.appendChild(pajamaImage);
   let pajamaReady=false,pajamaIndex=0,pajamaTimer=null;
   function pajamaTick(){
     pajamaTimer=null;pajamaHost.hidden=!pajamaRequested;
-    if(disposed||!pajamaRequested||!pajamaReady){pajamaImage.hidden=true;return;}
+    if(disposed||suspended||!pajamaRequested||!pajamaReady){pajamaImage.hidden=true;return;}
     const width=192*scaleSettings.globalPercent/100,first=pajamaData.frames[0],height=width*first.assetSize[1]/first.assetSize[0];
     pajamaHost.style.minHeight=height+'px';pajamaImage.style.width=width+'px';
     const rect=pajamaHost.getBoundingClientRect(),safe=Number.isFinite(rect.width)&&Number.isFinite(rect.height)&&rect.width>=width&&rect.height>=height&&ownedFullStage(pajamaHost);
@@ -3902,8 +3905,23 @@ return {createHachiFullbodyResponse};
     if(safe){pajamaImage.src=f.source;if(!document.hidden&&!pets.isPaused()&&!motionQuery.matches)pajamaIndex=(pajamaIndex+1)%pajamaData.frames.length;}
     pajamaTimer=setTimeout(pajamaTick,safe?f.durationMs:500);
   }
-  if(choices){const row=document.createElement('label'),input=document.createElement('input');input.type='checkbox';input.checked=pajamaRequested;input.id='pajama-group-visible';row.append(input,document.createTextNode('파자마 파티즈'));choices.appendChild(row);listen(input,'change',()=>{pajamaRequested=input.checked;try{localStorage.setItem('cv-pajama-group-v1',JSON.stringify({schemaVersion:1,groupId:'pajama-parties',requested:pajamaRequested}));}catch{}clearTimeout(pajamaTimer);pajamaTick();});}
+  if(choices){const row=document.createElement('label'),input=document.createElement('input');pajamaInput=input;input.type='checkbox';input.checked=pajamaRequested;input.id='pajama-group-visible';row.append(input,document.createTextNode('파자마 파티즈'));choices.appendChild(row);listen(input,'change',()=>{pajamaRequested=input.checked;try{localStorage.setItem('cv-pajama-group-v1',JSON.stringify({schemaVersion:1,groupId:'pajama-parties',requested:pajamaRequested}));}catch{}clearTimeout(pajamaTimer);pajamaTick();});}
   Promise.all(pajamaData.frames.map(async f=>{const im=new Image();im.src=f.source;await im.decode();if(im.naturalWidth!==f.assetSize[0]||im.naturalHeight!==f.assetSize[1])throw Error('pajama-frame-size');})).then(()=>{if(!disposed){pajamaReady=true;pajamaTick();}},()=>{});
-  function dispose(){if(disposed)return;disposed=true;clearTimeout(automaticTimer);clearTimeout(pajamaTimer);for(const cleanup of cleanups)cleanup();pets?.destroy();pajamaHost.remove();}
-  window.CVPage.beforeNavigate(dispose);listen(window,'pagehide',dispose);
+  // A cached document may be retained when navigation protects unsaved study data.
+  // Stop presentations while away, but keep the settings listeners until final unload.
+  function suspend(){if(disposed||suspended)return;suspended=true;clearTimeout(automaticTimer);clearTimeout(pajamaTimer);automaticTimer=pajamaTimer=null;pets?.destroy();pajamaImage.hidden=true;}
+  function resume(){
+    if(disposed||!suspended)return;
+    try{preferences=normalizePetVisibilityPreferences(JSON.parse(localStorage.getItem(visibilityKey)));}catch{}
+    try{scaleSettings=readDisplayScale(localStorage);}catch{}
+    for(const [id,input]of Object.entries(visibleInputs))input.checked=preferences.visible[id];
+    if(scale){scale.value=String(scaleSettings.globalPercent);scaleOutput.textContent=scale.value+'%';}
+    pajamaRequested=readPajamaRequested();if(pajamaInput)pajamaInput.checked=pajamaRequested;
+    suspended=false;focused=document.hasFocus?.()??true;pairIME=false;quietSince=performance.now();
+    mount();automaticTimer=setTimeout(automatic,1000);pajamaTick();
+  }
+  function dispose(){if(disposed)return;suspend();disposed=true;for(const cleanup of cleanups)cleanup();pajamaHost.remove();}
+  window.CVPage.beforeNavigate(suspend);
+  listen(window,'pagehide',event=>event.persisted?suspend():dispose());
+  listen(window,'pageshow',event=>{if(event.persisted&&!window.CVPage.navigating)resume();});
 })();
